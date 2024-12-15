@@ -21,7 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 30
+    compileSdkVersion 35
 
     signingConfigs {
         release {
@@ -51,8 +51,8 @@ android {
         signingConfig signingConfigs.debug
         applicationId 'com.qualcomm.ftcrobotcontroller'
         minSdkVersion 24
-        //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 28
+        targetSdkVersion 35
+        multiDexEnabled true
 
         /**
          * We keep the versionCode and versionName of robot controller applications in sync with
@@ -102,16 +102,14 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
 
-    packagingOptions {
-        pickFirst '**/*.so'
-    }
     ndkVersion '21.3.6528147'
 }
 
 repositories {
+    mavenCentral()
 }
 
