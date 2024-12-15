@@ -48,11 +48,12 @@ public class DrivePIDTask extends Task {
 				eaglePIDYawValue = 0;
 			}
 
-
-			// move robot until PID has reached target
-			robot.telemetry.addData("PID X Value", eaglePIDXValue);
-			robot.telemetry.addData("PID Y Value", eaglePIDYValue);
-			robot.telemetry.addData("PID Heading Value", eaglePIDYawValue);
+			robot.telemetry.addData("Odometry X Value", robot.odometry.getPosition().getX(DistanceUnit.INCH));
+			robot.telemetry.addData("Odometry Y Value", robot.odometry.getPosition().getY(DistanceUnit.INCH));
+			robot.telemetry.addData("Odometry Heading Value", robot.odometry.getPosition().getHeading(AngleUnit.DEGREES));
+			robot.telemetry.addData("Power X Value", eaglePIDXValue);
+			robot.telemetry.addData("Power Y Value", eaglePIDYValue);
+			robot.telemetry.addData("Power Heading Value", eaglePIDYawValue);
 			robot.drive.driveMecanumFieldCentric(-eaglePIDYValue, eaglePIDXValue, eaglePIDYawValue);
 			return false;
 		}
