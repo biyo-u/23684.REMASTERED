@@ -8,20 +8,33 @@ import org.firstinspires.ftc.teamcode.Utilities.Robot;
 @Config
 public class PIDDriver {
 
-	// TODO: FIND VALUES!!!!
-	public double kP = 0;
-	public double kI = 0;
-	public double kD = 0;
-	public double kF = 0;
-	private double target;
+	// TODO: FIND Kp!!! (by increasing Kp!!!) (try 0.999 or 1.000)!!
+	public static double kP = 0.75; // determines force robot moves at
+	public static double kI = 0; // do not touch
+	public static double kD = 0.946; // determines robot overshoot prevention
+	private double kF = 0.7; // do not touch
+	private double target; // target value
 
 	private Robot robot;
 
 	// Creates a PIDFController with gains kP, kI, kD, and kF
-	PIDFController pidf = new PIDFController(kP, kI, kD, kF);
+	PIDFController pidf;
 
 	public PIDDriver(double target) {
 		this.target = target;
+		this.pidf = new PIDFController(kP, kI, kD, kF);
+	}
+
+	public double getP(){
+		return pidf.getP();
+	}
+
+	public double getI(){
+		return pidf.getI();
+	}
+
+	public double getD(){
+		return pidf.getD();
 	}
 
 	public double getPIDOutput(double position){

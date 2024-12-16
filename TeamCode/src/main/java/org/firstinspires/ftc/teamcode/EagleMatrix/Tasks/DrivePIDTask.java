@@ -54,6 +54,15 @@ public class DrivePIDTask extends Task {
 			robot.telemetry.addData("Power X Value", eaglePIDXValue);
 			robot.telemetry.addData("Power Y Value", eaglePIDYValue);
 			robot.telemetry.addData("Power Heading Value", eaglePIDYawValue);
+			robot.telemetry.addData("XP", PIDXDriver.getP());
+			robot.telemetry.addData("XI", PIDXDriver.getI());
+			robot.telemetry.addData("XD", PIDXDriver.getD());
+			robot.telemetry.addData("YP", PIDYDriver.getP());
+			robot.telemetry.addData("YI", PIDYDriver.getI());
+			robot.telemetry.addData("YD", PIDYDriver.getD());
+			robot.telemetry.addData("HP", PIDDriverYaw.getP());
+			robot.telemetry.addData("HI", PIDDriverYaw.getI());
+			robot.telemetry.addData("HD", PIDDriverYaw.getD());
 			robot.drive.driveMecanumFieldCentric(-eaglePIDYValue, eaglePIDXValue, eaglePIDYawValue);
 			return false;
 		}
