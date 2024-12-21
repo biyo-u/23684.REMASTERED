@@ -19,13 +19,17 @@ import org.firstinspires.ftc.teamcode.Utilities.Robot;
 public class NewAuto extends OpMode {
 	private AutoActions autoActions;
 	private AutoDriver autoDriver;
-	public static double distance = 24;
+	public static double displacement = 0;
+	public static double distance = 48;
+	public static double theta = 0;
 
 	@Override
 	public void init() {
 		Robot robot = new Robot(hardwareMap, telemetry);
 
-		autoActions = new AutoActions().add(new Action(new DrivePIDTask(new Pose2D(DistanceUnit.INCH, 0, distance, AngleUnit.DEGREES, 0), robot), "FIRST_DRIVE", "0"));
+		// TODO: Create more actions in sequence
+		// TODO: Create PID drivers for other DcMotor aspects of the robot.
+		autoActions = new AutoActions().add(new Action(new DrivePIDTask(new Pose2D(DistanceUnit.INCH, displacement, distance, AngleUnit.DEGREES, theta), robot), "FIRST_DRIVE", "0"));
 		autoDriver = new AutoDriver(autoActions);
 	}
 

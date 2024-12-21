@@ -8,8 +8,8 @@ import org.firstinspires.ftc.teamcode.Utilities.Robot;
 @Config
 public class PIDDriver {
 
-	// TODO: FIND Kp!!! (by increasing Kp!!!) (try 0.999 or 1.000)!!
-	public static double kP = 0.75; // determines force robot moves at
+	// TODO: Fine-tune kP and kD to prevent violent oscillations at movements longer than 48 inches.
+	public static double kP = 9.00; // determines force robot moves at
 	public static double kI = 0; // do not touch
 	public static double kD = 0.946; // determines robot overshoot prevention
 	private double kF = 0.7; // do not touch

@@ -25,10 +25,11 @@ public class DrivePIDTask extends Task {
 	public boolean run() {
 		robot.odometry.update();
 
+		// TODO: Create separate PID driver for eaglePIDPYaw (turning), which will require a separate set of P, I, and D values. YAY!!!
 		// loops this until it returns true
 		double eaglePIDXValue = PIDXDriver.getPIDOutput(robot.odometry.getPosition().getX(DistanceUnit.INCH));
 		double eaglePIDYValue = PIDYDriver.getPIDOutput(robot.odometry.getPosition().getY(DistanceUnit.INCH));
-		double eaglePIDYawValue = PIDDriverYaw.getPIDOutput(robot.odometry.getPosition().getHeading(AngleUnit.DEGREES));
+		double eaglePIDYawValue = 0; //PIDDriverYaw.getPIDOutput(robot.odometry.getPosition().getHeading(AngleUnit.DEGREES));
 
 		if (eaglePIDXValue == 1234567.89 && eaglePIDYValue == 1234567.89 && eaglePIDYawValue == 1234567.89){
 			// stops robot if PID has reached target
