@@ -29,7 +29,7 @@ public class DrivePIDTask extends Task {
 		// loops this until it returns true
 		double eaglePIDXValue = PIDXDriver.getPIDOutput(robot.odometry.getPosition().getX(DistanceUnit.INCH));
 		double eaglePIDYValue = PIDYDriver.getPIDOutput(robot.odometry.getPosition().getY(DistanceUnit.INCH));
-		double eaglePIDYawValue = 0; //PIDDriverYaw.getPIDOutput(robot.odometry.getPosition().getHeading(AngleUnit.DEGREES));
+		double eaglePIDYawValue = PIDDriverYaw.getAnglePIDOutput(robot.odometry.getPosition().getHeading(AngleUnit.DEGREES));
 
 		if (eaglePIDXValue == 1234567.89 && eaglePIDYValue == 1234567.89 && eaglePIDYawValue == 1234567.89){
 			// stops robot if PID has reached target
@@ -61,9 +61,9 @@ public class DrivePIDTask extends Task {
 			robot.telemetry.addData("YP", PIDYDriver.getP());
 			robot.telemetry.addData("YI", PIDYDriver.getI());
 			robot.telemetry.addData("YD", PIDYDriver.getD());
-			robot.telemetry.addData("HP", PIDDriverYaw.getP());
-			robot.telemetry.addData("HI", PIDDriverYaw.getI());
-			robot.telemetry.addData("HD", PIDDriverYaw.getD());
+			robot.telemetry.addData("HP", PIDDriverYaw.getAngleP());
+			robot.telemetry.addData("HI", PIDDriverYaw.getAngleI());
+			robot.telemetry.addData("HD", PIDDriverYaw.getAngleD());
 			robot.drive.driveMecanumFieldCentric(-eaglePIDYValue, eaglePIDXValue, eaglePIDYawValue);
 			return false;
 		}
