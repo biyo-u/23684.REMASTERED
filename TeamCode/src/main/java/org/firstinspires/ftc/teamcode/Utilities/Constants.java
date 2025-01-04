@@ -23,4 +23,17 @@ public class Constants {
 		public static final String RoadrunnerTuning = "9.RoadrunnerTuning";
 		public static final String Testing = "8.Testing";
 	}
+
+	public static class PIDValues {
+		// forward and strafing PID values
+		public static double KP = 9.00;
+		public static double KI = 0.00;
+		public static double KD = 0.946;
+		public static double KF = 0.70;
+		// turning PID values
+		public static double HEADING_P = 0.00;
+		public static double HEADING_I = 0.00;
+		public static double HEADING_D = 0.00;
+		public static double HEADING_F = 0.70;
+	}
 }

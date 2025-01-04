@@ -19,7 +19,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
-@Config
 public class hyperdroidDrive extends SubsystemBase {
     static final AngleUnit ANGLE_UNIT = AngleUnit.DEGREES;
     static final DistanceUnit DISTANCE_UNIT = DistanceUnit.METER;
