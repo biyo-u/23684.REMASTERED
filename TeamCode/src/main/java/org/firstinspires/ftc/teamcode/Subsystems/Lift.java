@@ -1,17 +1,13 @@
 package org.firstinspires.ftc.teamcode.Subsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
 
 import java.util.Locale;
 
 public class Lift {
 	private final DcMotor liftMotorLeft;
 	private final DcMotor liftMotorRight;
-	private final DcMotor shoulderMotor;
-	private final Servo liftServoTilt;
-	private final Servo rightHangServo;
-	private final Servo leftHangServo;
+	private final DcMotor shoulder;
 
 	/**
 	 * Constructor for the Lift class.
@@ -20,24 +16,19 @@ public class Lift {
 	 *
 	 * @param liftMotorLeft      The left lift motor.
 	 * @param liftMotorRight     The right lift motor.
-	 * @param liftServoTilt The left tilt lift servo.
-	 * @param rightHangServo     The right hang servo.
 	 */
-	public Lift(DcMotor liftMotorLeft, DcMotor liftMotorRight, DcMotor shoulderMotor, Servo liftServoTilt, Servo rightHangServo, Servo leftHangServo) {
+	public Lift(DcMotor liftMotorLeft, DcMotor liftMotorRight, DcMotor shoulder) {
 		this.liftMotorLeft = liftMotorLeft;
 		this.liftMotorRight = liftMotorRight;
-		this.shoulderMotor = shoulderMotor;
-		this.liftServoTilt = liftServoTilt;
-		this.rightHangServo = rightHangServo;
-		this.leftHangServo = leftHangServo;
+		this.shoulder = shoulder;
 		this.liftMotorLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		this.liftMotorRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		this.shoulderMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+		this.shoulder.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		this.liftMotorLeft.setDirection(DcMotor.Direction.REVERSE);
 		this.liftMotorRight.setDirection(DcMotor.Direction.FORWARD);
 		this.liftMotorLeft.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		this.liftMotorRight.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		this.shoulderMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+		this.shoulder.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 	}
 
 	/**
@@ -50,14 +41,6 @@ public class Lift {
 	public void liftMove(double speed) {
 		liftMotorLeft.setPower(speed);
 		liftMotorRight.setPower(speed);
-	}
-
-	public void liftTiltBack(){
-		liftServoTilt.setPosition(0.5);
-	}
-
-	public void liftTIltStraight(){
-		liftServoTilt.setPosition(1);
 	}
 
 	/**
@@ -76,7 +59,7 @@ public class Lift {
 	 */
 	// TODO: IMPORTANT Add Thresholds
 	public void shoulderMove(double speed) {
-		shoulderMotor.setPower(speed);
+		shoulder.setPower(speed);
 	}
 
 	public DcMotor getLiftMotorLeft(){
@@ -87,11 +70,6 @@ public class Lift {
 		return liftMotorLeft;
 	}
 
-	public void hang(double rightHang, double leftHang) {
-		rightHangServo.setPosition(rightHang);
-		leftHangServo.setPosition(leftHang);
-	}
-
 	public String getJointLiftPosition() {
 		return String.format(Locale.getDefault(), """
                 Joint Lift Position: %d""", (liftMotorLeft.getCurrentPosition() + liftMotorRight.getCurrentPosition()) / 2);
@@ -100,14 +78,13 @@ public class Lift {
 		return (double) (liftMotorLeft.getCurrentPosition() + liftMotorRight.getCurrentPosition()) / 2;
 	}
 	public double getShoulderPosition() {
-		return (shoulderMotor.getCurrentPosition());
+		return (shoulder.getCurrentPosition());
 	}
 
 	public String getTelemetry() {
 		return String.format(Locale.getDefault(), """
                 Lift Motor Left: %d
                 Lift Motor Right: %d
-                Lift Servo Tilt: %f
-                Shoulder Motor: %d""", liftMotorLeft.getCurrentPosition(), liftMotorRight.getCurrentPosition(), liftServoTilt.getPosition(), shoulderMotor.getCurrentPosition());
+                Shoulder Motor: %d""", liftMotorLeft.getCurrentPosition(), liftMotorRight.getCurrentPosition(), shoulder.getCurrentPosition());
 	}
 }

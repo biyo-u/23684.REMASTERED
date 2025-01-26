@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Constants;
 import java.util.Locale;
 
 public class Odometry {
-    private final GoBildaPinpointDriver odometry;
+    private final GoBildaPinpointDriver odo;
     private final Compass compass;
     // isInitialized starts out false and turns true after the first `setPosition()` or `updateWithWeight()`
     private boolean isInitialized = false;
@@ -16,15 +16,15 @@ public class Odometry {
 
 
     public Odometry(GoBildaPinpointDriver odometry, Compass compass) {
-        this.odometry = odometry;
+        this.odo = odometry;
         this.compass = compass;
 
         // Sets Odometry offsets
-        this.odometry.setOffsets(-173.0, -156); //measured in mm
-        this.odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        this.odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        this.odo.setOffsets(-173.0, -156); //measured in mm
+        this.odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+        this.odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         this.compass.resetYaw();
-        this.odometry.resetPosAndIMU();
+        this.odo.resetPosAndIMU();
     }
 
     /**
@@ -39,7 +39,7 @@ public class Odometry {
      * @param y The y-coordinate of the robot's position in inches.
      */
     public void setPosition(double x, double y) {
-        odometry.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, compass.getHeading()));
+        odo.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, compass.getHeading()));
         if (!isInitialized) {
             isInitialized = true;
         }
@@ -56,14 +56,14 @@ public class Odometry {
      * @param heading The heading of the robot in degrees.
      */
     public void setPosition(double x, double y, double heading) {
-        odometry.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, heading));
+        odo.setPosition(new Pose2D(DistanceUnit.INCH, x, y, AngleUnit.DEGREES, heading));
         if (!isInitialized) {
             isInitialized = true;
         }
     }
 
     public void update() {
-        odometry.update();
+        odo.update();
     }
 
     /**
@@ -77,11 +77,11 @@ public class Odometry {
      * @param y The y-coordinate of the new position data (in inches).
      */
     public void updateWithWeight(double x, double y) {
-        double currentX = odometry.getPosX();
-        double currentY = odometry.getPosY();
+        double currentX = odo.getPosX();
+        double currentY = odo.getPosY();
         double currentHeading = compass.getHeading();
 
-        odometry.setPosition(new Pose2D(DistanceUnit.INCH, (currentX * (1 - Constants.odometryWeight)) + (x * Constants.odometryWeight), (currentY * (1 - Constants.odometryWeight)) + (y * Constants.odometryWeight), AngleUnit.DEGREES, currentHeading));
+        odo.setPosition(new Pose2D(DistanceUnit.INCH, (currentX * (1 - Constants.odometryWeight)) + (x * Constants.odometryWeight), (currentY * (1 - Constants.odometryWeight)) + (y * Constants.odometryWeight), AngleUnit.DEGREES, currentHeading));
     }
 
     /**
@@ -96,11 +96,11 @@ public class Odometry {
      * @param heading The heading of the new position data (in degrees).
      */
     public void updateWithWeight(double x, double y, double heading) {
-        double currentX = odometry.getPosX();
-        double currentY = odometry.getPosY();
+        double currentX = odo.getPosX();
+        double currentY = odo.getPosY();
         double currentHeading = compass.getHeading();
 
-        odometry.setPosition(new Pose2D(DistanceUnit.INCH, (currentX * (1 - Constants.odometryWeight)) + (x * Constants.odometryWeight), (currentY * (1 - Constants.odometryWeight)) + (y * Constants.odometryWeight), AngleUnit.DEGREES, (currentHeading * (1 - Constants.odometryWeight)) + (heading * Constants.odometryWeight)));
+        odo.setPosition(new Pose2D(DistanceUnit.INCH, (currentX * (1 - Constants.odometryWeight)) + (x * Constants.odometryWeight), (currentY * (1 - Constants.odometryWeight)) + (y * Constants.odometryWeight), AngleUnit.DEGREES, (currentHeading * (1 - Constants.odometryWeight)) + (heading * Constants.odometryWeight)));
     }
 
     /**
@@ -113,7 +113,7 @@ public class Odometry {
      * @return The current position of the robot as a Pose2D object.
      */
     public Pose2D getPosition() {
-        return odometry.getPosition();
+        return odo.getPosition();
     }
 
     /**
@@ -123,7 +123,7 @@ public class Odometry {
      * Values are in inches and degrees respectively.
      */
     public String getTelemetry() {
-        Pose2D position = odometry.getPosition();
+        Pose2D position = odo.getPosition();
         return String.format(Locale.getDefault(), "X: %f, Y: %f, Heading: %f", position.getX(DistanceUnit.INCH), position.getY(DistanceUnit.INCH), position.getHeading(AngleUnit.DEGREES));
     }
 
@@ -133,7 +133,7 @@ public class Odometry {
      * @return The robot's X telemetry values
      */
     public double rawXTelemetry() {
-        Pose2D position = odometry.getPosition();
+        Pose2D position = odo.getPosition();
         return position.getX(DistanceUnit.INCH);
     }
     /**
@@ -142,7 +142,7 @@ public class Odometry {
      * @return The robot's Y telemetry values
      */
     public double rawYTelemetry() {
-        Pose2D position = odometry.getPosition();
+        Pose2D position = odo.getPosition();
         return position.getY(DistanceUnit.INCH);
     }
     /**
@@ -151,7 +151,7 @@ public class Odometry {
      * @return The robot's Heading telemetry values
      */
     public double rawHeadingTelemetry() {
-        Pose2D position = odometry.getPosition();
+        Pose2D position = odo.getPosition();
         return position.getHeading(AngleUnit.DEGREES);
     }
 }

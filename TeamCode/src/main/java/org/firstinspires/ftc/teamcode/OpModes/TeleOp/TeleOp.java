@@ -47,58 +47,25 @@ public class TeleOp extends OpMode {
 
 		// Back Wrist
 		if (gamepad2.y) {
-			robot.intake.wristBackUp();
+			robot.intake.wristUp();
 		} else if (gamepad2.a) {
-			robot.intake.wristBackDown();
+			robot.intake.wristDown();
 		}
 
 		// Lift
 		robot.lift.liftMove(gamepad2.left_stick_y);
 
-		// Lift Tilt
-		if (gamepad2.a){
-			robot.lift.liftTiltBack();
-		} else if (gamepad2.y){
-			robot.lift.liftTIltStraight();
-		}
 
 		// Shoulder
 		robot.lift.shoulderMove(gamepad2.right_stick_y * 0.8);
 
-		// Hang Hooks
-		if (gamepad2.dpad_up) {
-			robot.lift.hang(1, 0);
-		} else if (gamepad2.dpad_down) {
-			robot.lift.hang(0.1, 0.7);
-		}
-
 		//  Front Claw
 		if (gamepad2.right_trigger > 0) {
-			robot.intake.clawBackOpen();
+			robot.intake.clawOpen();
 		} else if (gamepad2.left_trigger > 0) {
-			robot.intake.clawBackClose();
+			robot.intake.clawClose();
 		} else {
-			robot.intake.clawBackClose();
-		}
-
-//		// Back Claw
-//		if (gamepad2.left_trigger > 0) {
-//			robot.intake.clawBackOpen();
-//		} else {
-//			robot.intake.clawBackClose();
-//		}
-
-		// spin Back Claw
-		if (gamepad2.dpad_left) {
-			robot.intake.spinWristStraight();
-		} else if (gamepad2.dpad_right) {
-			robot.intake.spinWristSideways();
-		}
-		// Elbow Motor
-		if (gamepad2.right_stick_y > 0) {
-			robot.intake.ElbowMotorUp();
-		} else if (gamepad2.right_stick_y < 0) {
-			robot.intake.ElbowMotorDown();
+			robot.intake.clawClose();
 		}
 
 		robot.odometry.update();

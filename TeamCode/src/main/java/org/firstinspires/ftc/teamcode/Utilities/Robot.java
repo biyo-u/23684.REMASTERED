@@ -25,34 +25,27 @@ public class Robot {
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
         // Private Devices
-        Servo clawFront = hardwareMap.get(Servo.class, "clawFront");
-        Servo wristServo = hardwareMap.get(Servo.class, "wristServo");
-        Servo liftServoTilt = hardwareMap.get(Servo.class, "liftServoTilt");
-        Servo rightHangServo = hardwareMap.get(Servo.class, "rightHangServo");
-        Servo leftHangServo = hardwareMap.get(Servo.class, "leftHangServo");
-        Servo clawBack = hardwareMap.get(Servo.class, "clawBack");
-        Servo spinWrist = hardwareMap.get(Servo.class, "spinWrist");
-        Servo wristBackServo = hardwareMap.get(Servo.class, "wristBackServo");
-        DcMotor elbowMotor = hardwareMap.get(DcMotor.class, "elbowMotor");
+        Servo claw = hardwareMap.get(Servo.class, "claw");
+        Servo wrist = hardwareMap.get(Servo.class, "wrist");
         DcMotor liftMotorLeft = hardwareMap.get(DcMotor.class, "liftMotorLeft");
         DcMotor liftMotorRight = hardwareMap.get(DcMotor.class, "liftMotorRight");
-        DcMotor shoulderMotor = hardwareMap.get(DcMotor.class, "shoulderMotor");
+        DcMotor shoulder = hardwareMap.get(DcMotor.class, "shoulder");
         DcMotor frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
         DcMotor frontRight = hardwareMap.get(DcMotor.class, "frontRight");
         DcMotor rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
         DcMotor rearRight = hardwareMap.get(DcMotor.class, "rearRight");
 
-        GoBildaPinpointDriver odometryComputer = hardwareMap.get(GoBildaPinpointDriver.class, "odometry");
+        GoBildaPinpointDriver odometryComputer = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
 
         // Initialize Public Subsystems
         compass = new Compass(odometryComputer);
-        intake = new Intake(clawFront, wristServo, clawBack, elbowMotor, spinWrist, wristBackServo);
-        lift = new Lift(liftMotorLeft, liftMotorRight, shoulderMotor, liftServoTilt, rightHangServo, leftHangServo);
+        intake = new Intake(claw, wrist);
+        lift = new Lift(liftMotorLeft, liftMotorRight, shoulder);
         drive = new Drive(frontLeft, frontRight, rearLeft, rearRight, compass);
 
         // Public Devices (not subsystems)
         this.telemetry = telemetry;
-        this.odometry = hardwareMap.get(GoBildaPinpointDriver.class, "odometry");
+        this.odometry = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         this.odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         this.odometry.setOffsets(-6.44, 6.8745);
         this.odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
