@@ -22,7 +22,7 @@ public class TeleOp extends OpMode {
 	@Override
 	public void loop() {
 		// Drive the robot with the game-pad
-		robot.drive.driveMecanumRobotCentric(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+		robot.drive.driveMecanumRobotCentric(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
 
 		// Reset IMU for Field Centric
 		if (gamepad1.left_bumper) {
@@ -38,28 +38,20 @@ public class TeleOp extends OpMode {
 			robot.drive.setPower(0.5);
 		}
 
-		// Front Wrist
+		// Wrist
 		if (gamepad2.x){
 			robot.intake.wristUp();
 		} else if (gamepad2.b) {
 			robot.intake.wristDown();
 		}
 
-		// Back Wrist
-		if (gamepad2.y) {
-			robot.intake.wristUp();
-		} else if (gamepad2.a) {
-			robot.intake.wristDown();
-		}
-
 		// Lift
-		robot.lift.liftMove(gamepad2.left_stick_y);
-
+		robot.lift.liftMove(-gamepad2.left_stick_y);
 
 		// Shoulder
-		robot.lift.shoulderMove(gamepad2.right_stick_y * 0.8);
+		robot.lift.shoulderMove(-gamepad2.right_stick_y * 0.8);
 
-		//  Front Claw
+		// Claw
 		if (gamepad2.right_trigger > 0) {
 			robot.intake.clawOpen();
 		} else if (gamepad2.left_trigger > 0) {
