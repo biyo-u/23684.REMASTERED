@@ -16,10 +16,19 @@ public class TinyAuto extends OpMode {
 	@Override
 	public void init() {
 		this.driver = new Driver(hardwareMap, telemetry);
-		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
 	}
 	@Override
 	public void loop() {
-		driver.update();
+		// POSITION 1
+		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
+		while (!driver.update()) {
+
+		}
+
+		// POSITION 2
+		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
+		while (!driver.update()) {
+
+		}
 	}
 }
