@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.EagleMatrixTiny;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -19,10 +20,13 @@ public class Driver {
 	DcMotor rearRight;
 
 	public Driver(HardwareMap hardwareMap){
-		DcMotor frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
-		DcMotor frontRight = hardwareMap.get(DcMotor.class, "frontRight");
-		DcMotor rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
-		DcMotor rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+		this.frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
+		this.frontRight = hardwareMap.get(DcMotor.class, "frontRight");
+		this.rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
+		this.rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+
+		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+		rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
 
 	public void moveTo(Pose2D startPosition, Pose2D targetPosition, double DISTANCE_THRESHOLD){
