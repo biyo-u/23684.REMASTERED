@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 
 public class Driver {
 	Pose2D startPosition;
@@ -18,12 +19,20 @@ public class Driver {
 	DcMotor frontRight;
 	DcMotor rearLeft;
 	DcMotor rearRight;
+	GoBildaPinpointDriver odo;
 
 	public Driver(HardwareMap hardwareMap){
 		this.frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
 		this.frontRight = hardwareMap.get(DcMotor.class, "frontRight");
 		this.rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
 		this.rearRight = hardwareMap.get(DcMotor.class, "rearRight");
+		this.odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+
+
+		this.odo.setOffsets(-173.0, -156); //measured in mm
+		this.odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+		this.odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+		this.odo.resetPosAndIMU();
 
 		frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 		rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -36,6 +45,9 @@ public class Driver {
 	}
 
 	public void update(){
+
+		odo.update();
+
 		// Move X (Strafe)
 		if (Math.abs(startPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
 			// Reached X
