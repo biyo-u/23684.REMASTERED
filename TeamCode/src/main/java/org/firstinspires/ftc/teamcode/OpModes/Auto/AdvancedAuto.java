@@ -17,8 +17,13 @@ public class AdvancedAuto extends OpMode {
 	}
 	@Override
 	public void loop() {
-		// Park
-		this.driver.moveToX(36, 2);
+		this.driver.moveToY(12, 2);
+		while (!driver.update() && !isStopped) {}
+
+		this.driver.moveToY(-36, 2);
+		while (!driver.update() && !isStopped) {}
+
+		this.driver.turnTo(-135, 2);
 		while (!driver.update() && !isStopped) {}
 	}
 
