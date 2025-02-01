@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
@@ -18,6 +19,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
 
 import org.firstinspires.ftc.teamcode.EMLite.Migration.EagleGPS;
 
+@Disabled
 @Autonomous(name = "OtherAuto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
 public class Auto extends OpMode {
     private Robot robot; // imports robot hardwareMap class
