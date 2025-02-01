@@ -58,7 +58,7 @@ public class Driver {
 	public void turnTo(double targetHeading, double DISTANCE_THRESHOLD){
 		this.targetPosition = new Pose2D(DistanceUnit.INCH, targetPosition.getX(DistanceUnit.INCH), targetPosition.getY(DistanceUnit.INCH), AngleUnit.DEGREES, targetHeading);
 		this.DISTANCE_THRESHOLD = DISTANCE_THRESHOLD;
-		this.direction = 1;
+		this.direction = 2;
 	}
 
 	public boolean update(){
