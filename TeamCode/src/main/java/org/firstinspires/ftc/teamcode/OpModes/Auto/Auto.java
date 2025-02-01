@@ -28,11 +28,8 @@ public class Auto extends OpMode {
 
     // lines 31 to 36 create all the numerical variables that will be used to compare due to the Double.compare function not working with the direct doubles
     double zetaY = 0; // robot's current X position cast to a double
-    double zetaY2 = 0; // robot's target X position cast to a double
     double zetaX = 0; // robot's current Y position cast to a double
-    double zetaX2 = 0; // robot's target Y position cast to a double
     double zetaHeading = 0; // robot's current heading cast to a double
-    double zetaHeading2 = 0; // robot's target heading cast to a double
 
     // lines 45-47 create all the string variables that will be used to a) create the different values for each switch line of code, and keep track of AUTO as it runs
     String actionCounter = "PREP TO SCORE"; // robot's current action, String (text) value for switch block
@@ -61,11 +58,8 @@ public class Auto extends OpMode {
         telemetry.addData("Hardware Status", "initialised"); // prints on driver station that all hardware is initialised
 
         zetaY = -odometry.getPosY(); // gets zetaPrime's current Y
-        zetaY2 = migration.getY(); // sets zetaPrime's target Y
         zetaX = odometry.getPosX(); // get zetaPrime's current X
-        zetaX2 = migration.getX(); // sets zetaPrime's target X
         zetaHeading = odometry.getHeading(); // gets zetaPrime's current heading
-        zetaHeading2 = migration.getHeading(); // sets zetaPrime's target heading
     }
 
     @Override
