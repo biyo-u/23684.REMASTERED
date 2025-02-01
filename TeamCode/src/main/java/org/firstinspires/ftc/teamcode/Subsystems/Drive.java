@@ -33,20 +33,17 @@ public class Drive {
 
 	public void driveMecanumRobotCentric(double left_stick_y, double left_stick_x, double right_stick_x) {
 		double y = -left_stick_y; // Remember, Y stick value is reversed
-		double x = left_stick_x * 1.1; // Counteract imperfect strafing
+		double x = left_stick_x; // Counteract imperfect strafing
 
-		// Denominator is the largest motor power (absolute value) or 1
-		// This ensures all the powers maintain the same ratio,
-		// but only if at least one is out of the range [-1, 1]
 		double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(right_stick_x), 1);
-		double frontLeftPower = ((y + x + right_stick_x) / denominator) * power;
-		double backLeftPower = ((y - x + right_stick_x) / denominator) * power;
-		double frontRightPower = ((y - x - right_stick_x) / denominator) * power;
-		double backRightPower = ((y + x - right_stick_x) / denominator) * power;
+		double frontLeftPower = (y + x + right_stick_x) / denominator;
+		double backLeftPower = (y - x + right_stick_x) / denominator;
+		double frontRightPower = (y - x - right_stick_x) / denominator;
+		double backRightPower = (y + x - right_stick_x) / denominator;
 
 		frontLeft.setPower(frontLeftPower);
-		frontRight.setPower(frontRightPower);
 		rearLeft.setPower(backLeftPower);
+		frontRight.setPower(frontRightPower);
 		rearRight.setPower(backRightPower);
 	}
 

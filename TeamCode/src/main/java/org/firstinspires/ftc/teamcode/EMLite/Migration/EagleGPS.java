@@ -46,12 +46,11 @@ public class EagleGPS {
 
         if (zetaY - Air_Traffic_Control.driveToNetZone.y > correctionValue) {
             // if compare returns a negative value, value1 > value2
-            autoStatus = "OVERSHOT";
+            autoStatus = "NEEDS TO MOVE BACK";
             wingmove.move(MotorDirection.BACKWARD);
-
         } else if (zetaY - Air_Traffic_Control.driveToNetZone.y < -correctionValue && !GoalMet) {
             // if compare returns a positive value, value1 < value2
-            autoStatus = "INCOMPLETE";
+            autoStatus = "NEEDS TO MOVE FORWARD";
             wingmove.move(MotorDirection.FORWARD);
             GoalMet = false;
 
