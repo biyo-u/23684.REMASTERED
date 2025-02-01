@@ -57,17 +57,19 @@ public class Driver {
 		telemetry.addData("CURRENT POSITION Y", currentPosition.getY(DistanceUnit.INCH));
 		telemetry.addData("CURRENT POSITION HEADING", currentPosition.getHeading(AngleUnit.DEGREES));
 
-
 		// Move X (Strafe)
 		if (Math.abs(currentPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
 			// Reached X
+			telemetry.addLine("Reached required X position");
 			xPower = 0;
 		} else if (currentPosition.getX(DistanceUnit.INCH) > targetPosition.getX(DistanceUnit.INCH)){
 			// Move back
-			xPower = 1;
+			telemetry.addLine("Need to move back to reach required X position");
+			xPower = -1;
 		} else if (currentPosition.getX(DistanceUnit.INCH) < targetPosition.getX(DistanceUnit.INCH)) {
 			// Move forward
-			xPower = -1;
+			telemetry.addLine("Need to move forward to reach required X position");
+			xPower = 1;
 		}
 
 		// Move Y (Back and Forth)
