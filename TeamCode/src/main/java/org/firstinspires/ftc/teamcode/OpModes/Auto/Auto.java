@@ -44,7 +44,7 @@ public class Auto extends OpMode {
     @Override
     public void init() {
         // lines 48-54 initialise all information related to the odometry pods so when in use will properly function and not print out NullPointerExceptions.
-        this.odometry = hardwareMap.get(GoBildaPinpointDriver.class, "odometry");
+        this.odometry = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         this.odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         this.odometry.setOffsets(-6.44, 6.8745);
         this.odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);

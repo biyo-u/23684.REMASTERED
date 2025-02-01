@@ -42,4 +42,11 @@ public class WingMove {
         robot.drive.getRearLeft().setPower(direction.RL * modifier);
         robot.drive.getRearRight().setPower(direction.RR * modifier);
     }
+
+    public void clawopen(){
+        robot.intake.clawOpen();
+    }
+    public void clawclose(){
+        robot.intake.clawClose();
+    }
 }

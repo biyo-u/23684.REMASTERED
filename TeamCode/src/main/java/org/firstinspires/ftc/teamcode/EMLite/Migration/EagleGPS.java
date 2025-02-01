@@ -36,7 +36,7 @@ public class EagleGPS {
 
     public void prep_to_score() {
         autoStage = "STAGE: PREP TO SCORE";
-        robot.intake.clawClose();
+        wingmove.clawclose(); //TODO: FIX NULLPOINTEREXCEPTION ERROR NOWWWWW
         tasksRun = true;
 
         if (tasksRun == true) {
@@ -75,7 +75,7 @@ public class EagleGPS {
         boolean taskNotDone = true;
 
         if (taskNotDone) {
-            robot.intake.clawOpen();
+            wingmove.clawopen();
             taskNotDone = false;
         } else if (taskNotDone == false) {
             actionCounter = "MOVE TO OBSERVATION ZONE";
@@ -103,6 +103,7 @@ public class EagleGPS {
         }
 
         if (FinalGoalMet == true) {
+            wingmove.clawclose();
             actionCounter = "EXEUNT";
         }
     }
