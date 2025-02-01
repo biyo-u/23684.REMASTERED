@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.EMLite.Air_Traffic_Control;
 import org.firstinspires.ftc.teamcode.Utilities.Constants;
 import org.firstinspires.ftc.teamcode.EMLite.Migration.WingMove;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
@@ -22,6 +23,7 @@ public class EmergencyLastResortAuto extends OpMode {
     private GoBildaPinpointDriver odometry; // imports robot odometry class
     private WingMove wingmove; // imports EagleMatrix Lite movement class for drivetrain
     private EagleGPS eagleGPS; // imports EagleMatrix Lite GPS class
+    public Air_Traffic_Control coordinates;
     public Position migration = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(180, AngleUnit.DEGREES)); // target position
     int counter; // counter to ensure AUTO program is active and running loops
     public boolean GoalMet = false; // checks to see if goal (zetaTranslation) has been reached
@@ -39,8 +41,6 @@ public class EmergencyLastResortAuto extends OpMode {
     String autoStage = null; // robot's current action, String (text) value for telemetry
     String autoStatus = null; // robot's current action status, String (text) value for telemetry
 
-    boolean tasksRun = false;
-
     @Override
     public void init() {
         // lines 48-54 initialise all information related to the odometry pods so when in use will properly function and not print out NullPointerExceptions.
@@ -54,7 +54,7 @@ public class EmergencyLastResortAuto extends OpMode {
         // lines 56-59 initialise all other hardware imports and the movement imports so they are not rendered as "null", which when it happens creates the fatal NullPointerException error.
         this.robot = new Robot(hardwareMap, telemetry);
         this.wingmove = new WingMove(robot);
-        this.eagleGPS = new EagleGPS();
+        this.eagleGPS = new EagleGPS(robot, wingmove, odometry, coordinates);
         this.migration = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(0, AngleUnit.DEGREES));
 
         GoalMet = false; // resets goals boolean to false

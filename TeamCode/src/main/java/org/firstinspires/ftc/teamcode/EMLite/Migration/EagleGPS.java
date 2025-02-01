@@ -1,31 +1,21 @@
 package org.firstinspires.ftc.teamcode.EMLite.Migration;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 import org.firstinspires.ftc.teamcode.EMLite.Migration.WingMove.MotorDirection;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.Utilities.Old.Position;
-import org.firstinspires.ftc.teamcode.Utilities.Old.Rotation;
-import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
 import org.firstinspires.ftc.teamcode.EMLite.Air_Traffic_Control;
 
 public class EagleGPS {
-    private Robot robot; // imports robot hardwareMap class
-    private GoBildaPinpointDriver odometry; // imports robot odometry class
-    private WingMove wingmove; // imports EagleMatrix movement class for drivetrain
+    private final Robot robot; // imports robot hardwareMap class
+    private final GoBildaPinpointDriver odometry; // imports robot odometry class
+    private final WingMove wingmove; // imports EagleMatrix movement class for drivetrain
     public Air_Traffic_Control coordinates;
-    public Position netZone = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(0, AngleUnit.DEGREES)); // target position
-    public Position observationZone = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(0, AngleUnit.DEGREES)); // target position
     public boolean GoalMet = false; // checks to see if goal (zetaTranslation) has been reached
 
     // lines 31 to 36 create all the numerical variables that will be used to compare due to the Double.compare function not working with the direct doubles
     double zetaY = 0; // robot's current X position cast to a double
-    double zetaY2 = 0; // robot's target X position cast to a double
     double zetaX = 0; // robot's current Y position cast to a double
-    double zetaX2 = 0; // robot's target Y position cast to a double
     double zetaHeading = 0; // robot's current heading cast to a double
-    double zetaHeading2 = 0; // robot's target heading cast to a double
 
     // lines 45-47 create all the string variables that will be used to a) create the different values for each switch line of code, and keep track of AUTO as it runs
     String actionCounter = "PREP TO SCORE"; // robot's current action, String (text) value for switch block
@@ -34,9 +24,16 @@ public class EagleGPS {
     double correctionValue = 5.0;
     boolean tasksRun = false;
 
+    public EagleGPS(Robot robot, WingMove wingmove, GoBildaPinpointDriver odometry, Air_Traffic_Control coordinates) {
+        this.wingmove = wingmove;
+        this.robot = robot;
+        this.odometry = odometry;
+        this.coordinates = coordinates;
+    }
+
     public void prep_to_score() {
         autoStage = "STAGE: PREP TO SCORE";
-        wingmove.clawclose(); //TODO: FIX NULLPOINTEREXCEPTION ERROR NOWWWWW
+        wingmove.clawclose();
         tasksRun = true;
 
         if (tasksRun == true) {
