@@ -120,7 +120,7 @@ public class EagleGPS {
         autoStage = "STAGE: MOVE TO OBSERVATION ZONE";
 
         boolean GOGOGO = false;
-        double moveanddontstop = -40
+        double moveanddontstop = -40;
 
         if (zetaY - moveanddontstop > correctionValue) {
             // if compare returns a negative value, value1 > value2
