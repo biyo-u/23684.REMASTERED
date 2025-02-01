@@ -123,7 +123,7 @@ public class Driver {
 		}
 
 		double x = xPower * 0.4;
-		double y = yPower * 0.4;
+		double y = yPower * -0.4;
 		double rx = headingPower * 0.4;
 
 		double botHeading = odo.getHeading();
