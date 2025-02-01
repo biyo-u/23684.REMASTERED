@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
 
 import org.firstinspires.ftc.teamcode.EMLite.Migration.EagleGPS;
 
-@Autonomous(name = "Auto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
+@Autonomous(name = "OtherAuto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
 public class Auto extends OpMode {
     private Robot robot; // imports robot hardwareMap class
     private GoBildaPinpointDriver odometry; // imports robot odometry class

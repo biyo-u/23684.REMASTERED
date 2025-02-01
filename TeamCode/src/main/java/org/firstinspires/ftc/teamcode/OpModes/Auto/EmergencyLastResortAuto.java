@@ -80,7 +80,7 @@ public class EmergencyLastResortAuto extends OpMode {
         switch (actionCounter) {
 
             case "MOVE TO OBSERVATION ZONE": // MOVES ROBOT TO OBSERVATION ZONE FROM SUBMERSIBLE POSITION
-                eagleGPS.move_to_observation_zone();
+                eagleGPS.last_resort();
                 break;
 
             case "EXEUNT": // ENDS THE SWITCH STATEMENT ONCE ALL CASES ARE COMPLETED
