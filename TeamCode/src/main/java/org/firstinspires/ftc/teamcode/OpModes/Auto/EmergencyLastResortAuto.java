@@ -16,8 +16,8 @@ import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
 
 import org.firstinspires.ftc.teamcode.EMLite.Migration.EagleGPS;
 
-@Autonomous(name = "Auto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
-public class Auto extends OpMode {
+@Autonomous(name = "MOVE DIRECTLY TO OBSERVATION ZONE", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
+public class EmergencyLastResortAuto extends OpMode {
     private Robot robot; // imports robot hardwareMap class
     private GoBildaPinpointDriver odometry; // imports robot odometry class
     private WingMove wingmove; // imports EagleMatrix Lite movement class for drivetrain
@@ -35,7 +35,7 @@ public class Auto extends OpMode {
     double zetaHeading2 = 0; // robot's target heading cast to a double
 
     // lines 45-47 create all the string variables that will be used to a) create the different values for each switch line of code, and keep track of AUTO as it runs
-    String actionCounter = "PREP TO SCORE"; // robot's current action, String (text) value for switch block
+    String actionCounter = "MOVE TO OBSERVATION ZONE"; // robot's current action, String (text) value for switch block
     String autoStage = null; // robot's current action, String (text) value for telemetry
     String autoStatus = null; // robot's current action status, String (text) value for telemetry
 
@@ -78,18 +78,6 @@ public class Auto extends OpMode {
         zetaHeading = zetaPosition.getHeading(AngleUnit.DEGREES); // gets zetaPrime's current heading
 
         switch (actionCounter) {
-
-            case "PREP TO SCORE": // PREPARES ROBOT LIFT AND INTAKE TO SCORING POSITION
-                eagleGPS.prep_to_score();
-                break;
-
-            case "MOVE TO NET ZONE": // ROBOT DRIVES TO SUBMERSIBLE POSITION
-                eagleGPS.move_to_net_zone();
-                break;
-
-            case "PLACE PRELOADED SAMPLE": // ROBOT PLACES PRELOADED SAMPLE ON IN NET ZONE
-                eagleGPS.place_preloaded_sample();
-                break;
 
             case "MOVE TO OBSERVATION ZONE": // MOVES ROBOT TO OBSERVATION ZONE FROM SUBMERSIBLE POSITION
                 eagleGPS.move_to_observation_zone();

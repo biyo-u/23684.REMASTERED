@@ -2,23 +2,21 @@ package org.firstinspires.ftc.teamcode.EMLite.Migration;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 import org.firstinspires.ftc.teamcode.EMLite.Migration.WingMove.MotorDirection;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Utilities.Old.Position;
 import org.firstinspires.ftc.teamcode.Utilities.Old.Rotation;
 import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import org.firstinspires.ftc.teamcode.EMLite.Air_Traffic_Control;
 
 public class EagleGPS {
     private Robot robot; // imports robot hardwareMap class
     private GoBildaPinpointDriver odometry; // imports robot odometry class
     private WingMove wingmove; // imports EagleMatrix movement class for drivetrain
-    public Position migration = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(180, AngleUnit.DEGREES)); // target position
-    int counter; // counter to ensure AUTO program is active and running loops
+    public Air_Traffic_Control coordinates;
+    public Position netZone = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(0, AngleUnit.DEGREES)); // target position
+    public Position observationZone = new Position(new Distance(0, DistanceUnit.INCH), new Distance(20, DistanceUnit.INCH), new Rotation(0, AngleUnit.DEGREES)); // target position
     public boolean GoalMet = false; // checks to see if goal (zetaTranslation) has been reached
 
     // lines 31 to 36 create all the numerical variables that will be used to compare due to the Double.compare function not working with the direct doubles
@@ -33,49 +31,32 @@ public class EagleGPS {
     String actionCounter = "PREP TO SCORE"; // robot's current action, String (text) value for switch block
     String autoStage = null; // robot's current action, String (text) value for telemetry
     String autoStatus = null; // robot's current action status, String (text) value for telemetry
-
     double correctionValue = 5.0;
-
     boolean tasksRun = false;
 
     public void prep_to_score() {
         autoStage = "STAGE: PREP TO SCORE";
+        robot.intake.clawClose();
+        tasksRun = true;
 
-        Timer timertwo = new Timer("Timer");
-
-        TimerTask preptwo = new TimerTask() {
-            @Override
-            public void run() {
-                tasksRun = false;
-                actionCounter = "MOVE TO SUBMERSIBLE";
-            }
-        };
-
-        TimerTask prepone = new TimerTask() {
-            @Override
-            public void run() {
-                timertwo.schedule(preptwo, 3000);
-            }
-        };
-
-        if (!tasksRun) {
-            timertwo.schedule(prepone,1000);
-            tasksRun = true;
+        if (tasksRun == true) {
+            actionCounter = "MOVE TO NET ZONE";
         }
     }
 
     public void move_to_net_zone() {
         autoStage = "STAGE: MOVE TO NET ZONE";
 
-        if (zetaY - migration.getY() > correctionValue) {
+        if (zetaY - Air_Traffic_Control.driveToNetZone.y > correctionValue) {
             // if compare returns a negative value, value1 > value2
             autoStatus = "OVERSHOT";
             wingmove.move(MotorDirection.BACKWARD);
 
-        } else if (zetaY - migration.getY() < -correctionValue && !GoalMet) {
+        } else if (zetaY - Air_Traffic_Control.driveToNetZone.y < -correctionValue && !GoalMet) {
             // if compare returns a positive value, value1 < value2
             autoStatus = "INCOMPLETE";
             wingmove.move(MotorDirection.FORWARD);
+            GoalMet = false;
 
         } else {
             // if compare returns a zero value, value1 == value2
@@ -83,53 +64,38 @@ public class EagleGPS {
             wingmove.move(MotorDirection.STOP);
             GoalMet = true;
         }
-        actionCounter = "PLACE PRELOADED SPECIMEN";
+
+        if (GoalMet == true) {
+            actionCounter = "PLACE PRELOADED SPECIMEN";
+        }
     }
 
     public void place_preloaded_sample() {
         autoStage = "STAGE: PLACE PRELOADED SAMPLE";
+        boolean taskNotDone = true;
 
-        Timer timerone = new Timer("Timer");
-
-        TimerTask waittwo = new TimerTask() {
-            @Override
-            public void run() {
-            }
-        };
-
-        TimerTask waitone = new TimerTask() {
-            @Override
-            public void run() {
-                timerone.schedule(waittwo, 2000);
-            }
-        };
-
-        if (!tasksRun) {
-            timerone.schedule(waitone,3000);
-            tasksRun = true;
+        if (taskNotDone) {
+            robot.intake.clawOpen();
+            taskNotDone = false;
+        } else if (taskNotDone == false) {
+            actionCounter = "MOVE TO OBSERVATION ZONE";
         }
-
-        actionCounter = "MOVE TO OBSERVATION ZONE";
     }
 
     public void move_to_observation_zone() {
         autoStage = "STAGE: MOVE TO OBSERVATION ZONE";
 
         boolean FinalGoalMet = false;
-        Position observationZone = new Position(new Distance(30, DistanceUnit.INCH), new Distance(0, DistanceUnit.INCH), new Rotation(0, AngleUnit.DEGREES));
 
-        double zetaX2_3 = observationZone.getX();
-        zetaX2 = observationZone.getX();
-
-        if (zetaX - observationZone.getX() > correctionValue) {
+        if (zetaY - Air_Traffic_Control.driveToObservationZone.y > correctionValue) {
             // if compare returns a negative value, value1 > value2
             autoStatus = "OVERSHOT, BUT IT'S ALRIGHT";
             wingmove.move(MotorDirection.STOP);
             FinalGoalMet = true;
-        } else if (zetaX - observationZone.getX() < -correctionValue && FinalGoalMet == false) {
+        } else if (zetaY - Air_Traffic_Control.driveToObservationZone.y < -correctionValue && FinalGoalMet == false) {
             // if compare returns a positive value, value1 < value2
             autoStatus = "INCOMPLETE";
-            wingmove.move(MotorDirection.STRAFE_RIGHT);
+            wingmove.move(MotorDirection.BACKWARD);
         } else {
             autoStatus = "COMPLETE";
             wingmove.move(MotorDirection.STOP);
@@ -150,38 +116,30 @@ public class EagleGPS {
         autoStage = "ERROR";
     }
 
-    public void looping() {
+    public void last_resort() {
+        autoStage = "STAGE: MOVE TO OBSERVATION ZONE";
 
-        // WHAT WE NEED: 1 - move forward, 2 - place sample in net zone, 3 - move to observation zone, 4 - end
+        boolean GOGOGO = false;
+        double moveanddontstop = -40
 
-        switch (actionCounter) {
-
-            case "PREP TO SCORE": // PREPARES ROBOT LIFT AND INTAKE TO SCORING POSITION
-
-                break;
-
-            case "MOVE TO NET ZONE": // ROBOT DRIVES TO SUBMERSIBLE POSITION
-
-                break;
-
-            case "PLACE PRELOADED SAMPLE": // ROBOT PLACES PRELOADED SAMPLE ON IN NET ZONE
-
-                break;
-
-            case "MOVE TO OBSERVATION ZONE": // MOVES ROBOT TO OBSERVATION ZONE FROM SUBMERSIBLE POSITION
-
-                break;
-
-            case "EXEUNT": // ENDS THE SWITCH STATEMENT ONCE ALL CASES ARE COMPLETED
-
-                break;
-
-            default: // IF actionCounter IS NOT DEFINED OR DEFINED TO A UNDEFINED STATE, PRINT ERROR
-                autoStage = "ERROR";
+        if (zetaY - moveanddontstop > correctionValue) {
+            // if compare returns a negative value, value1 > value2
+            autoStatus = "OVERSHOT, BUT IT'S ALRIGHT";
+            wingmove.move(MotorDirection.STOP);
+            GOGOGO = true;
+        } else if (zetaY - moveanddontstop < -correctionValue && GOGOGO == false) {
+            // if compare returns a positive value, value1 < value2
+            autoStatus = "INCOMPLETE";
+            wingmove.move(MotorDirection.BACKWARD);
+        } else {
+            autoStatus = "COMPLETE";
+            wingmove.move(MotorDirection.STOP);
+            GOGOGO = true;
         }
 
-        counter++; // update counter for ever loop
-        odometry.update(); // updates odometry every loop
+        if (GOGOGO == true) {
+            actionCounter = "EXEUNT";
+        }
     }
 }
 
