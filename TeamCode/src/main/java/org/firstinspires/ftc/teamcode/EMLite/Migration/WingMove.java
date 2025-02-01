@@ -37,10 +37,10 @@ public class WingMove {
     }
 
     public void move(MotorDirection direction){
-        robot.drive.getFrontLeft().setPower(direction.FL * modifier);
-        robot.drive.getFrontRight().setPower(direction.FR * modifier);
-        robot.drive.getRearLeft().setPower(direction.RL * modifier);
-        robot.drive.getRearRight().setPower(direction.RR * modifier);
+        robot.drive.getFrontLeft().setPower(-direction.FL * modifier);
+        robot.drive.getFrontRight().setPower(-direction.FR * modifier);
+        robot.drive.getRearLeft().setPower(-direction.RL * modifier);
+        robot.drive.getRearRight().setPower(-direction.RR * modifier);
     }
 
     public void clawopen(){

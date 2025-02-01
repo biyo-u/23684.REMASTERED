@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -17,6 +18,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
 
 import org.firstinspires.ftc.teamcode.EMLite.Migration.EagleGPS;
 
+@Disabled
 @Autonomous(name = "MOVE DIRECTLY TO OBSERVATION ZONE", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
 public class EmergencyLastResortAuto extends OpMode {
     private Robot robot; // imports robot hardwareMap class

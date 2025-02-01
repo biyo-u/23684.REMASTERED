@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -37,6 +38,10 @@ public class Auto extends OpMode {
     String actionCounter = "PREP TO SCORE"; // robot's current action, String (text) value for switch block
     String autoStage = null; // robot's current action, String (text) value for telemetry
     String autoStatus = null; // robot's current action status, String (text) value for telemetry
+
+    // FROM EAGLE GPS
+    double correctionValue = 5.0;
+    boolean tasksRun = false;
 
     @Override
     public void init() {
@@ -74,27 +79,86 @@ public class Auto extends OpMode {
         switch (actionCounter) {
 
             case "PREP TO SCORE": // PREPARES ROBOT LIFT AND INTAKE TO SCORING POSITION
-                eagleGPS.prep_to_score();
+                autoStage = "STAGE: PREP TO SCORE";
+                wingmove.clawclose();
+                tasksRun = true;
+
+                if (tasksRun == true) {
+                    actionCounter = "MOVE TO NET ZONE";
+                }
                 break;
 
             case "MOVE TO NET ZONE": // ROBOT DRIVES TO SUBMERSIBLE POSITION
-                eagleGPS.move_to_net_zone();
+                autoStage = "STAGE: MOVE TO NET ZONE";
+
+                if (zetaY - Air_Traffic_Control.driveToNetZone.y > correctionValue) {
+                    // if compare returns a negative value, value1 > value2
+                    autoStatus = "NEEDS TO MOVE BACK";
+                    wingmove.move(WingMove.MotorDirection.BACKWARD);
+                } else if (zetaY - Air_Traffic_Control.driveToNetZone.y < -correctionValue && !GoalMet) {
+                    // if compare returns a positive value, value1 < value2
+                    autoStatus = "NEEDS TO MOVE FORWARD";
+                    wingmove.move(WingMove.MotorDirection.FORWARD);
+                    GoalMet = false;
+
+                } else {
+                    // if compare returns a zero value, value1 == value2
+                    autoStatus = "COMPLETE";
+                    wingmove.move(WingMove.MotorDirection.STOP);
+                    GoalMet = true;
+                }
+
+                if (GoalMet == true) {
+                    actionCounter = "PLACE PRELOADED SPECIMEN";
+                }
                 break;
 
             case "PLACE PRELOADED SAMPLE": // ROBOT PLACES PRELOADED SAMPLE ON IN NET ZONE
-                eagleGPS.place_preloaded_sample();
+                autoStage = "STAGE: PLACE PRELOADED SAMPLE";
+                boolean taskNotDone = true;
+
+                if (taskNotDone) {
+                    wingmove.clawopen();
+                    taskNotDone = false;
+                } else if (taskNotDone == false) {
+                    actionCounter = "MOVE TO OBSERVATION ZONE";
+                }
                 break;
 
             case "MOVE TO OBSERVATION ZONE": // MOVES ROBOT TO OBSERVATION ZONE FROM SUBMERSIBLE POSITION
-                eagleGPS.move_to_observation_zone();
+                autoStage = "STAGE: MOVE TO OBSERVATION ZONE";
+
+                boolean FinalGoalMet = false;
+
+                if (zetaY - Air_Traffic_Control.driveToObservationZone.y > correctionValue) {
+                    // if compare returns a negative value, value1 > value2
+                    autoStatus = "OVERSHOT, BUT IT'S ALRIGHT";
+                    wingmove.move(WingMove.MotorDirection.STOP);
+                    FinalGoalMet = true;
+                } else if (zetaY - Air_Traffic_Control.driveToObservationZone.y < -correctionValue && FinalGoalMet == false) {
+                    // if compare returns a positive value, value1 < value2
+                    autoStatus = "INCOMPLETE";
+                    wingmove.move(WingMove.MotorDirection.BACKWARD);
+                } else {
+                    autoStatus = "COMPLETE";
+                    wingmove.move(WingMove.MotorDirection.STOP);
+                    FinalGoalMet = true;
+                }
+
+                if (FinalGoalMet == true) {
+                    wingmove.clawclose();
+                    actionCounter = "EXEUNT";
+                }
                 break;
 
             case "EXEUNT": // ENDS THE SWITCH STATEMENT ONCE ALL CASES ARE COMPLETED
-                eagleGPS.exeunt();
+                autoStage = "STAGE: EXEUNT";
+                autoStatus = "AUTONOMOUS PROCESS COMPLETE, PLEASE PREPARE FOR TELEOP.";
                 break;
 
             default: // IF actionCounter IS NOT DEFINED OR DEFINED TO A UNDEFINED STATE, PRINT ERROR
-                eagleGPS.error();
+                autoStage = "ERROR";
+                autoStatus = "EXIT ERROR";
         }
 
         counter++; // update counter for ever loop
@@ -109,7 +173,7 @@ public class Auto extends OpMode {
         telemetry.addData("COUNT", counter); // counter
         telemetry.addData("AUTO STAGE", autoStage); // stage auto is in
         telemetry.addData("AUTO STATUS", autoStatus); // status action is in
-        telemetry.addLine("EagleMatrix 0.2.9."); // library version title
+        telemetry.addLine("EagleMatrix Lite 0.2.10."); // library version title
         counter++; // update counter for ever loop
         odometry.update(); // updates odometry every loop
         telemetry.update(); // updates telemetry every loop
