@@ -4,6 +4,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
@@ -20,13 +22,15 @@ public class Driver {
 	DcMotor rearLeft;
 	DcMotor rearRight;
 	GoBildaPinpointDriver odo;
+	Telemetry telemetry;
 
-	public Driver(HardwareMap hardwareMap){
+	public Driver(HardwareMap hardwareMap, Telemetry telemetry){
 		this.frontLeft = hardwareMap.get(DcMotor.class, "frontLeft");
 		this.frontRight = hardwareMap.get(DcMotor.class, "frontRight");
 		this.rearLeft = hardwareMap.get(DcMotor.class, "rearLeft");
 		this.rearRight = hardwareMap.get(DcMotor.class, "rearRight");
 		this.odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+		this.telemetry = telemetry;
 
 
 		this.odo.setOffsets(-173.0, -156); //measured in mm
@@ -48,6 +52,11 @@ public class Driver {
 
 		odo.update();
 		currentPosition = odo.getPosition();
+
+		telemetry.addData("CURRENT POSITION X", currentPosition.getX(DistanceUnit.INCH));
+		telemetry.addData("CURRENT POSITION Y", currentPosition.getY(DistanceUnit.INCH));
+		telemetry.addData("CURRENT POSITION HEADING", currentPosition.getHeading(AngleUnit.DEGREES));
+
 
 		// Move X (Strafe)
 		if (Math.abs(currentPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
