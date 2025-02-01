@@ -48,8 +48,7 @@ public class Driver {
 		this.DISTANCE_THRESHOLD = DISTANCE_THRESHOLD;
 	}
 
-	public void update(){
-
+	public boolean update(){
 		odo.update();
 		currentPosition = odo.getPosition();
 
@@ -101,5 +100,8 @@ public class Driver {
 		rearLeft.setPower(backLeftPower);
 		frontRight.setPower(frontRightPower);
 		rearRight.setPower(backRightPower);
+
+		// Reached position or not
+		return xPower == 0 && yPower == 0;
 	}
 }
