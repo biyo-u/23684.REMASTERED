@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class Driver {
-	Pose2D startPosition;
+	Pose2D currentPosition;
 	Pose2D targetPosition;
 	double DISTANCE_THRESHOLD;
 	private double xPower = 0;
@@ -29,33 +29,33 @@ public class Driver {
 		rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
 
-	public void moveTo(Pose2D startPosition, Pose2D targetPosition, double DISTANCE_THRESHOLD){
-		this.startPosition = startPosition;
+	public void moveTo(Pose2D currentPosition, Pose2D targetPosition, double DISTANCE_THRESHOLD){
+		this.currentPosition = currentPosition;
 		this.targetPosition = targetPosition;
 		this.DISTANCE_THRESHOLD = DISTANCE_THRESHOLD;
 	}
 
 	public void update(){
 		// Move X (Strafe)
-		if (Math.abs(startPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
+		if (Math.abs(currentPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
 			// Reached X
 			xPower = 0;
-		} else if (startPosition.getX(DistanceUnit.INCH) > targetPosition.getX(DistanceUnit.INCH)){
+		} else if (currentPosition.getX(DistanceUnit.INCH) > targetPosition.getX(DistanceUnit.INCH)){
 			// Move back
 			xPower = 1;
-		} else if (startPosition.getX(DistanceUnit.INCH) < targetPosition.getX(DistanceUnit.INCH)) {
+		} else if (currentPosition.getX(DistanceUnit.INCH) < targetPosition.getX(DistanceUnit.INCH)) {
 			// Move forward
 			xPower = -1;
 		}
 
 		// Move Y (Back and Forth)
-		if (Math.abs(startPosition.getY(DistanceUnit.INCH) - targetPosition.getY(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
+		if (Math.abs(currentPosition.getY(DistanceUnit.INCH) - targetPosition.getY(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
 			// Reached Y
 			yPower = 0;
-		} else if (startPosition.getY(DistanceUnit.INCH) > targetPosition.getY(DistanceUnit.INCH)){
+		} else if (currentPosition.getY(DistanceUnit.INCH) > targetPosition.getY(DistanceUnit.INCH)){
 			// Move back
 			yPower = -1;
-		} else if (startPosition.getY(DistanceUnit.INCH) < targetPosition.getY(DistanceUnit.INCH)) {
+		} else if (currentPosition.getY(DistanceUnit.INCH) < targetPosition.getY(DistanceUnit.INCH)) {
 			// Move forward
 			yPower = 1;
 		}
