@@ -42,8 +42,7 @@ public class Driver {
 		rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
 
-	public void moveTo(Pose2D currentPosition, Pose2D targetPosition, double DISTANCE_THRESHOLD){
-		this.currentPosition = currentPosition;
+	public void moveTo(Pose2D targetPosition, double DISTANCE_THRESHOLD){
 		this.targetPosition = targetPosition;
 		this.DISTANCE_THRESHOLD = DISTANCE_THRESHOLD;
 	}
