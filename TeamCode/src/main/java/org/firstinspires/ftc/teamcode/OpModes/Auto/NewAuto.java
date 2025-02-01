@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.OpModes.Auto;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -16,6 +17,7 @@ import org.firstinspires.ftc.teamcode.Utilities.AutoActions;
 import org.firstinspires.ftc.teamcode.Utilities.Constants;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
+@Disabled
 @Config
 @Autonomous(name= "NEWAuto", group= Constants.GroupNames.Autonomous, preselectTeleOp= "TeleOp")
 public class NewAuto extends OpMode {
