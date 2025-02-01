@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Constants;
 @Autonomous(name = "TinyAuto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
 public class TinyAuto extends OpMode {
 	Driver driver;
+	boolean isStopped;
 
 	@Override
 	public void init() {
@@ -20,15 +21,20 @@ public class TinyAuto extends OpMode {
 	@Override
 	public void loop() {
 		// POSITION 1
-		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
-		while (!driver.update()) {
-
-		}
+		this.driver.moveToX(24, 2);
+		while (!driver.update() && !isStopped) {}
 
 		// POSITION 2
-		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
-		while (!driver.update()) {
+//		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
+//		while (!driver.update()) {
+//
+//		}
+	}
 
-		}
+	@Override
+	public void stop() {
+		isStopped = true; // Mark the OpMode as stopped
+		telemetry.addData("Status", "OpMode Stopped");
+		telemetry.update();
 	}
 }

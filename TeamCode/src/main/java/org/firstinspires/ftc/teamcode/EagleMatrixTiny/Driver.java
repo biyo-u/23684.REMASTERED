@@ -17,6 +17,7 @@ public class Driver {
 	private double xPower = 0;
 	private double yPower = 0;
 	private double headingPower = 0;
+	private boolean direction = true; // true is Strafe, false is Back and Forth
 	DcMotor frontLeft;
 	DcMotor frontRight;
 	DcMotor rearLeft;
@@ -42,9 +43,10 @@ public class Driver {
 		rearLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 	}
 
-	public void moveTo(Pose2D targetPosition, double DISTANCE_THRESHOLD){
-		this.targetPosition = targetPosition;
+	public void moveToX(double targetX, double DISTANCE_THRESHOLD){
+		this.targetPosition = new Pose2D(DistanceUnit.INCH, targetX, targetPosition.getY(DistanceUnit.INCH), AngleUnit.DEGREES, targetPosition.getHeading(AngleUnit.DEGREES));
 		this.DISTANCE_THRESHOLD = DISTANCE_THRESHOLD;
+		this.direction = true;
 	}
 
 	public boolean update(){
@@ -56,30 +58,38 @@ public class Driver {
 		telemetry.addData("CURRENT POSITION HEADING", currentPosition.getHeading(AngleUnit.DEGREES));
 
 		// Move X (Strafe)
-		if (Math.abs(currentPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
-			// Reached X
-			telemetry.addLine("Reached required X position");
+		if (direction) {
+			if (Math.abs(currentPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
+				// Reached X
+				telemetry.addLine("Reached required X position");
+				xPower = 0;
+			} else if (currentPosition.getX(DistanceUnit.INCH) > targetPosition.getX(DistanceUnit.INCH)) {
+				// Move back
+				telemetry.addLine("Need to move back to reach required X position");
+				xPower = -1;
+			} else if (currentPosition.getX(DistanceUnit.INCH) < targetPosition.getX(DistanceUnit.INCH)) {
+				// Move forward
+				telemetry.addLine("Need to move forward to reach required X position");
+				xPower = 1;
+			}
+		} else {
 			xPower = 0;
-		} else if (currentPosition.getX(DistanceUnit.INCH) > targetPosition.getX(DistanceUnit.INCH)){
-			// Move back
-			telemetry.addLine("Need to move back to reach required X position");
-			xPower = -1;
-		} else if (currentPosition.getX(DistanceUnit.INCH) < targetPosition.getX(DistanceUnit.INCH)) {
-			// Move forward
-			telemetry.addLine("Need to move forward to reach required X position");
-			xPower = 1;
 		}
 
 		// Move Y (Back and Forth)
-		if (Math.abs(currentPosition.getY(DistanceUnit.INCH) - targetPosition.getY(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
-			// Reached Y
+		if (!direction) {
+			if (Math.abs(currentPosition.getY(DistanceUnit.INCH) - targetPosition.getY(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
+				// Reached Y
+				yPower = 0;
+			} else if (currentPosition.getY(DistanceUnit.INCH) > targetPosition.getY(DistanceUnit.INCH)) {
+				// Move back
+				yPower = -1;
+			} else if (currentPosition.getY(DistanceUnit.INCH) < targetPosition.getY(DistanceUnit.INCH)) {
+				// Move forward
+				yPower = 1;
+			}
+		} else {
 			yPower = 0;
-		} else if (currentPosition.getY(DistanceUnit.INCH) > targetPosition.getY(DistanceUnit.INCH)){
-			// Move back
-			yPower = -1;
-		} else if (currentPosition.getY(DistanceUnit.INCH) < targetPosition.getY(DistanceUnit.INCH)) {
-			// Move forward
-			yPower = 1;
 		}
 
 		double y = yPower; // Remember, Y stick value is reversed
