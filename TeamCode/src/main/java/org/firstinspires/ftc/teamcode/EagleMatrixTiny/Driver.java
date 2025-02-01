@@ -47,6 +47,7 @@ public class Driver {
 	public void update(){
 
 		odo.update();
+		currentPosition = odo.getPosition();
 
 		// Move X (Strafe)
 		if (Math.abs(currentPosition.getX(DistanceUnit.INCH) - targetPosition.getX(DistanceUnit.INCH)) <= DISTANCE_THRESHOLD) {
