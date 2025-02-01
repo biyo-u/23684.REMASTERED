@@ -42,10 +42,10 @@ public class Driver {
 			xPower = 0;
 		} else if (startPosition.getX(DistanceUnit.INCH) > targetPosition.getX(DistanceUnit.INCH)){
 			// Move back
-			xPower = -1;
+			xPower = 1;
 		} else if (startPosition.getX(DistanceUnit.INCH) < targetPosition.getX(DistanceUnit.INCH)) {
 			// Move forward
-			xPower = 1;
+			xPower = -1;
 		}
 
 		// Move Y (Back and Forth)
