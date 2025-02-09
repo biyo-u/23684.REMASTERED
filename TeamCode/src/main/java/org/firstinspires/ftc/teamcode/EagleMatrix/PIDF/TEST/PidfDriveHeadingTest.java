@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.EagleMatrix.PIDF;
+package org.firstinspires.ftc.teamcode.EagleMatrix.PIDF.TEST;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
-public class PidfDriveYTest extends OpMode {
+public class PidfDriveHeadingTest extends OpMode {
 
     private PIDController controller;
 
     public static double p = 0 , i = 0 , d = 0;
     public static double f = 0;
-    public static int target = 700;
+    public static int target = 180;
 
     public final double ticksInDegree = 700 / 180.0;
     Robot robot;
@@ -35,17 +35,17 @@ public class PidfDriveYTest extends OpMode {
 
         controller.setPID(p,i,d);
 
-        double Ypos = odo.getPosY();
+        double Hpos = odo.getHeading();
 
-        double  Ypid = controller.calculate(Ypos,target);
-        double ff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;
+        double  Hpid = controller.calculate(Hpos,target);
+        double Hff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;
 
-        double power = Ypid + ff;
+        double Hpower = Hpid + Hff;
 
-        robot.drive.driveMecanumFieldCentric(power,0,0);
+        robot.drive.driveMecanumFieldCentric(0,0,Hpower);
 
-        telemetry.addData("Y position ", Ypos);
-        telemetry.addData("target Y ",target);
+        telemetry.addData("Heading position ", Hpos);
+        telemetry.addData("target Heading",target);
         telemetry.update();
         odo.update();
 
