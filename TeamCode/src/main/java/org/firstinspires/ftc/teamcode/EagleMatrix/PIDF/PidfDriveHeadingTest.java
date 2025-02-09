@@ -47,6 +47,7 @@ public class PidfDriveHeadingTest extends OpMode {
         telemetry.addData("Heading position ", Hpos);
         telemetry.addData("target Heading",target);
         telemetry.update();
+        odo.update();
 
     }
 }

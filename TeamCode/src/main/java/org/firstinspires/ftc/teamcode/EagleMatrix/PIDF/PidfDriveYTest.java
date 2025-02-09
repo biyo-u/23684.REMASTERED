@@ -47,6 +47,7 @@ public class PidfDriveYTest extends OpMode {
         telemetry.addData("Y position ", Ypos);
         telemetry.addData("target Y ",target);
         telemetry.update();
+        odo.update();
 
     }
 }
