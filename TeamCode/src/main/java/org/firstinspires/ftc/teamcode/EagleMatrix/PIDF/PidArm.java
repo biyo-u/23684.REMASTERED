@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp
@@ -15,9 +16,9 @@ public class PidArm  extends OpMode {
 
     private PIDController controller;
 
-    public static double p = 0 , i = 0 , d = 0;
+    public static double p = 0.09 , i = 0.001 , d = 0.001;
     public static double f = 0;
-    public static int target = 0;
+    public static int target = 700;
     public final double ticksInDegree = 700 / 180.0;
     DcMotor shoulder;
 
@@ -28,6 +29,8 @@ public class PidArm  extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         shoulder = hardwareMap.get(DcMotor.class,"shoulder");
+
+        shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
 
