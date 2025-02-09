@@ -2,15 +2,11 @@ package org.firstinspires.ftc.teamcode.OpModes.Auto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.EagleMatrixTiny.Driver;
 import org.firstinspires.ftc.teamcode.Utilities.Constants;
 
-@Autonomous(name = "TinyAuto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
-public class TinyAuto extends OpMode {
+@Autonomous(name = "Basic Auto", group = Constants.GroupNames.Autonomous, preselectTeleOp = "TeleOp")
+public class BasicAuto extends OpMode {
 	Driver driver;
 	boolean isStopped;
 
@@ -20,15 +16,9 @@ public class TinyAuto extends OpMode {
 	}
 	@Override
 	public void loop() {
-		// POSITION 1
-		this.driver.moveToX(24, 2);
+		// Park
+		this.driver.moveToX(36, 2);
 		while (!driver.update() && !isStopped) {}
-
-		// POSITION 2
-//		this.driver.moveTo(new Pose2D(DistanceUnit.INCH, 24, 0, AngleUnit.DEGREES, 0), 2);
-//		while (!driver.update()) {
-//
-//		}
 	}
 
 	@Override
