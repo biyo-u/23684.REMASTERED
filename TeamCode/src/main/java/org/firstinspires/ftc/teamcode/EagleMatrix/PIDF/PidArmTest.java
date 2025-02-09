@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode.EagleMatrix.PIDF;
 
+
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
-import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 @Config
 @TeleOp
-public class PidArm  extends OpMode {
+public class PidArmTest extends OpMode {
 
     private PIDController controller;
 
@@ -23,7 +23,7 @@ public class PidArm  extends OpMode {
     public final double ticksInDegree = 700 / 180.0;
     DcMotor shoulder;
 
-    @Override
+
     public void init(){
 
         controller = new PIDController(p,i,d);
@@ -36,7 +36,7 @@ public class PidArm  extends OpMode {
 
 
   }
-    @Override
+
     public void loop(){
 
         controller.setPID(p,i,d);
