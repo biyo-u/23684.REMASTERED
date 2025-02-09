@@ -19,6 +19,7 @@ public class PidArm  extends OpMode {
     public static double p = 0.09 , i = 0.001 , d = 0.001;
     public static double f = 0;
     public static int target = 700;
+
     public final double ticksInDegree = 700 / 180.0;
     DcMotor shoulder;
 
