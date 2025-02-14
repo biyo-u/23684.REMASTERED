@@ -5,7 +5,10 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Utilities.Old.Distance;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
 public class PidfDriveXTest extends OpMode {
@@ -18,16 +21,20 @@ public class PidfDriveXTest extends OpMode {
     Robot robot;
     GoBildaPinpointDriver odo;
 
+    Pose2D currentPos;
+
     public void init(){
         controller = new PIDController(p,i,d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         robot = new Robot(hardwareMap,telemetry);
+
+        currentPos = odo.getPosition();
     }
 
     public void loop(){
         controller.setPID(p,i,d);
-        double X_POSITION = odo.getPosX();
+        double X_POSITION = currentPos.getX(DistanceUnit.INCH);
 
         double X_PID = controller.calculate(X_POSITION,target);
         double Xff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;

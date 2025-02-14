@@ -21,6 +21,9 @@ public class ArmPIDF {
      private DcMotor shoulder;
 
     public ArmPIDF(HardwareMap hw) {
+
+        controller = new PIDController(p,i,d);
+
         shoulder = hw.get(DcMotor.class,"shoulder");
         shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
     }

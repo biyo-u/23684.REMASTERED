@@ -5,6 +5,9 @@ import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
@@ -19,19 +22,23 @@ public class PidfDriveHeadingTest extends OpMode {
     Robot robot;
     GoBildaPinpointDriver odo;
 
+    Pose2D currentPos;
     public void init(){
 
         controller = new PIDController(p,i,d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         robot = new Robot(hardwareMap,telemetry);
+
+        currentPos = odo.getPosition();
     }
 
     public void loop(){
 
         controller.setPID(p,i,d);
 
-        double HEADING_POSITION = odo.getHeading();
+        double HEADING_POSITION = currentPos.getHeading(AngleUnit.DEGREES);
+
 
         double Hpid = controller.calculate(HEADING_POSITION,target);
         double Hff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;
