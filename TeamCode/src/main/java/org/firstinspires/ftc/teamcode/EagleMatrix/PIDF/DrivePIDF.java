@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
 public class DrivePIDF  {
 
+    // todo: delete DrivePIDF because it's redundant (botPID literally rolls the ArmPIDF, LiftPIDF, and DrivePIDF classes into one, this class literally does the exact same thing)
     public PIDController Xcontroller;
     public PIDController Ycontroller;
     public PIDController Hcontroller;

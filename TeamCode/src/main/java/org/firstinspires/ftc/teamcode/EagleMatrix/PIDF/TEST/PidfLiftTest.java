@@ -52,7 +52,5 @@ public class PidfLiftTest extends OpMode {
         telemetry.addData(" Slide position RIGHT", posRight);
         telemetry.addData("target ",target);
         telemetry.update();
-
-
     }
 }
