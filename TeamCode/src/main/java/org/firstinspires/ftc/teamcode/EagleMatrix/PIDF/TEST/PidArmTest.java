@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 @Config
 @TeleOp
 public class PidArmTest extends OpMode {
-
     private PIDController controller;
 
     public static double p = 0.09 , i = 0.001 , d = 0.001;
@@ -30,11 +29,7 @@ public class PidArmTest extends OpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         shoulder = hardwareMap.get(DcMotor.class,"shoulder");
-
         shoulder.setDirection(DcMotorSimple.Direction.REVERSE);
-
-
-
   }
 
     public void loop(){
@@ -53,6 +48,5 @@ public class PidArmTest extends OpMode {
         telemetry.addData("pos ",armPosition);
         telemetry.addData("target ",target);
         telemetry.update();
-
     }
 }

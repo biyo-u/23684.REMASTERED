@@ -9,9 +9,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
 public class PidfDriveXTest extends OpMode {
-
     private PIDController controller;
-
     public static double p = 0 , i = 0 , d = 0;
     public static double f = 0;
     public static int target = 700;
@@ -20,34 +18,29 @@ public class PidfDriveXTest extends OpMode {
     Robot robot;
     GoBildaPinpointDriver odo;
 
-
     public void init(){
-
         controller = new PIDController(p,i,d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         robot = new Robot(hardwareMap,telemetry);
-
-
     }
 
     public void loop(){
-
         controller.setPID(p,i,d);
+        double X_POSITION = odo.getPosX();
 
-        double Xpos = odo.getPosX();
-
-        double  Xpid = controller.calculate(Xpos,target);
+        double X_PID = controller.calculate(X_POSITION,target);
         double Xff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;
 
-        double Xpower = Xpid + Xff;
+        double X_POWER = X_PID + Xff;
 
-        robot.drive.driveMecanumFieldCentric(0,Xpower,0);
+        // TODO: test to see if FieldCentric is better than Robot Centric
+        // robot.drive.driveMecanumFieldCentric(0,X_POWER,0);
+        robot.drive.driveMecanumRobotCentric(0,X_POWER,0);
 
-        telemetry.addData("X position ", Xpos);
+        telemetry.addData("X position ", X_POSITION);
         telemetry.addData("target X ",target);
         telemetry.update();
         odo.update();
-
     }
 }

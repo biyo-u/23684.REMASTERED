@@ -9,7 +9,6 @@ import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
 public class PidfDriveHeadingTest extends OpMode {
-
     private PIDController controller;
 
     public static double p = 0 , i = 0 , d = 0;
@@ -20,34 +19,32 @@ public class PidfDriveHeadingTest extends OpMode {
     Robot robot;
     GoBildaPinpointDriver odo;
 
-
     public void init(){
 
         controller = new PIDController(p,i,d);
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         robot = new Robot(hardwareMap,telemetry);
-
-
     }
 
     public void loop(){
 
         controller.setPID(p,i,d);
 
-        double Hpos = odo.getHeading();
+        double HEADING_POSITION = odo.getHeading();
 
-        double  Hpid = controller.calculate(Hpos,target);
+        double Hpid = controller.calculate(HEADING_POSITION,target);
         double Hff = Math.cos(Math.toRadians(target / ticksInDegree)) * f;
 
-        double Hpower = Hpid + Hff;
+        double H_POWER = Hpid + Hff;
 
-        robot.drive.driveMecanumFieldCentric(0,0,Hpower);
+        // TODO: test to see if FieldCentric is better than Robot Centric
+        // robot.drive.driveMecanumFieldCentric(0,0,H_POWER);
+        robot.drive.driveMecanumRobotCentric(0,0,H_POWER);
 
-        telemetry.addData("Heading position ", Hpos);
+        telemetry.addData("Heading position ", HEADING_POSITION);
         telemetry.addData("target Heading",target);
         telemetry.update();
         odo.update();
-
     }
 }
