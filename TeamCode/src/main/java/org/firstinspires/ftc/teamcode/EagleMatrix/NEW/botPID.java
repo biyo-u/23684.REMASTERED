@@ -9,13 +9,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
-
-import java.util.Locale;
+import org.firstinspires.ftc.teamcode.EagleMatrix.NEW.botPIDConstants.PIDF_Constants;
+import org.firstinspires.ftc.teamcode.EagleMatrix.NEW.botPIDConstants.Ticks2Deg;
 
 @Config
 public class botPID {
     //HARDWARE
     public final Robot robot;
+    public final botPIDConstants constants;
 
     //PID CONTROLLERS
     public final PIDFController armController;
@@ -24,18 +25,6 @@ public class botPID {
     public final PIDController driveYController;
     public final PIDController driveHeadingController;
 
-    // TICKS TO IN-DEGREES
-    public final double ArmTicksInDegree = 700 / 180.0; // TODO: FIND CORRECT VALUES FOR ARM, LIFT, DRIVE, or just use it as it
-    public final double LiftTicksInDegree = 700 / 180.0;
-    public final double DriveTicksInDegree = 700 / 180.0;
-
-    //PID GAINS
-    public static double Arm_p = 0.01, Arm_i = 0, Arm_d = 0, Arm_f = 0;
-    public static double Lift_p = 0.01, Lift_i = 0, Lift_d = 0, Lift_f = 0;
-    public static double Xp = 0.08, Xi = 0, Xd = 0.003, Xf = 0;
-    public static double Yp = 0.08, Yi = 0, Yd = 0.009, Yf = 0;
-    public static double Heading_p = 0, Heading_i = 0, Heading_d = 0, Heading_f = 0;
-
     // TARGETS
     public static double Arm_target;
     public static double Lift_target;
@@ -43,13 +32,14 @@ public class botPID {
     public static double Y_target;
     public static double Heading_target;
 
-    public botPID(Robot robot) {
+    public botPID(Robot robot, botPIDConstants constants) {
         this.robot = robot;
-        armController = new PIDFController(Arm_p,Arm_i,Arm_d, Arm_f);
-        liftController = new PIDController(Lift_p,Lift_i,Lift_d);
-        driveXController = new PIDController(Xp,Xi,Xd);
-        driveYController = new PIDController(Yp,Yi,Yd);
-        driveHeadingController = new PIDController(Heading_p,Heading_i,Heading_d);
+        this.constants = new botPIDConstants();
+        armController = new PIDFController(PIDF_Constants.Arm_p, PIDF_Constants.Arm_i, PIDF_Constants.Arm_d, PIDF_Constants.Arm_f);
+        liftController = new PIDController(PIDF_Constants.Lift_p, PIDF_Constants.Lift_i, PIDF_Constants.Lift_d);
+        driveXController = new PIDController(PIDF_Constants.Xp, PIDF_Constants.Xi, PIDF_Constants.Xd);
+        driveYController = new PIDController(PIDF_Constants.Yp, PIDF_Constants.Yi, PIDF_Constants.Yd);
+        driveHeadingController = new PIDController(PIDF_Constants.Heading_p, PIDF_Constants.Heading_i, PIDF_Constants.Heading_d);
     }
 
     public void setArmTarget(double target){
@@ -74,13 +64,13 @@ public class botPID {
     }
 
     public void runArm(){
-        armController.setPIDF(Arm_p,Arm_i,Arm_d,Arm_f);
+        armController.setPIDF(PIDF_Constants.Arm_p, PIDF_Constants.Arm_i, PIDF_Constants.Arm_d, PIDF_Constants.Arm_f);
 
         double armPosition = robot.lift.getShoulderPosition();
 
         double armPID = armController.calculate(armPosition, Arm_target);
 
-        double Arm_ff = Math.cos(Math.toRadians(Arm_target / ArmTicksInDegree)) * Arm_f;
+        double Arm_ff = Math.cos(Math.toRadians(Arm_target / Ticks2Deg.ArmTicksInDegree)) * PIDF_Constants.Arm_f;
 
         double Arm_power = armPID + Arm_ff;
 
@@ -88,37 +78,48 @@ public class botPID {
         robot.lift.shoulderMove(Arm_power);
     }
     public void runLift(){
-        liftController.setPID(Lift_p,Lift_i,Lift_d);
+        liftController.setPID(PIDF_Constants.Lift_p, PIDF_Constants.Lift_i, PIDF_Constants.Lift_d);
 
         double liftPosition = robot.lift.getLiftPosition();
 
         double liftPID = liftController.calculate(liftPosition, Lift_target);
 
-        double Lift_ff = Math.cos(Math.toRadians(Lift_target / LiftTicksInDegree)) * Lift_f;
+        double Lift_ff = Math.cos(Math.toRadians(Lift_target / Ticks2Deg.LiftTicksInDegree)) * PIDF_Constants.Lift_f;
 
         double Lift_power = liftPID + Lift_ff;
 
         robot.lift.liftMove(Lift_power);
     }
     public void runDrive(){
-        driveXController.setPID(Xp,Xi,Xd);
-        driveYController.setPID(Yp,Yi,Yd);
-        driveHeadingController.setPID(Heading_p,Heading_i,Heading_d);
+        driveXController.setPID(PIDF_Constants.Xp, PIDF_Constants.Xi, PIDF_Constants.Xd);
+        driveYController.setPID(PIDF_Constants.Yp, PIDF_Constants.Yi, PIDF_Constants.Yd);
+        driveHeadingController.setPID(PIDF_Constants.Heading_p, PIDF_Constants.Heading_i, PIDF_Constants.Heading_d);
 
         double xPosition = robot.odometry.getPosition().getX(DistanceUnit.INCH);
         double yPosition = robot.odometry.getPosition().getY(DistanceUnit.INCH);
-        // TODO: Fix with a mod angle that ensures the robot never crosses a 0 (see Craig)
-        // TODO: another idea is set variable so whenever angle crosses 0, add 1 (if positive), and minus 1 (if negative)
+
+        // TODO: Fix normalization issue with heading
+        // Fix with a mod equation that ensures the robot never crosses a 0 (from Craig)
+        // another idea is set variable so whenever angle crosses 0, add 1 (if positive), and minus 1 (if negative)
+        // if all else fails, add 360 to target and initial values
+
+        //TODO: see if solution (ala ChatGPT) works.
         double heading = robot.odometry.getPosition().getHeading(AngleUnit.DEGREES);
-        // double totalHeading = robot.odometry.getPosition().
+        double delta = heading - Heading_target;
+        double unnormalizedHeading = (delta % 360 + 360) % 360;
+
+        // Ensuring smooth transitions without abrupt -180 flips
+        if (unnormalizedHeading > 180) {
+            unnormalizedHeading -= 360; // Prefers a shorter route in the negative direction
+        }
 
         double xPID = driveXController.calculate(xPosition, X_target);
         double yPID = driveYController.calculate(yPosition, Y_target);
-        double headingPID = driveHeadingController.calculate(heading, Heading_target);
+        double headingPID = driveHeadingController.calculate(unnormalizedHeading, Heading_target);
 
-        double Xff = Math.cos(Math.toRadians(X_target / DriveTicksInDegree)) * Xf;
-        double Yff = Math.cos(Math.toRadians(Y_target / DriveTicksInDegree)) * Yf;
-        double Heading_ff = Math.cos(Math.toRadians(Heading_target / DriveTicksInDegree)) * Heading_f;
+        double Xff = Math.cos(Math.toRadians(X_target / Ticks2Deg.DriveTicksInDegree)) * PIDF_Constants.Xf;
+        double Yff = Math.cos(Math.toRadians(Y_target / Ticks2Deg.DriveTicksInDegree)) * PIDF_Constants.Yf;
+        double Heading_ff = Math.cos(Math.toRadians(Heading_target / Ticks2Deg.DriveTicksInDegree)) * PIDF_Constants.Heading_f;
 
         double X_power = xPID + Xff;
         double Y_power = yPID + Yff;
@@ -126,12 +127,11 @@ public class botPID {
 
         robot.drive.driveMecanumFieldCentric(Y_power, X_power, -Heading_power, heading);
     }
-
-    public String getTargets(){
-
-        return String.format(Locale.getDefault(), """
-                Arm Target: %f \n
-                Lift Target: %f""", Arm_target, Lift_target);
+    public double getArmTarget(){
+        return Arm_target;
+    }
+    public double getLiftTarget(){
+        return Lift_target;
     }
     public double getXTarget(){
         return X_target;
@@ -142,11 +142,9 @@ public class botPID {
     public double getHeadingTarget(){
         return Heading_target;
     }
-
     public double getArmPosition(){
         return robot.lift.getShoulderPosition();
     }
-
     public double getLiftPosition(){
         return robot.lift.getLiftPosition();
     }

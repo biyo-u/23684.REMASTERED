@@ -17,11 +17,12 @@ import org.firstinspires.ftc.teamcode.Utilities.Robot;
 public class TEST_botPID extends OpMode {
     botPID bot;
     Robot robot;
+    botPIDConstants botPIDConstants;
 
     @Override
     public void init() {
         robot = new Robot(hardwareMap,telemetry);
-        bot = new botPID(robot);
+        bot = new botPID(robot, botPIDConstants);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         robot.lift.getShoulder().setDirection(DcMotorSimple.Direction.REVERSE);
@@ -44,18 +45,22 @@ public class TEST_botPID extends OpMode {
         bot.runArm();
         bot.runLift();
         bot.runDrive();
-        //telemetry.addLine(bot.getTelemetry());
-        // telemetry.addLine(bot.getTargets()); // TODO: change these to be public doubles!!!
+
         telemetry.addData("Arm Position", bot.getArmPosition());
         telemetry.addData("Lift Position", bot.getLiftPosition());
         telemetry.addData("X Position", bot.getOdoPosition().getX(DistanceUnit.INCH));
         telemetry.addData("Y Position", bot.getOdoPosition().getY(DistanceUnit.INCH));
         telemetry.addData("Heading Position", bot.getOdoPosition().getHeading(AngleUnit.DEGREES));
+
+        telemetry.addData("\n Arm Target", bot.getArmTarget());
+        telemetry.addData("Lift Target", bot.getLiftTarget());
         telemetry.addData("X Target", bot.getXTarget());
         telemetry.addData("Y Target", bot.getYTarget());
         telemetry.addData("Heading Target", bot.getHeadingTarget());
-        telemetry.addData("X Offset", robot.odometry.XOffset());
+
+        telemetry.addData("\n X Offset", robot.odometry.XOffset());
         telemetry.addData("Y Offset", robot.odometry.YOffset());
+
         robot.odometry.update();
         telemetry.update();
     }
