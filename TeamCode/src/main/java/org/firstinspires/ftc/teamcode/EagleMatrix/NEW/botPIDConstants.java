@@ -7,17 +7,17 @@ public class botPIDConstants {
     // TODO: Add in other frequently used constant values such as PIDF values and ticks/inch-degrees values
     public static class Arm_Constants {
         // TODO: Find values for Arm_Score_Baskets, Arm_Score_Chambers, Arm_PickUp_Sample
-        public static final double Arm_Score_Baskets = 3000;
-        public static final double Arm_Score_Chambers = 0;
-        public static final double Arm_PickUp_Sample = 0;
-        public static final double Arm_Home = 0;
+        public static final double Arm_Score_High_Baskets = -5000;
+        public static final double Arm_Score_High_Chambers = -3500;
+        public static final double Arm_PickUp_Sample = -300; // check this
+        public static final double Arm_Home = -10;
     }
 
     public static class Lift_Constants {
         // TODO: Find values for Lift_Score_Baskets, Lift_Score_Chambers, Lift_Hang
-        public static final double Lift_Score_Baskets = 0;
-        public static final double Lift_Score_Chambers = 0;
-        public static final double Lift_Hang = 0;
+        public static final double Lift_Score_Baskets = 6000;
+        public static final double Lift_Score_Chambers = 1000;
+        public static final double Lift_Hang_Grab = -6000;
         public static final double Lift_Home = 0;
     }
 

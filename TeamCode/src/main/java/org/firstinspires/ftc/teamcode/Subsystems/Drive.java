@@ -47,11 +47,11 @@ public class Drive {
 		rearRight.setPower(backRightPower);
 	}
 
-	public void driveMecanumFieldCentric(double left_stick_y, double left_stick_x, double right_stick_x) {
+	public void driveMecanumFieldCentric(double left_stick_y, double left_stick_x, double right_stick_x, double botHeading) {
 		double y = -left_stick_y; // Remember, Y stick value is reversed
 
 		// Gets robot heading (direction it's pointing)
-		double botHeading = compass.getHeading();
+		//double botHeading = compass.getHeading();
 
 		// Rotate the movement direction counter to the bot's rotation
 		double rotX = left_stick_x * Math.cos(-botHeading) - y * Math.sin(-botHeading);

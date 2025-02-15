@@ -13,6 +13,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
+import org.firstinspires.ftc.teamcode.Subsystems.Odometry;
 
 public class Robot {
     // Public Subsystems
@@ -20,7 +21,7 @@ public class Robot {
     public Lift lift;
     public Drive drive;
     public Compass compass;
-    public GoBildaPinpointDriver odometry;
+    public Odometry odometry;
     public Telemetry telemetry;
 
     public Robot(HardwareMap hardwareMap, Telemetry telemetry) {
@@ -42,14 +43,15 @@ public class Robot {
         intake = new Intake(claw, wrist);
         lift = new Lift(liftMotorLeft, liftMotorRight, shoulder);
         drive = new Drive(frontLeft, frontRight, rearLeft, rearRight, compass);
+        odometry = new Odometry(odometryComputer, compass);
 
         // Public Devices (not subsystems)
         this.telemetry = telemetry;
-        this.odometry = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        this.odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        this.odometry.setOffsets(-6.44, 6.8745);
-        this.odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        this.odometry.resetPosAndIMU();
-        this.odometry.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
+//        this.odometry = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+//        this.odometry.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
+//        this.odometry.setOffsets(-6.44, 6.8745);
+//        this.odometry.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+//        this.odometry.resetPosAndIMU();
+//        this.odometry.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
     }
 }

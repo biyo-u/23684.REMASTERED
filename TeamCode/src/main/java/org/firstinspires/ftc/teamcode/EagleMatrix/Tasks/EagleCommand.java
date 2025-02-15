@@ -94,7 +94,7 @@ public class EagleCommand extends SubsystemBase {
     }
 
     public void setPosition(Pose2D pose) {
-        robot.odometry.setPosition(pose);
+        // robot.odometry.setPosition(pose);
         current_position = pose;
         GOAL_HEADING = pose.getHeading(AngleUnit.DEGREES);
     }

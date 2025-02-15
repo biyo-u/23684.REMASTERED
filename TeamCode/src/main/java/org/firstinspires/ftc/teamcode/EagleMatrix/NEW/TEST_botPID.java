@@ -4,16 +4,18 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utilities.Constants;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
 
 /** @noinspection unused*/
 @Autonomous(name = "TEST_botPID", group = Constants.GroupNames.Testing)
 public class TEST_botPID extends OpMode {
-    // SOFTWARE
     botPID bot;
-
-    // HARDWARE
     Robot robot;
 
     @Override
@@ -22,12 +24,18 @@ public class TEST_botPID extends OpMode {
         bot = new botPID(robot);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-        bot.setArmTarget(700);
+        robot.lift.getShoulder().setDirection(DcMotorSimple.Direction.REVERSE);
+
+        bot.setArmTarget(0);
         bot.setLiftTarget(0);
         bot.setXTarget(0);
         bot.setYTarget(0);
         bot.setHeadingTarget(0);
         bot.setDriveTarget(0,0,0);
+        robot.lift.getLiftMotorLeft().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        robot.lift.getLiftMotorRight().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        robot.lift.getShoulder().setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     @Override
@@ -36,7 +44,19 @@ public class TEST_botPID extends OpMode {
         bot.runArm();
         bot.runLift();
         bot.runDrive();
-        bot.getTelemetry();
+        //telemetry.addLine(bot.getTelemetry());
+        // telemetry.addLine(bot.getTargets()); // TODO: change these to be public doubles!!!
+        telemetry.addData("Arm Position", bot.getArmPosition());
+        telemetry.addData("Lift Position", bot.getLiftPosition());
+        telemetry.addData("X Position", bot.getOdoPosition().getX(DistanceUnit.INCH));
+        telemetry.addData("Y Position", bot.getOdoPosition().getY(DistanceUnit.INCH));
+        telemetry.addData("Heading Position", bot.getOdoPosition().getHeading(AngleUnit.DEGREES));
+        telemetry.addData("X Target", bot.getXTarget());
+        telemetry.addData("Y Target", bot.getYTarget());
+        telemetry.addData("Heading Target", bot.getHeadingTarget());
+        telemetry.addData("X Offset", robot.odometry.XOffset());
+        telemetry.addData("Y Offset", robot.odometry.YOffset());
+        robot.odometry.update();
         telemetry.update();
     }
 }

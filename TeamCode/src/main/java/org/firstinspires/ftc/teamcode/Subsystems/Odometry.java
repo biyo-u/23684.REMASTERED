@@ -20,7 +20,7 @@ public class Odometry {
         this.compass = compass;
 
         // Sets Odometry offsets
-        this.odo.setOffsets(-173.0, -156); //measured in mm
+        this.odo.setOffsets(-173.0, 156); //measured in mm
         this.odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         this.odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         this.compass.resetYaw();
@@ -153,5 +153,13 @@ public class Odometry {
     public double rawHeadingTelemetry() {
         Pose2D position = odo.getPosition();
         return position.getHeading(AngleUnit.DEGREES);
+    }
+
+    public double XOffset(){
+        return odo.getXOffset();
+    }
+
+    public double YOffset(){
+        return odo.getYOffset();
     }
 }

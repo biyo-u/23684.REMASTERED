@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.EagleMatrix.NEW;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.PIDFController;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -16,7 +18,7 @@ public class botPID {
     public final Robot robot;
 
     //PID CONTROLLERS
-    public final PIDController armController;
+    public final PIDFController armController;
     public final PIDController liftController;
     public final PIDController driveXController;
     public final PIDController driveYController;
@@ -28,22 +30,22 @@ public class botPID {
     public final double DriveTicksInDegree = 700 / 180.0;
 
     //PID GAINS
-    public static double Arm_p = 0.09, Arm_i = 0.001, Arm_d = 0.001, Arm_f = 0;
-    public static double Lift_p = 0, Lift_i = 0, Lift_d = 0, Lift_f = 0;
-    public static double Xp = 0, Xi = 0, Xd = 0, Xf = 0;
-    public static double Yp = 0, Yi = 0, Yd = 0, Yf = 0;
+    public static double Arm_p = 0.01, Arm_i = 0, Arm_d = 0, Arm_f = 0;
+    public static double Lift_p = 0.01, Lift_i = 0, Lift_d = 0, Lift_f = 0;
+    public static double Xp = 0.08, Xi = 0, Xd = 0.003, Xf = 0;
+    public static double Yp = 0.08, Yi = 0, Yd = 0.009, Yf = 0;
     public static double Heading_p = 0, Heading_i = 0, Heading_d = 0, Heading_f = 0;
 
     // TARGETS
-    public double Arm_target;
-    public double Lift_target;
-    public double X_target;
-    public double Y_target;
-    public double Heading_target;
+    public static double Arm_target;
+    public static double Lift_target;
+    public static double X_target;
+    public static double Y_target;
+    public static double Heading_target;
 
     public botPID(Robot robot) {
         this.robot = robot;
-        armController = new PIDController(Arm_p,Arm_i,Arm_d);
+        armController = new PIDFController(Arm_p,Arm_i,Arm_d, Arm_f);
         liftController = new PIDController(Lift_p,Lift_i,Lift_d);
         driveXController = new PIDController(Xp,Xi,Xd);
         driveYController = new PIDController(Yp,Yi,Yd);
@@ -72,7 +74,7 @@ public class botPID {
     }
 
     public void runArm(){
-        armController.setPID(Arm_p,Arm_i,Arm_d);
+        armController.setPIDF(Arm_p,Arm_i,Arm_d,Arm_f);
 
         double armPosition = robot.lift.getShoulderPosition();
 
@@ -82,6 +84,7 @@ public class botPID {
 
         double Arm_power = armPID + Arm_ff;
 
+        robot.lift.getShoulder().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.lift.shoulderMove(Arm_power);
     }
     public void runLift(){
@@ -104,7 +107,10 @@ public class botPID {
 
         double xPosition = robot.odometry.getPosition().getX(DistanceUnit.INCH);
         double yPosition = robot.odometry.getPosition().getY(DistanceUnit.INCH);
-        double heading = robot.odometry.getHeading();
+        // TODO: Fix with a mod angle that ensures the robot never crosses a 0 (see Craig)
+        // TODO: another idea is set variable so whenever angle crosses 0, add 1 (if positive), and minus 1 (if negative)
+        double heading = robot.odometry.getPosition().getHeading(AngleUnit.DEGREES);
+        // double totalHeading = robot.odometry.getPosition().
 
         double xPID = driveXController.calculate(xPosition, X_target);
         double yPID = driveYController.calculate(yPosition, Y_target);
@@ -118,17 +124,33 @@ public class botPID {
         double Y_power = yPID + Yff;
         double Heading_power = headingPID + Heading_ff;
 
-        robot.drive.driveMecanumRobotCentric(Y_power, X_power, Heading_power);
+        robot.drive.driveMecanumFieldCentric(Y_power, X_power, -Heading_power, heading);
     }
 
-    public String getTelemetry(){
-        Pose2D position = robot.odometry.getPosition();
+    public String getTargets(){
 
         return String.format(Locale.getDefault(), """
-                Arm Position: %f
-                Lift Position: %f
-                X Position (INCHES): %f
-                Y Position (INCHES): %f
-                Heading (DEGREES): %f""", robot.lift.getShoulderPosition(), robot.lift.getLiftPosition(), position.getX(DistanceUnit.INCH), position.getY(DistanceUnit.INCH), position.getHeading(AngleUnit.DEGREES));
+                Arm Target: %f \n
+                Lift Target: %f""", Arm_target, Lift_target);
+    }
+    public double getXTarget(){
+        return X_target;
+    }
+    public double getYTarget(){
+        return Y_target;
+    }
+    public double getHeadingTarget(){
+        return Heading_target;
+    }
+
+    public double getArmPosition(){
+        return robot.lift.getShoulderPosition();
+    }
+
+    public double getLiftPosition(){
+        return robot.lift.getLiftPosition();
+    }
+    public Pose2D getOdoPosition(){
+        return robot.odometry.getPosition();
     }
 }

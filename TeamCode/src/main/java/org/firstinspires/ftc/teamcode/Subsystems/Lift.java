@@ -69,6 +69,9 @@ public class Lift {
 	public DcMotor getLiftMotorRight(){
 		return liftMotorLeft;
 	}
+	public DcMotor getShoulder(){
+		return shoulder;
+	}
 
 	public String getJointLiftPosition() {
 		return String.format(Locale.getDefault(), """
