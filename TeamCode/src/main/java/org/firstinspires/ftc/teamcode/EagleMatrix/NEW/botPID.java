@@ -113,9 +113,7 @@ public class botPID {
         double Y_power = yPID + Yff;
         double Heading_power = headingPID + Heading_ff;
 
-        // TODO: Find out why the variable for Y_Power is giving "suspicious name combination" warning. makes no sense
-        //noinspection SuspiciousNameCombination
-        robot.drive.driveMecanumRobotCentric(X_power, Y_power, Heading_power);
+        robot.drive.driveMecanumRobotCentric(Y_power, X_power, Heading_power);
     }
 
     public String getTelemetry(){
