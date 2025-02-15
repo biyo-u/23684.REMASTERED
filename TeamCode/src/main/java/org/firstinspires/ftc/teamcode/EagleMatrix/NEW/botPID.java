@@ -65,6 +65,11 @@ public class botPID {
     public void setHeadingTarget(double target){
         Heading_target = target;
     }
+    public void setDriveTarget(double x_target, double y_target, double heading_target){
+        X_target = x_target;
+        Y_target = y_target;
+        Heading_target = heading_target;
+    }
 
     public void runArm(){
         armController.setPID(Arm_p,Arm_i,Arm_d);

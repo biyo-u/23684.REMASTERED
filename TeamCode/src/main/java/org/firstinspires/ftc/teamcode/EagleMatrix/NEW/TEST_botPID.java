@@ -19,6 +19,7 @@ public class TEST_botPID extends OpMode {
     @Override
     public void init() {
         robot = new Robot(hardwareMap,telemetry);
+        bot = new botPID(robot);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
         bot.setArmTarget(700);
@@ -26,6 +27,7 @@ public class TEST_botPID extends OpMode {
         bot.setXTarget(0);
         bot.setYTarget(0);
         bot.setHeadingTarget(0);
+        bot.setDriveTarget(0,0,0);
     }
 
     @Override
