@@ -26,6 +26,9 @@ public class botPID {
     public final PIDController driveHeadingController;
 
     // TARGETS
+    double oldheading = 0;
+    double headingCounter = 0;
+    double unNormalizedHeading = 0;
     public static double Arm_target;
     public static double Lift_target;
     public static double X_target;
@@ -39,7 +42,7 @@ public class botPID {
         liftController = new PIDController(PIDF_Constants.Lift_p, PIDF_Constants.Lift_i, PIDF_Constants.Lift_d);
         driveXController = new PIDController(PIDF_Constants.Xp, PIDF_Constants.Xi, PIDF_Constants.Xd);
         driveYController = new PIDController(PIDF_Constants.Yp, PIDF_Constants.Yi, PIDF_Constants.Yd);
-        driveHeadingController = new PIDController(PIDF_Constants.Heading_p, PIDF_Constants.Heading_i, PIDF_Constants.Heading_d);
+        driveHeadingController = new PIDController(botPIDConstants.Heading_p, botPIDConstants.Heading_i, botPIDConstants.Heading_d);
     }
 
     public void setArmTarget(double target){
@@ -93,7 +96,7 @@ public class botPID {
     public void runDrive(){
         driveXController.setPID(PIDF_Constants.Xp, PIDF_Constants.Xi, PIDF_Constants.Xd);
         driveYController.setPID(PIDF_Constants.Yp, PIDF_Constants.Yi, PIDF_Constants.Yd);
-        driveHeadingController.setPID(PIDF_Constants.Heading_p, PIDF_Constants.Heading_i, PIDF_Constants.Heading_d);
+        driveHeadingController.setPID(botPIDConstants.Heading_p, botPIDConstants.Heading_i, botPIDConstants.Heading_d);
 
         double xPosition = robot.odometry.getPosition().getX(DistanceUnit.INCH);
         double yPosition = robot.odometry.getPosition().getY(DistanceUnit.INCH);
@@ -105,27 +108,29 @@ public class botPID {
 
         //TODO: see if solution (ala ChatGPT) works.
         double heading = robot.odometry.getPosition().getHeading(AngleUnit.DEGREES);
-        double delta = heading - Heading_target;
-        double unnormalizedHeading = (delta % 360 + 360) % 360;
 
-        // Ensuring smooth transitions without abrupt -180 flips
-        if (unnormalizedHeading > 180) {
-            unnormalizedHeading -= 360; // Prefers a shorter route in the negative direction
+        if (oldheading > 30 && unNormalizedHeading < -30){
+            headingCounter++;
         }
+        unNormalizedHeading = heading + (360 * -headingCounter);
+        oldheading = unNormalizedHeading;
 
         double xPID = driveXController.calculate(xPosition, X_target);
         double yPID = driveYController.calculate(yPosition, Y_target);
-        double headingPID = driveHeadingController.calculate(unnormalizedHeading, Heading_target);
+        double headingPID = driveHeadingController.calculate(unNormalizedHeading, Heading_target);
 
         double Xff = Math.cos(Math.toRadians(X_target / Ticks2Deg.DriveTicksInDegree)) * PIDF_Constants.Xf;
         double Yff = Math.cos(Math.toRadians(Y_target / Ticks2Deg.DriveTicksInDegree)) * PIDF_Constants.Yf;
-        double Heading_ff = Math.cos(Math.toRadians(Heading_target / Ticks2Deg.DriveTicksInDegree)) * PIDF_Constants.Heading_f;
+        double Heading_ff = Math.cos(Math.toRadians(Heading_target / Ticks2Deg.DriveTicksInDegree)) * botPIDConstants.Heading_f;
 
         double X_power = xPID + Xff;
         double Y_power = yPID + Yff;
         double Heading_power = headingPID + Heading_ff;
 
         robot.drive.driveMecanumFieldCentric(Y_power, X_power, -Heading_power, heading);
+    }
+    public double getUnNormalizedHeading(){
+        return unNormalizedHeading;
     }
     public double getArmTarget(){
         return Arm_target;
