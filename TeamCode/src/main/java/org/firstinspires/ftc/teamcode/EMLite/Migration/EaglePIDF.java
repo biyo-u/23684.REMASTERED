@@ -16,6 +16,8 @@ public class EaglePIDF {
 
  String CurrentAction = "hes just standing there, MENACINGLY";
  String NextAction = "initialization";
+
+
  private boolean IsFinished = false;
 
 
