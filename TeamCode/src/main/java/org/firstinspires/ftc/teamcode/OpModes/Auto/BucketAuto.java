@@ -30,11 +30,11 @@ public class BucketAuto extends OpMode {
      switch (action){
 
          case "Case 1":
-             botPID.setLiftTarget(botPIDConstants.Lift_Constants.Lift_Score_Baskets);
-             botPID.setArmTarget(botPIDConstants.Arm_Constants.Arm_Score_High_Baskets);
+             //botPID.setLiftTarget(botPIDConstants.Lift_Constants.Lift_Score_Baskets);
+             //botPID.setArmTarget(botPIDConstants.Arm_Constants.Arm_Score_High_Baskets);
 
-             botPID.runArm();
-             botPID.runLift();
+             //botPID.runArm();
+             //botPID.runLift();
 
              isDone = true;
 
@@ -43,11 +43,11 @@ public class BucketAuto extends OpMode {
              }
 
          case "Case 2":
-             botPID.setLiftTarget(botPIDConstants.Lift_Constants.Lift_Home);
-             botPID.setArmTarget(botPIDConstants.Arm_Constants.Arm_PickUp_Sample);
+             //botPID.setLiftTarget(botPIDConstants.Lift_Constants.Lift_Home);
+             //botPID.setArmTarget(botPIDConstants.Arm_Constants.Arm_PickUp_Sample);
 
-             botPID.runArm();
-             botPID.runLift();
+             //botPID.runArm();
+             //botPID.runLift();
      }
  }
 

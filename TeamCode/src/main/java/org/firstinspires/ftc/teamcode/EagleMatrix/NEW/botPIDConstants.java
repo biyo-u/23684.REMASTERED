@@ -28,7 +28,7 @@ public class botPIDConstants {
         public static final double Arm_Score_High_Baskets = -5000;
         public static final double Arm_Score_High_Chambers = -3500;
         public static final double Arm_PickUp_Sample = -300; // check this
-        public static final double Arm_Home = -10;
+        public static final double Arm_Home = 0;
     }
     public static class Lift_Constants {
         public static final double Lift_Score_Baskets = 6000;

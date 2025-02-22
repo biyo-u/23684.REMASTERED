@@ -46,12 +46,12 @@ public class EaglePIDF {
      IsFinished = false;
 
      CurrentAction = "MOVING TO BASKET";
-     botPID.setArmTarget(6000);
-     botPID.setLiftTarget(botPIDConstants.Lift_Constants.Lift_Score_Baskets);
-     botPID.setYTarget(30);
+     //botPID.setArmTarget(6000);
+     //botPID.setLiftTarget(botPIDConstants.Lift_Constants.Lift_Score_Baskets);
+     //botPID.setYTarget(30);
 
-     botPID.runLift();
-     botPID.runArm();
+     // botPID.runLift();
+     // botPID.runArm();
      robot.intake.wristDown();
      botPID.runDrive();
      IsFinished = true;

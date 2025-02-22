@@ -45,12 +45,14 @@ public class botPID {
         driveHeadingController = new PIDController(botPIDConstants.Heading_p, botPIDConstants.Heading_i, botPIDConstants.Heading_d);
     }
 
-    public void setArmTarget(double target){
-        Arm_target = target;
-    }
-    public void setLiftTarget(double target){
-        Lift_target = target;
-    }
+//    public void setArmTarget(double target){
+//        Arm_target = target;
+//    }
+//    public void setLiftTarget(double target){
+//        Lift_target = target;
+//    }
+
+    // TODO: redo Drive PIDF systems to match Arm and Lift!!!
     public void setXTarget(double target){
         X_target = target;
     }
@@ -66,7 +68,8 @@ public class botPID {
         Heading_target = heading_target;
     }
 
-    public void runArm(){
+    public void runArm(double targetArm){
+        Arm_target = targetArm;
         armController.setPIDF(PIDF_Constants.Arm_p, PIDF_Constants.Arm_i, PIDF_Constants.Arm_d, PIDF_Constants.Arm_f);
 
         double armPosition = robot.lift.getShoulderPosition();
@@ -80,7 +83,8 @@ public class botPID {
         robot.lift.getShoulder().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.lift.shoulderMove(Arm_power);
     }
-    public void runLift(){
+    public void runLift(double targetLift){
+        Lift_target = targetLift;
         liftController.setPID(PIDF_Constants.Lift_p, PIDF_Constants.Lift_i, PIDF_Constants.Lift_d);
 
         double liftPosition = robot.lift.getLiftPosition();
@@ -155,5 +159,39 @@ public class botPID {
     }
     public Pose2D getOdoPosition(){
         return robot.odometry.getPosition();
+    }
+
+    public PIDController getLiftController(){
+        return liftController;
+    }
+
+    public void stopLift(){
+        Lift_target = robot.lift.getLiftPosition();
+        liftController.setPID(PIDF_Constants.Lift_p, PIDF_Constants.Lift_i, PIDF_Constants.Lift_d);
+
+        double liftPosition = robot.lift.getLiftPosition();
+
+        double liftPID = liftController.calculate(liftPosition, Lift_target);
+
+        double Lift_ff = Math.cos(Math.toRadians(Lift_target / Ticks2Deg.LiftTicksInDegree)) * PIDF_Constants.Lift_f;
+
+        double Lift_power = liftPID + Lift_ff;
+
+        robot.lift.liftMove(Lift_power);
+    }
+    public void stopArm(){
+        Arm_target = robot.lift.getShoulderPosition();
+        armController.setPIDF(PIDF_Constants.Arm_p, PIDF_Constants.Arm_i, PIDF_Constants.Arm_d, PIDF_Constants.Arm_f);
+
+        double armPosition = robot.lift.getShoulderPosition();
+
+        double armPID = armController.calculate(armPosition, Arm_target);
+
+        double Arm_ff = Math.cos(Math.toRadians(Arm_target / Ticks2Deg.ArmTicksInDegree)) * PIDF_Constants.Arm_f;
+
+        double Arm_power = armPID + Arm_ff;
+
+        robot.lift.getShoulder().setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.lift.shoulderMove(Arm_power);
     }
 }
