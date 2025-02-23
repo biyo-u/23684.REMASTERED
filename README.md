@@ -12,5 +12,7 @@ Repository History:
 7. zeta-prime-commander
 8. 23684.MAX
 9. 23684.APEX
+10. 23684.EAGLEMATRIX
+11. 23684.REMASTERED
 
 Do not edit this README file.
