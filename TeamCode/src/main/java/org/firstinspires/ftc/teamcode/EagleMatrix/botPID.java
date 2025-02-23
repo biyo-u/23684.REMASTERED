@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.EagleMatrix.NEW;
+package org.firstinspires.ftc.teamcode.EagleMatrix;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Utilities.Robot;
-import org.firstinspires.ftc.teamcode.EagleMatrix.NEW.botPIDConstants.PIDF_Constants;
-import org.firstinspires.ftc.teamcode.EagleMatrix.NEW.botPIDConstants.Ticks2Deg;
+import org.firstinspires.ftc.teamcode.EagleMatrix.botPIDConstants.PIDF_Constants;
+import org.firstinspires.ftc.teamcode.EagleMatrix.botPIDConstants.Ticks2Deg;
 
 @Config
 public class botPID {
