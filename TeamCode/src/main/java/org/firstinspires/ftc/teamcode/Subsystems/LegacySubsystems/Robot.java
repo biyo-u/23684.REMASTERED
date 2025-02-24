@@ -1,25 +1,17 @@
-package org.firstinspires.ftc.teamcode.Utilities;
+package org.firstinspires.ftc.teamcode.Subsystems.LegacySubsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Subsystems.Compass;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.Subsystems.Intake;
-import org.firstinspires.ftc.teamcode.Subsystems.Lift;
-import org.firstinspires.ftc.teamcode.Subsystems.Odometry;
 
 public class Robot {
     // Public Subsystems
     public Intake intake;
     public Lift lift;
-    public Drive drive;
+    public OldDrive oldDrive;
     public Compass compass;
     public Odometry odometry;
     public Telemetry telemetry;
@@ -42,7 +34,7 @@ public class Robot {
         compass = new Compass(odometryComputer);
         intake = new Intake(claw, wrist);
         lift = new Lift(liftMotorLeft, liftMotorRight, shoulder);
-        drive = new Drive(frontLeft, frontRight, rearLeft, rearRight, compass);
+        oldDrive = new OldDrive(frontLeft, frontRight, rearLeft, rearRight, compass);
         odometry = new Odometry(odometryComputer, compass);
 
         // Public Devices (not subsystems)

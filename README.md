@@ -1,9 +1,9 @@
 23684 TECH TITANS REPOSITORY
 
-The EIGHTH 23684 Tech Titans repository, featuring EagleMatrix 0.3.x, EagleMatrix Lite 1.0.0, and EagleMatrix Tiny 0.1.0!!
+The ELEVENTH 23684 Tech Titans repository, featuring EagleMatrix 0.4.x!!
 
 Repository History:
-1. 23684-depreciated
+1. 23684-deprecated
 2. 23684RR
 3. 23684
 4. 23684.TT (deleted)

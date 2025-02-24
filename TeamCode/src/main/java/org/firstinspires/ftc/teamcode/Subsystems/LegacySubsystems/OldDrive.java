@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.Subsystems.LegacySubsystems;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-public class Drive {
+public class OldDrive {
 	private final DcMotor frontLeft;
 	private final DcMotor frontRight;
 	private final DcMotor rearLeft;
@@ -10,7 +10,7 @@ public class Drive {
 	private final Compass compass;
 	private double power;
 
-	public Drive(DcMotor frontLeft, DcMotor frontRight, DcMotor rearLeft, DcMotor rearRight, Compass compass) {
+	public OldDrive(DcMotor frontLeft, DcMotor frontRight, DcMotor rearLeft, DcMotor rearRight, Compass compass) {
 		this.frontLeft = frontLeft;
 		this.frontRight = frontRight;
 		this.rearLeft = rearLeft;
