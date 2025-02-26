@@ -129,7 +129,7 @@ public class Drive extends SubsystemBase {
 
 // NOTE: static-friction seems to be about "0.1" motor-power to overcome
 // NOTE: we give "Drive" access to "Arm" here so that our Driver can initiate climbing
-    //public Arm arm = null;
+    //public Arm arm = null; TODO: CREATE ARM!!!!!!!!!!!!!
 
     public Drive(HardwareMap hardwareMap) {
         // TO DO: replace Motor.GoBILDA.RPM_312 with CPR, RPM:
