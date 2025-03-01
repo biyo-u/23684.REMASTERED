@@ -117,6 +117,10 @@ public class Drive extends SubsystemBase {
         return new QuickMoveTo(x, y, heading);
     }
 
+    public Command turnQuickly(double x, double y, double heading) {
+        return new TurnMoveTo(x, y, heading);
+    }
+
     public class QuickMoveTo extends CommandBase {
         private final PIDFController quick_strafe;
         private final PIDFController quick_forward;
@@ -126,7 +130,7 @@ public class Drive extends SubsystemBase {
             target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
             quick_strafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
             quick_forward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
-            quick_turn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
+            quick_turn = new PIDController(0, 0, 0);
             quick_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
             quick_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
             quick_turn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
@@ -165,6 +169,65 @@ public class Drive extends SubsystemBase {
         public boolean isFinished() {
             // Check if target is reached
             return quick_strafe.atSetPoint() && quick_forward.atSetPoint() && quick_turn.atSetPoint();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            strafe = 0;
+            forward = 0;
+            turn = 0;
+            stop();
+        }
+    }
+
+    public class TurnMoveTo extends CommandBase {
+        private final PIDFController prevent_strafe;
+        private final PIDFController prevent_forward;
+        private final PIDFController quick_turn;
+
+        public TurnMoveTo(double x, double y, double h) {
+            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+            prevent_strafe = new PIDController(0, 0, 0);
+            prevent_forward = new PIDController(0, 0, 0);
+            quick_turn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
+            prevent_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
+            prevent_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
+            quick_turn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
+            prevent_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
+            prevent_forward.setSetPoint(target.getY(DISTANCE_UNIT));
+            quick_turn.setSetPoint(target.getHeading(ANGLE_UNIT));
+            addRequirements(Drive.this);
+        }
+
+        @Override
+        public void initialize() {
+            drivebase.setMaxSpeed(TURBO_FAST_SPEED);
+        }
+
+        @Override
+        public void execute() {
+            strafe = prevent_strafe.calculate(current_position.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
+            forward = prevent_forward.calculate(current_position.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
+            turn = quick_turn.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
+
+            // Custom Static Friction Calculations TODO: TUNE STATIC_F_SENSITIVE
+            if (strafe > STATIC_F_SENSITIVE) ff_strafe = STRAFE_PID_QUICK.f;
+            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STRAFE_PID_QUICK.f;
+            if (forward > STATIC_F_SENSITIVE) ff_forward = FORWARD_PID_QUICK.f;
+            if (forward < -STATIC_F_SENSITIVE) ff_forward = -FORWARD_PID_QUICK.f;
+            // TODO: ADD STATIC FRICTION FOR HEADING
+            if (turn > STATIC_F_SENSITIVE) ff_turn = HEADING_PID_QUICK.f;
+            if (turn < -STATIC_F_SENSITIVE) ff_turn = -HEADING_PID_QUICK.f;
+
+            strafe += ff_strafe;
+            forward += ff_forward;
+            turn += 0;
+        }
+
+        @Override
+        public boolean isFinished() {
+            // Check if target is reached
+            return prevent_strafe.atSetPoint() && prevent_forward.atSetPoint() && quick_turn.atSetPoint();
         }
 
         @Override
