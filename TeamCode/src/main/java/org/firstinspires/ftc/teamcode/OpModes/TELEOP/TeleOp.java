@@ -33,6 +33,7 @@ public abstract class TeleOp extends OpMode {
     public void init() {
         // arm = new Arm(hardwareMap, getAlliance() == Alliance.RED);
         drive = new Drive(hardwareMap);
+        drive.reset();
         // arm.drive = drive; TODO: create arm subsystem
         // drive.arm = arm; TODO: create arm subsystem
         battery = hardwareMap.voltageSensor.get("Control Hub");
@@ -60,22 +61,23 @@ public abstract class TeleOp extends OpMode {
     @Override
     public void start() {
         // arm.reset(); TODO: create arm subsystem
-        drive.reset();
         runtime.reset();
         // set starting position
         //drive.setPosition(new SparkFunOTOS.Pose2D(-1.03,-1.61,0));
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
     }
 
     @Override
     public void init_loop() {
         // runs while the robot is "on" but we haven't pressed "play" yet
+        drive.reset();
     }
 
     @Override
     public void loop() {
         // read controls and sensors
         driver.readButtons();
-        operator.readButtons();
+//        operator.readButtons();
         drive.read_sensors(time);
         // arm.read_sensors();
 

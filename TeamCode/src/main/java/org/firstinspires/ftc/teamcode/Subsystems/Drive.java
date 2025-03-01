@@ -94,6 +94,8 @@ public class Drive extends SubsystemBase {
     double x_velocity;
     double y_velocity;
 
+    Pose2D target = new Pose2D(DISTANCE_UNIT,0,0,ANGLE_UNIT,0);
+
     // robot geometry
     // static final double WHEEL_RADIUS = 0.048; // in DISTANCE_UNITs
     // static final double LX = 0.118;  // lateral distance from robot's COM to wheel [m].
@@ -244,16 +246,15 @@ public class Drive extends SubsystemBase {
         return current_position;
     }
 
-    public Command moveCarefully(double x, double y, double heading) {
-        return new CarefulMoveTo(x, y, heading);
-    }
+//    public Command moveCarefully(double x, double y, double heading) {
+//        return new CarefulMoveTo(x, y, heading);
+//    }
 
     public Command moveQuickly(double x, double y, double heading) {
         return new QuickMoveTo(x, y, heading);
     }
 
     public class QuickMoveTo extends CommandBase {
-        Pose2D target;
         private PIDController quick_strafe;
         private PIDController quick_forward;
 
@@ -311,64 +312,64 @@ public class Drive extends SubsystemBase {
     }
 
 
-    public class CarefulMoveTo extends CommandBase {
-        Pose2D target;
-        private PIDController careful_strafe;
-        private PIDController careful_forward;
-
-        public CarefulMoveTo(double x, double y, double h) {
-            //System.out.println("x="+(x-current_position.x)+" y="+(y-current_position.y)+" h="+(h-current_position.h));
-            target = new Pose2D(DISTANCE_UNIT,x, y, ANGLE_UNIT, h);
-            careful_strafe = new PIDController(strafe_pid_careful.p, strafe_pid_careful.i, strafe_pid_careful.d);
-            careful_forward = new PIDController(forward_pid_careful.p, forward_pid_careful.i, forward_pid_careful.d);
-            careful_strafe.setTolerance(DISTANCE_TOLERANCE);
-            careful_forward.setTolerance(DISTANCE_TOLERANCE);
-            addRequirements(Drive.this);
-        }
-
-        @Override
-        public void initialize() {
-            careful_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
-            careful_forward.setSetPoint(target.getY(DISTANCE_UNIT));
-            desired_heading = wrapAngle(target.getHeading(ANGLE_UNIT));
-
-            // careful, take out for production FIXME TODO
-//            if (false) {
-//                otos.setLinearScalar(LINEAR_SCALAR);
-//                otos.setAngularScalar(ANGULAR_SCALAR);
-//            }
-            drivebase.setMaxSpeed(TURBO_SLOW_SPEED);
-        }
-
-        @Override
-        public void execute() {
-            // compute the direction vector relatively to the robot coordinates
-            strafe = careful_strafe.calculate(current_position.getX(DISTANCE_UNIT));
-            forward = careful_forward.calculate(current_position.getY(DISTANCE_UNIT));
-
-            // our own "static friction" calc
-            if (strafe > STATIC_F_SENSITIVE) ff_strafe = STATIC_F_STRAFE;
-            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STATIC_F_STRAFE;
-            if (forward > STATIC_F_SENSITIVE) ff_forward = STATIC_F_FORWARD;
-            if (forward < -STATIC_F_SENSITIVE) ff_forward = -STATIC_F_FORWARD;
-
-            strafe += ff_strafe;
-            forward += ff_forward;
-        }
-
-        @Override
-        public boolean isFinished() {
-            // check if the target is reached
-            return careful_strafe.atSetPoint() && careful_forward.atSetPoint() && heading_control.atSetPoint();
-        }
-
-        @Override
-        public void end(boolean interrupted) {
-            strafe = 0;
-            forward = 0;
-            stop();
-        }
-    }
+//    public class CarefulMoveTo extends CommandBase {
+//        Pose2D target;
+//        private PIDController careful_strafe;
+//        private PIDController careful_forward;
+//
+//        public CarefulMoveTo(double x, double y, double h) {
+//            //System.out.println("x="+(x-current_position.x)+" y="+(y-current_position.y)+" h="+(h-current_position.h));
+//            target = new Pose2D(DISTANCE_UNIT,x, y, ANGLE_UNIT, h);
+//            careful_strafe = new PIDController(strafe_pid_careful.p, strafe_pid_careful.i, strafe_pid_careful.d);
+//            careful_forward = new PIDController(forward_pid_careful.p, forward_pid_careful.i, forward_pid_careful.d);
+//            careful_strafe.setTolerance(DISTANCE_TOLERANCE);
+//            careful_forward.setTolerance(DISTANCE_TOLERANCE);
+//            addRequirements(Drive.this);
+//        }
+//
+//        @Override
+//        public void initialize() {
+//            careful_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
+//            careful_forward.setSetPoint(target.getY(DISTANCE_UNIT));
+//            desired_heading = wrapAngle(target.getHeading(ANGLE_UNIT));
+//
+//            // careful, take out for production FIXME TODO
+////            if (false) {
+////                otos.setLinearScalar(LINEAR_SCALAR);
+////                otos.setAngularScalar(ANGULAR_SCALAR);
+////            }
+//            drivebase.setMaxSpeed(TURBO_SLOW_SPEED);
+//        }
+//
+//        @Override
+//        public void execute() {
+//            // compute the direction vector relatively to the robot coordinates
+//            strafe = careful_strafe.calculate(current_position.getX(DISTANCE_UNIT));
+//            forward = careful_forward.calculate(current_position.getY(DISTANCE_UNIT));
+//
+//            // our own "static friction" calc
+//            if (strafe > STATIC_F_SENSITIVE) ff_strafe = STATIC_F_STRAFE;
+//            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STATIC_F_STRAFE;
+//            if (forward > STATIC_F_SENSITIVE) ff_forward = STATIC_F_FORWARD;
+//            if (forward < -STATIC_F_SENSITIVE) ff_forward = -STATIC_F_FORWARD;
+//
+//            strafe += ff_strafe;
+//            forward += ff_forward;
+//        }
+//
+//        @Override
+//        public boolean isFinished() {
+//            // check if the target is reached
+//            return careful_strafe.atSetPoint() && careful_forward.atSetPoint() && heading_control.atSetPoint();
+//        }
+//
+//        @Override
+//        public void end(boolean interrupted) {
+//            strafe = 0;
+//            forward = 0;
+//            stop();
+//        }
+//    }
 
     // all interaction with gamepads should go through this inner class
     public class HumanInputs extends CommandBase {
@@ -385,9 +386,9 @@ public class Drive extends SubsystemBase {
             // Run wheels in POV mode: use the Right stick to go forward & strafe, the Left stick to rotate left & right.
             strafe = scaleInputs(driver.getRightX());
             forward = scaleInputs(-driver.getRightY());
-            double leftX = driver.getLeftX();
-            if (Math.abs(leftX) > DEAD_ZONE)
-                desired_heading = wrapAngle(desired_heading - TURN_SPEED * leftX);
+//            double leftX = driver.getLeftX();
+//            if (Math.abs(leftX) > DEAD_ZONE)
+//                desired_heading = wrapAngle(desired_heading - TURN_SPEED * leftX);
             if (driver.wasJustPressed(GamepadKeys.Button.DPAD_UP))
                 desired_heading = 0;
             if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
@@ -400,11 +401,11 @@ public class Drive extends SubsystemBase {
             // Anjalika wants "turbo" mode ... so if we're holding
             // left trigger _currently_, we go to Turbo -- otherwise
             // to non-Turbo
-            if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5){
-                turbo(true);
-            } else {
-                turbo(false);
-            }
+//            if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5){
+//                turbo(true);
+//            } else {
+//                turbo(false);
+//            }
         }
 
         public double scaleInputs(double input) {
@@ -459,13 +460,13 @@ public class Drive extends SubsystemBase {
     }
 
     public void add_telemetry(TelemetryPacket pack) {
-        pack.put("position-x (inches)", current_position.getX(DISTANCE_UNIT));
-        pack.put("position-y (inches)", current_position.getY(DISTANCE_UNIT));
-        pack.put("position-x (cm)", current_position.getY(DistanceUnit.CM));
-        pack.put("position-y (cm)", current_position.getY(DistanceUnit.CM));
+        pack.put("x", current_position.getX(DISTANCE_UNIT));
+        pack.put("y", current_position.getY(DISTANCE_UNIT));
+//        pack.put("position-x (cm)", current_position.getY(DistanceUnit.CM));
+//        pack.put("position-y (cm)", current_position.getY(DistanceUnit.CM));
         pack.put("current-heading-unnormalized", unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)));
-        //pack.put("target-x", fixme);
-        //pack.put("target-y", fixme);
+        pack.put("target-x", target.getX(DISTANCE_UNIT));
+        pack.put("target-y", target.getY(DISTANCE_UNIT));
         pack.put("current-heading",current_position.getHeading(ANGLE_UNIT));
         pack.put("desired-heading", desired_heading);
 

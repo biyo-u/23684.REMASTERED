@@ -124,7 +124,7 @@ public class AutoChamberTest extends OpMode {
                         //arm.moveTo(0,1800,0,0.2,Arm.CLAW_CLOSED),
                         new ParallelCommandGroup(
                                 //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
-                                drive.moveCarefully(0.77, -1.10, -135).withTimeout(1300)
+                                drive.moveQuickly(0.77, -1.10, -135).withTimeout(1300)
                         ),
                         //drop off in human player zone
                         //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_OPEN),
@@ -140,7 +140,7 @@ public class AutoChamberTest extends OpMode {
                         //drop in human zone
                         new ParallelCommandGroup(
                                 //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
-                                drive.moveCarefully(0.77, -1.10, -135).withTimeout(1300)
+                                drive.moveQuickly(0.77, -1.10, -135).withTimeout(1300)
                         ),
                         //arm.moveTo(0,1800,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
                         //arm.moveTo(0,500,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
