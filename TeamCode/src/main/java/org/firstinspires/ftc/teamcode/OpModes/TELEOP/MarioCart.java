@@ -69,7 +69,7 @@ public class MarioCart extends OpMode {
 
         if (controller.wasJustPressed(GamepadKeys.Button.X)) {
             CommandScheduler.getInstance().schedule(
-                    drive.moveQuickly(X, Y, HEADING).withTimeout(5000)
+                    drive.moveQuickly(X, Y, HEADING)
             );
         }
 
