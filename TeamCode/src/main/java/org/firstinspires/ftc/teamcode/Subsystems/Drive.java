@@ -12,7 +12,6 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.PIDCoefficients;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
@@ -91,15 +90,6 @@ public class Drive extends SubsystemBase {
 
     public void stop() {
         drivebase.stop();
-    }
-
-    public static double wrapAngle(double angle) {
-        angle %= 360; // normalize angle between -360 and +360
-        if (angle > 180)
-            angle -= 360;
-        else if (angle <= -180)
-            angle += 360;
-        return angle;
     }
 
     public double unnormalizeHeading(double angle) {
