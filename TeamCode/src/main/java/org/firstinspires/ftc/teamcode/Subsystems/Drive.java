@@ -26,6 +26,7 @@ public class Drive extends SubsystemBase {
     public static double ANGLE_VELOCITY_TOLERANCE = Double.POSITIVE_INFINITY;
     public static double POWER_INPUT = 2;
     public static double DEAD_ZONE = 0.1;
+    public static double TURN_SPEED = 3;
     public static double TURBO_FAST_SPEED = 1.0;
     public static double TURBO_SLOW_SPEED = 0.75;
     public static double STATIC_F_SENSITIVE = 0.005;
@@ -34,7 +35,6 @@ public class Drive extends SubsystemBase {
     double forward;
     double strafe;
     double turn;
-    double desired_heading;
     double ff_forward;
     double ff_strafe;
     double ff_turn;
@@ -42,18 +42,15 @@ public class Drive extends SubsystemBase {
     public static PIDFCoefficients forward_pid_quick = new PIDFCoefficients(0.04, 0, 0.005, 0.0045);
     public static PIDFCoefficients strafe_pid_quick = new PIDFCoefficients(0.055, 0, 0, 0);
     public static Motor.ZeroPowerBehavior zeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE;
-    double current_time;
     Pose2D current_position;
     Pose2D previous_position;
-    double previous_time;
     double headingWrapMultiplier = 0;
     Pose2D target = new Pose2D(DISTANCE_UNIT,0,0, ANGLE_UNIT,0);
 
-// NOTE: we give "Drive" access to "Arm" here so that our Driver can initiate climbing
+    // NOTE: we give "Drive" access to "Arm" here so that our Driver can initiate climbing
     //public Arm arm = null; TODO: CREATE ARM!!!!!!!!!!!!!
 
     public Drive(HardwareMap hardwareMap) {
-        // TO DO: replace Motor.GoBILDA.RPM_312 with CPR, RPM:
         Motor motor_fl = new Motor(hardwareMap, "frontLeft", Motor.GoBILDA.RPM_312);
         motor_fl.setInverted(false);
         motor_fl.setZeroPowerBehavior(zeroPowerBehavior);
@@ -73,12 +70,9 @@ public class Drive extends SubsystemBase {
         drivebase = new MecanumDrive(false, motor_fl, motor_fr, motor_bl, motor_br);
         drivebase.setMaxSpeed(1);
 
-//        heading_control = new PIDController(hPID.p,hPID.i,hPID.d);
-//        heading_control.setTolerance(ANGLE_TOLERANCE, Double.POSITIVE_INFINITY);
-
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
 
-        this.pinpoint.setOffsets(-173.0, 156); //measured in mm
+        this.pinpoint.setOffsets(-173.0, 156);
         this.pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         this.pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         this.pinpoint.resetPosAndIMU();
@@ -116,18 +110,12 @@ public class Drive extends SubsystemBase {
 
     public void setPosition(Pose2D pose) {
         pinpoint.setPosition(pose);
-//        previous_position = current_position;
         current_position = pose;
-        desired_heading = pose.getHeading(ANGLE_UNIT);
     }
 
     public Pose2D getPosition() {
         return current_position;
     }
-
-//    public Command moveCarefully(double x, double y, double heading) {
-//        return new CarefulMoveTo(x, y, heading);
-//    }
 
     public Command moveQuickly(double x, double y, double heading) {
         return new QuickMoveTo(x, y, heading);
@@ -161,7 +149,7 @@ public class Drive extends SubsystemBase {
             forward = quick_forward.calculate(current_position.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
             turn = quick_turn.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
 
-            // our own "static friction" calc TODO: TUNE STATIC_F_SENSITIVE
+            // Custom Static Friction Calculations TODO: TUNE STATIC_F_SENSITIVE
             if (strafe > STATIC_F_SENSITIVE) ff_strafe = strafe_pid_quick.f;
             if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -strafe_pid_quick.f;
             if (forward > STATIC_F_SENSITIVE) ff_forward = forward_pid_quick.f;
@@ -202,17 +190,17 @@ public class Drive extends SubsystemBase {
         public void execute() {
             strafe = scaleInputs(driver.getRightX());
             forward = scaleInputs(-driver.getRightY());
-//            double leftX = driver.getLeftX();
-//            if (Math.abs(leftX) > DEAD_ZONE)
-//                desired_heading = wrapAngle(desired_heading - TURN_SPEED * leftX);
+            double leftX = driver.getLeftX();
+            if (Math.abs(leftX) > DEAD_ZONE)
+                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, target.getHeading(ANGLE_UNIT) - TURN_SPEED * leftX);
             if (driver.wasJustPressed(GamepadKeys.Button.DPAD_UP))
-                desired_heading = 0;
+                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 0);
             if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
-                desired_heading = 180;
+                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 180);
             if (driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))
-                desired_heading = 90;
+                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 90);
             if (driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
-                desired_heading = -90;
+                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, -90);
 
             // Left trigger for turbo mode
 //            if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5){
@@ -239,9 +227,7 @@ public class Drive extends SubsystemBase {
     }
 
     public void read_sensors(double time) {
-        // Get the latest pose and time
-        previous_time = current_time;
-        current_time = time;
+        // Get the latest pose
         current_position = pinpoint.getPosition();
     }
 
@@ -256,9 +242,9 @@ public class Drive extends SubsystemBase {
         pack.put("Current Y", current_position.getY(DISTANCE_UNIT));
         pack.put("Target X", target.getX(DISTANCE_UNIT));
         pack.put("Target Y", target.getY(DISTANCE_UNIT));
+        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
         pack.put("Current Heading",current_position.getHeading(ANGLE_UNIT));
         pack.put("Current Heading Unnormalized", unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)));
-        pack.put("Target Heading", desired_heading);
         pack.put("Strafe Power", strafe);
         pack.put("Forward Power", forward);
         pack.put("Strafe Friction", ff_strafe);
