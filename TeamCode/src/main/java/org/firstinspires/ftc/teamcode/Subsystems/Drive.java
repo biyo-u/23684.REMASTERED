@@ -19,6 +19,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Config
 public class Drive extends SubsystemBase {
+    public static PIDFCoefficients HEADING_PID_QUICK = new PIDFCoefficients(0.04, 0, 0, 0);
+    public static PIDFCoefficients FORWARD_PID_QUICK = new PIDFCoefficients(0.04, 0, 0.005, 0.0045);
+    public static PIDFCoefficients STRAFE_PID_QUICK = new PIDFCoefficients(0.055, 0, 0, 0);
     static final AngleUnit ANGLE_UNIT = AngleUnit.DEGREES;
     static final DistanceUnit DISTANCE_UNIT = DistanceUnit.INCH;
     public static double DISTANCE_TOLERANCE_LOW = 0.01;
@@ -38,9 +41,6 @@ public class Drive extends SubsystemBase {
     double ff_forward;
     double ff_strafe;
     double ff_turn;
-    public static PIDFCoefficients heading_pid_quick = new PIDFCoefficients(0.04, 0, 0, 0);
-    public static PIDFCoefficients forward_pid_quick = new PIDFCoefficients(0.04, 0, 0.005, 0.0045);
-    public static PIDFCoefficients strafe_pid_quick = new PIDFCoefficients(0.055, 0, 0, 0);
     public static Motor.ZeroPowerBehavior zeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE;
     Pose2D current_position;
     Pose2D previous_position;
@@ -52,22 +52,18 @@ public class Drive extends SubsystemBase {
 
     public Drive(HardwareMap hardwareMap) {
         Motor motor_fl = new Motor(hardwareMap, "frontLeft", Motor.GoBILDA.RPM_312);
-        motor_fl.setInverted(false);
         motor_fl.setZeroPowerBehavior(zeroPowerBehavior);
 
         Motor motor_fr = new Motor(hardwareMap, "frontRight", Motor.GoBILDA.RPM_312);
-        motor_fr.setInverted(true);
         motor_fr.setZeroPowerBehavior(zeroPowerBehavior);
 
         Motor motor_bl = new Motor(hardwareMap, "rearLeft", Motor.GoBILDA.RPM_312);
-        motor_bl.setInverted(false);
         motor_bl.setZeroPowerBehavior(zeroPowerBehavior);
 
         Motor motor_br = new Motor(hardwareMap, "rearRight", Motor.GoBILDA.RPM_312);
-        motor_br.setInverted(true);
         motor_br.setZeroPowerBehavior(zeroPowerBehavior);
 
-        drivebase = new MecanumDrive(false, motor_fl, motor_fr, motor_bl, motor_br);
+        drivebase = new MecanumDrive(motor_fl, motor_fr, motor_bl, motor_br);
         drivebase.setMaxSpeed(1);
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
@@ -75,7 +71,7 @@ public class Drive extends SubsystemBase {
         this.pinpoint.setOffsets(-173.0, 156);
         this.pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         this.pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
-        this.pinpoint.resetPosAndIMU();
+        reset();
     }
 
     public void reset() {
@@ -128,12 +124,15 @@ public class Drive extends SubsystemBase {
 
         public QuickMoveTo(double x, double y, double h) {
             target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
-            quick_strafe = new PIDController(strafe_pid_quick.p, strafe_pid_quick.i, strafe_pid_quick.d);
-            quick_forward = new PIDController(forward_pid_quick.p, forward_pid_quick.i, forward_pid_quick.d);
-            quick_turn = new PIDController(heading_pid_quick.p, heading_pid_quick.i, heading_pid_quick.d);
+            quick_strafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
+            quick_forward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
+            quick_turn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
             quick_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
             quick_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
             quick_turn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
+            quick_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
+            quick_forward.setSetPoint(target.getY(DISTANCE_UNIT));
+            quick_turn.setSetPoint(target.getHeading(ANGLE_UNIT));
             addRequirements(Drive.this);
         }
 
@@ -144,19 +143,18 @@ public class Drive extends SubsystemBase {
 
         @Override
         public void execute() {
-            // compute the direction vector relatively to the robot coordinates
             strafe = quick_strafe.calculate(current_position.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
             forward = quick_forward.calculate(current_position.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
             turn = quick_turn.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
 
             // Custom Static Friction Calculations TODO: TUNE STATIC_F_SENSITIVE
-            if (strafe > STATIC_F_SENSITIVE) ff_strafe = strafe_pid_quick.f;
-            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -strafe_pid_quick.f;
-            if (forward > STATIC_F_SENSITIVE) ff_forward = forward_pid_quick.f;
-            if (forward < -STATIC_F_SENSITIVE) ff_forward = -forward_pid_quick.f;
+            if (strafe > STATIC_F_SENSITIVE) ff_strafe = STRAFE_PID_QUICK.f;
+            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STRAFE_PID_QUICK.f;
+            if (forward > STATIC_F_SENSITIVE) ff_forward = FORWARD_PID_QUICK.f;
+            if (forward < -STATIC_F_SENSITIVE) ff_forward = -FORWARD_PID_QUICK.f;
             // TODO: ADD STATIC FRICTION FOR HEADING
-            if (turn > STATIC_F_SENSITIVE) ff_turn = heading_pid_quick.f;
-            if (turn < -STATIC_F_SENSITIVE) ff_turn = -heading_pid_quick.f;
+            if (turn > STATIC_F_SENSITIVE) ff_turn = HEADING_PID_QUICK.f;
+            if (turn < -STATIC_F_SENSITIVE) ff_turn = -HEADING_PID_QUICK.f;
 
             strafe += ff_strafe;
             forward += ff_forward;
@@ -188,8 +186,10 @@ public class Drive extends SubsystemBase {
 
         @Override
         public void execute() {
-            strafe = scaleInputs(driver.getRightX());
-            forward = scaleInputs(-driver.getRightY());
+//            strafe = scaleInputs(driver.getRightX());
+//            forward = scaleInputs(-driver.getRightY());
+            strafe = driver.getRightX();
+            forward = -driver.getRightY();
             double leftX = driver.getLeftX();
             if (Math.abs(leftX) > DEAD_ZONE)
                 target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, target.getHeading(ANGLE_UNIT) - TURN_SPEED * leftX);
@@ -210,12 +210,12 @@ public class Drive extends SubsystemBase {
 //            }
         }
 
-        public double scaleInputs(double input) {
-            if (Math.abs(input) > DEAD_ZONE)
-                return Math.pow(Math.abs(input), POWER_INPUT) * Math.signum(input);
-            else
-                return 0;
-        }
+//        public double scaleInputs(double input) {
+//            if (Math.abs(input) > DEAD_ZONE)
+//                return Math.pow(Math.abs(input), POWER_INPUT) * Math.signum(input);
+//            else
+//                return 0;
+//        }
     }
 
     public void turbo(boolean on) {
