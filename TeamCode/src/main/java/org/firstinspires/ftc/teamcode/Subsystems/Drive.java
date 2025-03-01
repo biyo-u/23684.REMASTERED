@@ -31,6 +31,7 @@ public class Drive extends SubsystemBase {
     public static double DISTANCE_TOLERANCE = 0.005; // in DISTANCE_UNITs to target
     public static double DISTANCE_TOLERANCE_LOW = 0.010; // in DISTANCE_UNITs to target
     public static double ANGLE_TOLERANCE = 1; // in ANGLE_UNITs to target
+    public static double ANGLE_VELOCITY_TOLERANCE = Double.POSITIVE_INFINITY;
     public static double TURN_SPEED = 3;
     public static double POWER_INPUT = 2;
     public static double DEAD_ZONE = 0.1;
@@ -43,10 +44,6 @@ public class Drive extends SubsystemBase {
     // jan 20, re-tuned these with "StaticFriction" op-mode
     public static double STATIC_F_FORWARD = 0.04; // 0.09;
     public static double STATIC_F_STRAFE = 0.08; // 0.15;
-
-    public static double LINEAR_SCALAR = 1.018;
-    public static double ANGULAR_SCALAR = 0.995;
-
     MecanumDrive drivebase;
     GoBildaPinpointDriver pinpoint;
 
@@ -66,16 +63,14 @@ public class Drive extends SubsystemBase {
 
     double ff_forward;
     double ff_strafe;
-
-    private final PIDController heading_control;
     public static PIDCoefficients hPID = new PIDCoefficients(0.04,0,0); //adjusted November 1
 //    public static PIDCoefficients PID = new PIDCoefficients(50,0,3);
     //public static PIDCoefficients careful_pid = new PIDCoefficients(1.9, 0, 0.2);
     //public static PIDCoefficients careful_pid = new PIDCoefficients(2.0, 0, 0.2);
     // jan 15, 2025 re-tuned this, also new static-f values
     // jan 20, 2025 -- re-tuning with separate forward/strafe PIDs (at 75% and 100% drivebase)
-    static PIDCoefficients forward_pid_careful = new PIDCoefficients(0, 0, 0);
-    static PIDCoefficients strafe_pid_careful = new PIDCoefficients(0, 0, 0);
+//    static PIDCoefficients forward_pid_careful = new PIDCoefficients(0, 0, 0);
+//    static PIDCoefficients strafe_pid_careful = new PIDCoefficients(0, 0, 0);
 
     // jan 20 -- re-tuned at 100% speed
     // jan 23, 2025 -- re-tuning at max-speed
@@ -94,7 +89,7 @@ public class Drive extends SubsystemBase {
     double x_velocity;
     double y_velocity;
 
-    Pose2D target = new Pose2D(DISTANCE_UNIT,0,0,ANGLE_UNIT,0);
+    Pose2D target = new Pose2D(DISTANCE_UNIT,0,0, ANGLE_UNIT,0);
 
     // robot geometry
     // static final double WHEEL_RADIUS = 0.048; // in DISTANCE_UNITs
@@ -158,8 +153,8 @@ public class Drive extends SubsystemBase {
         drivebase = new MecanumDrive(false, motor_fl, motor_fr, motor_bl, motor_br);
         drivebase.setMaxSpeed(1);
 
-        heading_control = new PIDController(hPID.p,hPID.i,hPID.d);
-        heading_control.setTolerance(ANGLE_TOLERANCE, Double.POSITIVE_INFINITY);
+//        heading_control = new PIDController(hPID.p,hPID.i,hPID.d);
+//        heading_control.setTolerance(ANGLE_TOLERANCE, Double.POSITIVE_INFINITY);
 
         // configure odometry sensor
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
@@ -257,41 +252,45 @@ public class Drive extends SubsystemBase {
     public class QuickMoveTo extends CommandBase {
         private PIDFController quick_strafe;
         private PIDFController quick_forward;
+        private PIDFController quick_turn;
 
         public QuickMoveTo(double x, double y, double h) {
-            target = new Pose2D(DISTANCE_UNIT,x, y, ANGLE_UNIT, h);
-            quick_strafe = new PIDFController(strafe_pid_quick.p, strafe_pid_quick.i, strafe_pid_quick.d, strafe_pid_quick.f);
-            quick_forward = new PIDFController(forward_pid_quick.p, forward_pid_quick.i, forward_pid_quick.d, forward_pid_quick.f);
+            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+            quick_strafe = new PIDController(strafe_pid_quick.p, strafe_pid_quick.i, strafe_pid_quick.d);
+            quick_forward = new PIDController(forward_pid_quick.p, forward_pid_quick.i, forward_pid_quick.d);
+            quick_turn = new PIDController(hPID.p, hPID.i, hPID.d);
             quick_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
             quick_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
+            quick_turn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
             addRequirements(Drive.this);
         }
 
         @Override
         public void initialize() {
-            quick_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
-            quick_forward.setSetPoint(target.getY(DISTANCE_UNIT));
-            desired_heading = wrapAngle(target.getHeading(ANGLE_UNIT));
+            desired_heading = unnormalizeHeading(target.getHeading(ANGLE_UNIT));
+            drivebase.setMaxSpeed(TURBO_FAST_SPEED);
 
 //            // careful, take out for production FIXME TODO
 //            if (false) {
 //                otos.setLinearScalar(LINEAR_SCALAR);
 //                otos.setAngularScalar(ANGULAR_SCALAR);
 //            }
-            drivebase.setMaxSpeed(TURBO_FAST_SPEED);
         }
 
         @Override
         public void execute() {
             // compute the direction vector relatively to the robot coordinates
-            strafe = quick_strafe.calculate(current_position.getX(DISTANCE_UNIT));
-            forward = quick_forward.calculate(current_position.getY(DISTANCE_UNIT));
+            strafe = quick_strafe.calculate(current_position.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
+            forward = quick_forward.calculate(current_position.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
+            turn = quick_turn.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), desired_heading);
 
             // our own "static friction" calc TODO: TUNE STATIC_F_SENSITIVE
             if (strafe > STATIC_F_SENSITIVE) ff_strafe = STATIC_F_STRAFE;
             if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STATIC_F_STRAFE;
             if (forward > STATIC_F_SENSITIVE) ff_forward = STATIC_F_FORWARD;
             if (forward < -STATIC_F_SENSITIVE) ff_forward = -STATIC_F_FORWARD;
+            // TODO: ADD STATIC FRICTION FOR HEADING
+
 
             strafe += ff_strafe;
             forward += ff_forward;
@@ -300,13 +299,14 @@ public class Drive extends SubsystemBase {
         @Override
         public boolean isFinished() {
             // check if the target is reached
-            return quick_strafe.atSetPoint() && quick_forward.atSetPoint() && heading_control.atSetPoint();
+            return quick_strafe.atSetPoint() && quick_forward.atSetPoint() && quick_turn.atSetPoint();
         }
 
         @Override
         public void end(boolean interrupted) {
             strafe = 0;
             forward = 0;
+            turn = 0;
             stop();
         }
     }
@@ -430,7 +430,7 @@ public class Drive extends SubsystemBase {
         // Get the latest pose, which includes the x and y coordinates, plus the heading angle
         previous_time = current_time;
         current_time = time;
-        //previous_position = current_position;
+//        previous_position = current_position;
         current_position = pinpoint.getPosition();
         /*
         current_left_distance= dist_left.getDistance(DistanceUnit.INCH);
@@ -453,8 +453,7 @@ public class Drive extends SubsystemBase {
         pinpoint.update();
         // heading lock
         //heading_control.setPID(hPID.p,hPID.i,hPID.d);
-        heading_control.setPID(hPID.p,hPID.i,hPID.d);
-        turn = heading_control.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), desired_heading);
+//        heading_control.setPID(hPID.p,hPID.i,hPID.d);
         // tell ftclib its inputs
         drivebase.driveFieldCentric(strafe, forward, turn, current_position.getHeading(ANGLE_UNIT), false);
     }
@@ -469,7 +468,6 @@ public class Drive extends SubsystemBase {
         pack.put("target-y", target.getY(DISTANCE_UNIT));
         pack.put("current-heading",current_position.getHeading(ANGLE_UNIT));
         pack.put("desired-heading", desired_heading);
-
         pack.put("strafe", strafe);
         pack.put("forward", forward);
         pack.put("strafe_ff", ff_strafe);
