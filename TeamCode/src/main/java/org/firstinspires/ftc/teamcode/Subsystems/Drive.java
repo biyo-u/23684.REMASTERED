@@ -28,8 +28,8 @@ import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 public class Drive extends SubsystemBase {
     static final AngleUnit ANGLE_UNIT = AngleUnit.DEGREES;
     static final DistanceUnit DISTANCE_UNIT = DistanceUnit.INCH;
-    public static double DISTANCE_TOLERANCE = 0.005; // 5mm // in DISTANCE_UNITs to target
-    public static double DISTANCE_TOLERANCE_LOW = 0.010; // 10mm // in DISTANCE_UNITs to target
+    public static double DISTANCE_TOLERANCE = 0.005; // in DISTANCE_UNITs to target
+    public static double DISTANCE_TOLERANCE_LOW = 0.010; // in DISTANCE_UNITs to target
     public static double ANGLE_TOLERANCE = 1; // in ANGLE_UNITs to target
     public static double TURN_SPEED = 3;
     public static double POWER_INPUT = 2;
@@ -74,13 +74,13 @@ public class Drive extends SubsystemBase {
     //public static PIDCoefficients careful_pid = new PIDCoefficients(2.0, 0, 0.2);
     // jan 15, 2025 re-tuned this, also new static-f values
     // jan 20, 2025 -- re-tuning with separate forward/strafe PIDs (at 75% and 100% drivebase)
-    public static PIDCoefficients forward_pid_careful = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients strafe_pid_careful = new PIDCoefficients(0, 0, 0);
+    static PIDCoefficients forward_pid_careful = new PIDCoefficients(0, 0, 0);
+    static PIDCoefficients strafe_pid_careful = new PIDCoefficients(0, 0, 0);
 
     // jan 20 -- re-tuned at 100% speed
     // jan 23, 2025 -- re-tuning at max-speed
-    public static PIDCoefficients forward_pid_quick = new PIDCoefficients(0, 0, 0);
-    public static PIDCoefficients strafe_pid_quick = new PIDCoefficients(0, 0, 0);
+    public static PIDFCoefficients forward_pid_quick = new PIDFCoefficients(0.04, 0, 0.005, 0.0045);
+    public static PIDFCoefficients strafe_pid_quick = new PIDFCoefficients(0.055, 0, 0, 0);
 
     public static Motor.ZeroPowerBehavior zeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE;
 
@@ -183,7 +183,7 @@ public class Drive extends SubsystemBase {
 
         this.pinpoint.setOffsets(-173.0, 156); //measured in mm
         this.pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
-        this.pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+        this.pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         this.pinpoint.resetPosAndIMU();
 
         // distance sensor
@@ -255,13 +255,13 @@ public class Drive extends SubsystemBase {
     }
 
     public class QuickMoveTo extends CommandBase {
-        private PIDController quick_strafe;
-        private PIDController quick_forward;
+        private PIDFController quick_strafe;
+        private PIDFController quick_forward;
 
         public QuickMoveTo(double x, double y, double h) {
             target = new Pose2D(DISTANCE_UNIT,x, y, ANGLE_UNIT, h);
-            quick_strafe = new PIDController(strafe_pid_quick.p, strafe_pid_quick.i, strafe_pid_quick.d);
-            quick_forward = new PIDController(forward_pid_quick.p, forward_pid_quick.i, forward_pid_quick.d);
+            quick_strafe = new PIDFController(strafe_pid_quick.p, strafe_pid_quick.i, strafe_pid_quick.d, strafe_pid_quick.f);
+            quick_forward = new PIDFController(forward_pid_quick.p, forward_pid_quick.i, forward_pid_quick.d, forward_pid_quick.f);
             quick_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
             quick_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
             addRequirements(Drive.this);

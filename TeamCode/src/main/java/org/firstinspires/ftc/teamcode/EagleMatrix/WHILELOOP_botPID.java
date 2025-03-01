@@ -15,7 +15,7 @@ import org.firstinspires.ftc.teamcode.EagleMatrix.botPIDConstants.Arm_Constants;
 import org.firstinspires.ftc.teamcode.EagleMatrix.botPIDConstants.Lift_Constants;
 
 /** @noinspection unused*/
-@Autonomous(name = "WHILELOOP_botPID", group = Constants.GroupNames.Testing)
+//@Autonomous(name = "WHILELOOP_botPID", group = Constants.GroupNames.Testing)
 public class WHILELOOP_botPID extends OpMode {
     botPID bot;
     Robot robot;

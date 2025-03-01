@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.LegacySubsystems.Robot;
 import org.firstinspires.ftc.teamcode.EagleMatrix.botPIDConstants.PIDF_Constants;
 import org.firstinspires.ftc.teamcode.EagleMatrix.botPIDConstants.Ticks2Deg;
 
-@Config
+
 public class botPID {
     //HARDWARE
     public final Robot robot;

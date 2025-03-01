@@ -2,11 +2,10 @@ package org.firstinspires.ftc.teamcode.EagleMatrix;
 
 import com.acmerobotics.dashboard.config.Config;
 
-@Config
 public class botPIDConstants {
     // TODO: Add in other frequently used constant values such as PIDF values and ticks/inch-degrees values
 
-    @Config
+
     public static class PIDF_Constants {
         public static final double Arm_p = 0.01, Arm_i = 0, Arm_d = 0, Arm_f = 0;
         public static final double Lift_p = 0.01, Lift_i = 0, Lift_d = 0, Lift_f = 0;
@@ -16,14 +15,12 @@ public class botPIDConstants {
 
     public static double Heading_p = 0.02, Heading_i = 0, Heading_d = 0.001, Heading_f = 0;
 
-    @Config
     public static class Ticks2Deg {
         public static final double ArmTicksInDegree = 700 / 180.0; // TODO: FIND CORRECT VALUES FOR ARM, LIFT, DRIVE, or just use it as it
         public static final double LiftTicksInDegree = 700 / 180.0;
         public static final double DriveTicksInDegree = 700 / 180.0;
     }
 
-    @Config
     public static class Arm_Constants {
         public static final double Arm_Score_High_Baskets = -5000;
         public static final double Arm_Score_High_Chambers = -3500;

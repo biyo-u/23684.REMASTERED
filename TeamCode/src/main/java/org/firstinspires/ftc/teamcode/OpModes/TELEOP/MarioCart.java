@@ -30,8 +30,8 @@ public class MarioCart extends OpMode {
 //    Arm arm;
     VoltageSensor battery;
 
-    public static double X = 0.43;
-    public static double Y = -1.61;
+    public static double X = 0;
+    public static double Y = 0;
     public static double HEADING = 0.0;
 
     public static double ARM_ANGLE = 0.0;
@@ -66,13 +66,14 @@ public class MarioCart extends OpMode {
         drive.reset();
     }
 
-    @Override
-    public void init_loop() {
-//        arm.read_sensors();
-//        arm.periodic();
-        // maaaaybe could do this, but ... dangerous?
-        //CommandScheduler.getInstance().run();
-    }
+//    @Override
+//    public void init_loop() {
+//        drive.reset();
+////        arm.read_sensors();
+////        arm.periodic();
+//        // maaaaybe could do this, but ... dangerous?
+//        //CommandScheduler.getInstance().run();
+//    }
 
     public Command doNothing(long timeout) {
         return new CommandBase() {}.withTimeout(timeout);

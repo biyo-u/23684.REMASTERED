@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-@Config
+
 public abstract class TeleOp extends OpMode {
     GamepadEx driver;
     GamepadEx operator;
