@@ -232,7 +232,7 @@ public class Drive extends SubsystemBase {
         private PIDController quick_forward;
 
         public QuickMoveTo(double x, double y, double h) {
-            target = new Pose2D(DISTANCE_UNIT,x, y, ANGLE_UNIT, h);
+            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
             quick_strafe = new PIDController(strafe_pid_quick.p, strafe_pid_quick.i, strafe_pid_quick.d);
             quick_forward = new PIDController(forward_pid_quick.p, forward_pid_quick.i, forward_pid_quick.d);
             quick_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
