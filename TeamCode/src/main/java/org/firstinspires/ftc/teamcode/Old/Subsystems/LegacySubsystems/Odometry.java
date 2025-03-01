@@ -1,10 +1,10 @@
-package org.firstinspires.ftc.teamcode.Subsystems.LegacySubsystems;
+package org.firstinspires.ftc.teamcode.Old.Subsystems.LegacySubsystems;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
-import org.firstinspires.ftc.teamcode.Utilities.MoreOld.Constants;
+import org.firstinspires.ftc.teamcode.Utilites.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Old.Utilities.MoreOld.Constants;
 
 import java.util.Locale;
 

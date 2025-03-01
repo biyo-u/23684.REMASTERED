@@ -21,7 +21,10 @@ public class AutoChamberTest extends OpMode {
     Drive drive;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
+    // TODO: FIGURE OUT WHY BLUE ISN'T BEING USED
     public enum Alliance {RED, BLUE}
+
+    /** @noinspection unused*/
     public Alliance getAlliance() { return Alliance.RED; }
 
     @Override
@@ -38,7 +41,7 @@ public class AutoChamberTest extends OpMode {
 
     @Override
     public void init_loop() {
-        drive.read_sensors(time);
+        drive.readSensors();
     }
 
     public Command doNothing(long timeout) {
@@ -51,6 +54,7 @@ public class AutoChamberTest extends OpMode {
         drive.setPosition(new Pose2D(DistanceUnit.METER, 0, 0, AngleUnit.DEGREES, 0));
         runtime.reset();
 
+        // TODO: Change this to camel case
         double score_y = -0.72;
         double pickup_x = 0.56;
         double pickup_y = -1.56;
@@ -173,22 +177,22 @@ public class AutoChamberTest extends OpMode {
 
     @Override
     public void loop() {
-        drive.read_sensors(time);
+        drive.readSensors();
 
         // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket();
-        pack.put("Elapsed time", runtime.toString());
-        pack.put("time", time);
-        pack.put("battery", battery.getVoltage());
-        drive.add_telemetry(pack);
+        pack.put("Elapsed Time", runtime.toString());
+        pack.put("Time", time);
+        pack.put("Battery", battery.getVoltage());
+        drive.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
     }
 
     @Override
     public void stop() {
-        drive.read_sensors(time);
+        drive.readSensors();
         drive.stop();
 
         // TODO: Add robot's current position here

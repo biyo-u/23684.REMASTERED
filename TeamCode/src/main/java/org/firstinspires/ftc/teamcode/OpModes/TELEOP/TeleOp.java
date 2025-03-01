@@ -22,7 +22,9 @@ public abstract class TeleOp extends OpMode {
     boolean endgameAlertTriggered = false;
     boolean parkAlertTriggered = false;
 
-    public enum Alliance {RED, BLUE};
+    public enum Alliance {RED, BLUE}
+
+    /** @noinspection unused*/
     public abstract Alliance getAlliance();
 
     @Override
@@ -49,13 +51,13 @@ public abstract class TeleOp extends OpMode {
 
     @Override
     public void init_loop() {
-        drive.read_sensors(time);
+        drive.readSensors();
     }
 
     @Override
     public void loop() {
         driver.readButtons();
-        drive.read_sensors(time);
+        drive.readSensors();
 
         CommandScheduler.getInstance().run();
 
@@ -101,7 +103,7 @@ public abstract class TeleOp extends OpMode {
         pack.put("Elapsed time", runtime.toString());
         pack.put("time", time);
         pack.put("battery", battery.getVoltage());
-        drive.add_telemetry(pack);
+        drive.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
         Pose2D drivePosition = drive.getPosition();
 

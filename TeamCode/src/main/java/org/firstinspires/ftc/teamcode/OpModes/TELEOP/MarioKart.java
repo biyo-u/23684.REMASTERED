@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.OpModes.TELEOP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-import com.arcrobotics.ftclib.command.Command;
-import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -41,11 +39,7 @@ public class MarioKart extends OpMode {
 
     @Override
     public void init_loop() {
-        drive.read_sensors(time);
-    }
-
-    public Command doNothing(long timeout) {
-        return new CommandBase() {}.withTimeout(timeout);
+        drive.readSensors();
     }
 
     @Override
@@ -56,7 +50,7 @@ public class MarioKart extends OpMode {
     @Override
     public void loop() {
         controller.readButtons();
-        drive.read_sensors(time);
+        drive.readSensors();
 
 
         if (controller.wasJustPressed(GamepadKeys.Button.X)) {
@@ -76,13 +70,13 @@ public class MarioKart extends OpMode {
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket();
-        drive.add_telemetry(pack);
+        drive.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
     }
 
     @Override
     public void stop() {
-        drive.read_sensors(time);
+        drive.readSensors();
         drive.stop();
 
         // TODO: Add robot's current position here
