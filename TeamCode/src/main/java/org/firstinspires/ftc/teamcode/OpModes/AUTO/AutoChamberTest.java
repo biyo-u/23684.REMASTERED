@@ -237,14 +237,14 @@ public class AutoChamberTest extends OpMode {
     @Override
     public void stop() {
         drive.read_sensors(time);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putFloat("heading", (float)drive.getPosition().getHeading(AngleUnit.DEGREES));
-        editor.putFloat("x", (float)drive.getPosition().getX(DistanceUnit.METER));
-        editor.putFloat("y", (float)drive.getPosition().getY(DistanceUnit.METER));
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
+//        SharedPreferences.Editor editor = prefs.edit();
+//        editor.putFloat("heading", (float)drive.getPosition().getHeading(AngleUnit.DEGREES));
+//        editor.putFloat("x", (float)drive.getPosition().getX(DistanceUnit.METER));
+//        editor.putFloat("y", (float)drive.getPosition().getY(DistanceUnit.METER));
         //editor.putFloat("extension", (float)arm.current_extension_distance);
         //editor.putFloat("shoulder_angle",(float) arm.current_shoulder_angle);
-        editor.apply();
+//        editor.apply();
         drive.stop();
     }
 }

@@ -6,7 +6,9 @@ import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.command.CommandScheduler;
+import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.controller.PIDController;
+import com.arcrobotics.ftclib.controller.wpilibcontroller.SimpleMotorFeedforward;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -25,7 +27,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 @Config
 public class Drive extends SubsystemBase {
     static final AngleUnit ANGLE_UNIT = AngleUnit.DEGREES;
-    static final DistanceUnit DISTANCE_UNIT = DistanceUnit.METER;
+    static final DistanceUnit DISTANCE_UNIT = DistanceUnit.INCH;
     public static double DISTANCE_TOLERANCE = 0.005; // 5mm // in DISTANCE_UNITs to target
     public static double DISTANCE_TOLERANCE_LOW = 0.010; // 10mm // in DISTANCE_UNITs to target
     public static double ANGLE_TOLERANCE = 1; // in ANGLE_UNITs to target
@@ -65,27 +67,29 @@ public class Drive extends SubsystemBase {
     double ff_forward;
     double ff_strafe;
 
-    private final PIDFController heading_control;
-    public static PIDFCoefficients hPID = new PIDFCoefficients(0.02,0,0.001,0); //adjusted November 1
-    public static PIDCoefficients PID = new PIDCoefficients(50,0,3);
+    private final PIDController heading_control;
+    public static PIDCoefficients hPID = new PIDCoefficients(0.04,0,0); //adjusted November 1
+//    public static PIDCoefficients PID = new PIDCoefficients(50,0,3);
     //public static PIDCoefficients careful_pid = new PIDCoefficients(1.9, 0, 0.2);
     //public static PIDCoefficients careful_pid = new PIDCoefficients(2.0, 0, 0.2);
     // jan 15, 2025 re-tuned this, also new static-f values
     // jan 20, 2025 -- re-tuning with separate forward/strafe PIDs (at 75% and 100% drivebase)
-    public static PIDCoefficients forward_pid_careful = new PIDCoefficients(0.08, 0, 0.009);
-    public static PIDCoefficients strafe_pid_careful = new PIDCoefficients(0.08, 0, 0.003);
+    public static PIDCoefficients forward_pid_careful = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients strafe_pid_careful = new PIDCoefficients(0, 0, 0);
 
     // jan 20 -- re-tuned at 100% speed
     // jan 23, 2025 -- re-tuning at max-speed
-    public static PIDCoefficients forward_pid_quick = new PIDCoefficients(0.08, 0, 0.009);
-    public static PIDCoefficients strafe_pid_quick = new PIDCoefficients(0.08, 0, 0.003);
+    public static PIDCoefficients forward_pid_quick = new PIDCoefficients(0, 0, 0);
+    public static PIDCoefficients strafe_pid_quick = new PIDCoefficients(0, 0, 0);
 
     public static Motor.ZeroPowerBehavior zeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE;
 
     double current_time;
     Pose2D current_position;
+    Pose2D previous_position;
 
     double previous_time;
+    double headingWrapMultiplier = 0;
 
     double x_velocity;
     double y_velocity;
@@ -152,7 +156,7 @@ public class Drive extends SubsystemBase {
         drivebase = new MecanumDrive(false, motor_fl, motor_fr, motor_bl, motor_br);
         drivebase.setMaxSpeed(1);
 
-        heading_control = new PIDFController(hPID.p,hPID.i,hPID.d, hPID.f);
+        heading_control = new PIDController(hPID.p,hPID.i,hPID.d);
         heading_control.setTolerance(ANGLE_TOLERANCE, Double.POSITIVE_INFINITY);
 
         // configure odometry sensor
@@ -205,6 +209,28 @@ public class Drive extends SubsystemBase {
         else if (angle <= -180)
             angle += 360;
         return angle;
+    }
+
+    public double unnormalizeHeading(double angle) {
+        if (previous_position == null) {
+            previous_position = current_position;
+        }
+
+        if (previous_position.getHeading(AngleUnit.DEGREES) > 90 &&
+                previous_position.getHeading(AngleUnit.DEGREES) < 181 &&
+                current_position.getHeading(AngleUnit.DEGREES) < -90 && current_position.getHeading(AngleUnit.DEGREES) > -181){
+            // Flipped from 180 to -180
+            headingWrapMultiplier += 1;
+        } else if (previous_position.getHeading(AngleUnit.DEGREES) < -90 &&
+                previous_position.getHeading(AngleUnit.DEGREES) > -181 &&
+                current_position.getHeading(AngleUnit.DEGREES) > 90 && current_position.getHeading(AngleUnit.DEGREES) < 181){
+            // Flipped from -180 to 180
+            headingWrapMultiplier -= 1;
+        }
+
+        previous_position = current_position;
+
+        return angle + (headingWrapMultiplier * 360);
     }
 
     public void setPosition(Pose2D pose) {
@@ -260,7 +286,7 @@ public class Drive extends SubsystemBase {
             strafe = quick_strafe.calculate(current_position.getX(DISTANCE_UNIT));
             forward = quick_forward.calculate(current_position.getY(DISTANCE_UNIT));
 
-            // our own "static friction" calc
+            // our own "static friction" calc TODO: TUNE STATIC_F_SENSITIVE
             if (strafe > STATIC_F_SENSITIVE) ff_strafe = STATIC_F_STRAFE;
             if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STATIC_F_STRAFE;
             if (forward > STATIC_F_SENSITIVE) ff_forward = STATIC_F_FORWARD;
@@ -426,16 +452,18 @@ public class Drive extends SubsystemBase {
         pinpoint.update();
         // heading lock
         //heading_control.setPID(hPID.p,hPID.i,hPID.d);
-        turn = heading_control.calculate(wrapAngle(desired_heading - current_position.getHeading(ANGLE_UNIT)));
+        heading_control.setPID(hPID.p,hPID.i,hPID.d);
+        turn = heading_control.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), desired_heading);
         // tell ftclib its inputs
         drivebase.driveFieldCentric(strafe, forward, turn, current_position.getHeading(ANGLE_UNIT), false);
     }
 
     public void add_telemetry(TelemetryPacket pack) {
-        pack.put("position-x", current_position.getX(DISTANCE_UNIT));
-        pack.put("position-y", current_position.getY(DISTANCE_UNIT));
-        pack.put("position-x-cm", current_position.getY(DISTANCE_UNIT) * 100.0);
-        pack.put("position-y-cm", current_position.getY(DISTANCE_UNIT) * 100.0);
+        pack.put("position-x (inches)", current_position.getX(DISTANCE_UNIT));
+        pack.put("position-y (inches)", current_position.getY(DISTANCE_UNIT));
+        pack.put("position-x (cm)", current_position.getY(DistanceUnit.CM));
+        pack.put("position-y (cm)", current_position.getY(DistanceUnit.CM));
+        pack.put("current-heading-unnormalized", unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)));
         //pack.put("target-x", fixme);
         //pack.put("target-y", fixme);
         pack.put("current-heading",current_position.getHeading(ANGLE_UNIT));
