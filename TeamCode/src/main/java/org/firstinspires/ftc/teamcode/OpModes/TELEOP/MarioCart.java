@@ -81,8 +81,6 @@ public class MarioCart extends OpMode {
             );
         }
 
-
-        // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket();
