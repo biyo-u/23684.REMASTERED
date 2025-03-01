@@ -12,8 +12,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.Utilities.MoreOld.Constants;
 import org.firstinspires.ftc.teamcode.Subsystems.LegacySubsystems.Robot;
 
-/** @noinspection unused*/
-//@Autonomous(name = "TEST_botPID", group = Constants.GroupNames.Testing)
 public class TEST_botPID extends OpMode {
     botPID bot;
     Robot robot;

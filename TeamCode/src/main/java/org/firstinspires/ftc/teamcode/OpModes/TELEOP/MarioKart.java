@@ -1,10 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TELEOP;
 
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandBase;
@@ -12,19 +8,15 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
-import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-
-@Config
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="Mario Kart", group="Opmode")
-public class MarioCart extends OpMode {
+public class MarioKart extends OpMode {
     GamepadEx controller;
     Drive drive;
     VoltageSensor battery;
@@ -91,11 +83,15 @@ public class MarioCart extends OpMode {
     @Override
     public void stop() {
         drive.read_sensors(time);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putFloat("heading", (float)drive.getPosition().getHeading(AngleUnit.DEGREES));
-        editor.apply();
         drive.stop();
+
+        // TODO: Add robot's current position here
+//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
+//        SharedPreferences.Editor editor = prefs.edit();
+//        editor.putFloat("heading", (float)drive.getPosition().getHeading(AngleUnit.DEGREES));
+//        editor.apply();
+
+        CommandScheduler.getInstance().reset();
     }
 }
 

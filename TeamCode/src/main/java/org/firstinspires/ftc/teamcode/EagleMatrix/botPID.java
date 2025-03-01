@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.EagleMatrix;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.qualcomm.robotcore.hardware.DcMotor;
