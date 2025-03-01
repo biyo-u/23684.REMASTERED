@@ -16,6 +16,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
 
 @Config
 public class Drive extends SubsystemBase {
@@ -27,7 +28,6 @@ public class Drive extends SubsystemBase {
     public static double DISTANCE_TOLERANCE_LOW = 0.01;
     public static double ANGLE_TOLERANCE = 1;
     public static double ANGLE_VELOCITY_TOLERANCE = Double.POSITIVE_INFINITY;
-    public static double POWER_INPUT = 2;
     public static double DEAD_ZONE = 0.1;
     public static double TURN_SPEED = 3;
     public static double TURBO_FAST_SPEED = 1.0;
@@ -38,12 +38,12 @@ public class Drive extends SubsystemBase {
     double forward;
     double strafe;
     double turn;
-    double ff_forward;
-    double ff_strafe;
-    double ff_turn;
+    double ffForward;
+    double ffStrafe;
+    double ffTurn;
     public static Motor.ZeroPowerBehavior zeroPowerBehavior = Motor.ZeroPowerBehavior.BRAKE;
-    Pose2D current_position;
-    Pose2D previous_position;
+    Pose2D currentPosition;
+    Pose2D previousPosition;
     double headingWrapMultiplier = 0;
     Pose2D target = new Pose2D(DISTANCE_UNIT,0,0, ANGLE_UNIT,0);
 
@@ -51,19 +51,19 @@ public class Drive extends SubsystemBase {
     //public Arm arm = null; TODO: CREATE ARM!!!!!!!!!!!!!
 
     public Drive(HardwareMap hardwareMap) {
-        Motor motor_fl = new Motor(hardwareMap, "frontLeft", Motor.GoBILDA.RPM_312);
-        motor_fl.setZeroPowerBehavior(zeroPowerBehavior);
+        Motor motorFL = new Motor(hardwareMap, "frontLeft", Motor.GoBILDA.RPM_312);
+        motorFL.setZeroPowerBehavior(zeroPowerBehavior);
 
-        Motor motor_fr = new Motor(hardwareMap, "frontRight", Motor.GoBILDA.RPM_312);
-        motor_fr.setZeroPowerBehavior(zeroPowerBehavior);
+        Motor motorFR = new Motor(hardwareMap, "frontRight", Motor.GoBILDA.RPM_312);
+        motorFR.setZeroPowerBehavior(zeroPowerBehavior);
 
-        Motor motor_bl = new Motor(hardwareMap, "rearLeft", Motor.GoBILDA.RPM_312);
-        motor_bl.setZeroPowerBehavior(zeroPowerBehavior);
+        Motor motorBL = new Motor(hardwareMap, "rearLeft", Motor.GoBILDA.RPM_312);
+        motorBL.setZeroPowerBehavior(zeroPowerBehavior);
 
-        Motor motor_br = new Motor(hardwareMap, "rearRight", Motor.GoBILDA.RPM_312);
-        motor_br.setZeroPowerBehavior(zeroPowerBehavior);
+        Motor motorBR = new Motor(hardwareMap, "rearRight", Motor.GoBILDA.RPM_312);
+        motorBR.setZeroPowerBehavior(zeroPowerBehavior);
 
-        drivebase = new MecanumDrive(motor_fl, motor_fr, motor_bl, motor_br);
+        drivebase = new MecanumDrive(motorFL, motorFR, motorBL, motorBR);
         drivebase.setMaxSpeed(1);
 
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
@@ -83,34 +83,34 @@ public class Drive extends SubsystemBase {
     }
 
     public double unnormalizeHeading(double angle) {
-        if (previous_position == null) {
-            previous_position = current_position;
+        if (previousPosition == null) {
+            previousPosition = currentPosition;
         }
 
-        if (previous_position.getHeading(AngleUnit.DEGREES) > 90 &&
-                previous_position.getHeading(AngleUnit.DEGREES) < 181 &&
-                current_position.getHeading(AngleUnit.DEGREES) < -90 && current_position.getHeading(AngleUnit.DEGREES) > -181){
+        if (previousPosition.getHeading(AngleUnit.DEGREES) > 90 &&
+                previousPosition.getHeading(AngleUnit.DEGREES) < 181 &&
+                currentPosition.getHeading(AngleUnit.DEGREES) < -90 && currentPosition.getHeading(AngleUnit.DEGREES) > -181){
             // Flipped from 180 to -180
             headingWrapMultiplier += 1;
-        } else if (previous_position.getHeading(AngleUnit.DEGREES) < -90 &&
-                previous_position.getHeading(AngleUnit.DEGREES) > -181 &&
-                current_position.getHeading(AngleUnit.DEGREES) > 90 && current_position.getHeading(AngleUnit.DEGREES) < 181){
+        } else if (previousPosition.getHeading(AngleUnit.DEGREES) < -90 &&
+                previousPosition.getHeading(AngleUnit.DEGREES) > -181 &&
+                currentPosition.getHeading(AngleUnit.DEGREES) > 90 && currentPosition.getHeading(AngleUnit.DEGREES) < 181){
             // Flipped from -180 to 180
             headingWrapMultiplier -= 1;
         }
 
-        previous_position = current_position;
+        previousPosition = currentPosition;
 
         return angle + (headingWrapMultiplier * 360);
     }
 
     public void setPosition(Pose2D pose) {
         pinpoint.setPosition(pose);
-        current_position = pose;
+        currentPosition = pose;
     }
 
     public Pose2D getPosition() {
-        return current_position;
+        return currentPosition;
     }
 
     public Command moveQuickly(double x, double y, double heading) {
@@ -122,21 +122,21 @@ public class Drive extends SubsystemBase {
     }
 
     public class QuickMoveTo extends CommandBase {
-        private final PIDFController quick_strafe;
-        private final PIDFController quick_forward;
-        private final PIDFController quick_turn;
+        private final PIDFController quickStrafe;
+        private final PIDFController quickForward;
+        private final PIDFController quickTurn;
 
         public QuickMoveTo(double x, double y, double h) {
             target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
-            quick_strafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
-            quick_forward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
-            quick_turn = new PIDController(0, 0, 0);
-            quick_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
-            quick_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
-            quick_turn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
-            quick_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
-            quick_forward.setSetPoint(target.getY(DISTANCE_UNIT));
-            quick_turn.setSetPoint(target.getHeading(ANGLE_UNIT));
+            quickStrafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
+            quickForward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
+            quickTurn = new PIDController(0, 0, 0);
+            quickStrafe.setTolerance(DISTANCE_TOLERANCE_LOW);
+            quickForward.setTolerance(DISTANCE_TOLERANCE_LOW);
+            quickTurn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
+            quickStrafe.setSetPoint(target.getX(DISTANCE_UNIT));
+            quickForward.setSetPoint(target.getY(DISTANCE_UNIT));
+            quickTurn.setSetPoint(target.getHeading(ANGLE_UNIT));
             addRequirements(Drive.this);
         }
 
@@ -147,28 +147,28 @@ public class Drive extends SubsystemBase {
 
         @Override
         public void execute() {
-            strafe = quick_strafe.calculate(current_position.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
-            forward = quick_forward.calculate(current_position.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
-            turn = quick_turn.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
+            strafe = quickStrafe.calculate(currentPosition.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
+            forward = quickForward.calculate(currentPosition.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
+            turn = quickTurn.calculate(unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
 
             // Custom Static Friction Calculations TODO: TUNE STATIC_F_SENSITIVE
-            if (strafe > STATIC_F_SENSITIVE) ff_strafe = STRAFE_PID_QUICK.f;
-            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STRAFE_PID_QUICK.f;
-            if (forward > STATIC_F_SENSITIVE) ff_forward = FORWARD_PID_QUICK.f;
-            if (forward < -STATIC_F_SENSITIVE) ff_forward = -FORWARD_PID_QUICK.f;
+            if (strafe > STATIC_F_SENSITIVE) ffStrafe = STRAFE_PID_QUICK.f;
+            if (strafe < -STATIC_F_SENSITIVE) ffStrafe = -STRAFE_PID_QUICK.f;
+            if (forward > STATIC_F_SENSITIVE) ffForward = FORWARD_PID_QUICK.f;
+            if (forward < -STATIC_F_SENSITIVE) ffForward = -FORWARD_PID_QUICK.f;
             // TODO: ADD STATIC FRICTION FOR HEADING
-            if (turn > STATIC_F_SENSITIVE) ff_turn = HEADING_PID_QUICK.f;
-            if (turn < -STATIC_F_SENSITIVE) ff_turn = -HEADING_PID_QUICK.f;
+            if (turn > STATIC_F_SENSITIVE) ffTurn = HEADING_PID_QUICK.f;
+            if (turn < -STATIC_F_SENSITIVE) ffTurn = -HEADING_PID_QUICK.f;
 
-            strafe += ff_strafe;
-            forward += ff_forward;
+            strafe += ffStrafe;
+            forward += ffForward;
             turn += 0;
         }
 
         @Override
         public boolean isFinished() {
             // Check if target is reached
-            return quick_strafe.atSetPoint() && quick_forward.atSetPoint() && quick_turn.atSetPoint();
+            return quickStrafe.atSetPoint() && quickForward.atSetPoint() && quickTurn.atSetPoint();
         }
 
         @Override
@@ -219,8 +219,8 @@ public class Drive extends SubsystemBase {
             if (turn > STATIC_F_SENSITIVE) ff_turn = HEADING_PID_QUICK.f;
             if (turn < -STATIC_F_SENSITIVE) ff_turn = -HEADING_PID_QUICK.f;
 
-            strafe += ff_strafe;
-            forward += ff_forward;
+            strafe += ffStrafe;
+            forward += ffForward;
             turn += 0;
         }
 
@@ -273,9 +273,10 @@ public class Drive extends SubsystemBase {
 //            }
         }
 
+        // TODO: Re-add this to HumanInputs
 //        public double scaleInputs(double input) {
 //            if (Math.abs(input) > DEAD_ZONE)
-//                return Math.pow(Math.abs(input), POWER_INPUT) * Math.signum(input);
+//                return Math.pow(Math.abs(input), 2) * Math.signum(input);
 //            else
 //                return 0;
 //        }
@@ -289,29 +290,29 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    public void read_sensors(double time) {
+    public void readSensors() {
         // Get the latest pose
-        current_position = pinpoint.getPosition();
+        currentPosition = pinpoint.getPosition();
     }
 
     @Override
     public void periodic() {
         pinpoint.update();
-        drivebase.driveFieldCentric(strafe, forward, turn, current_position.getHeading(ANGLE_UNIT));
+        drivebase.driveFieldCentric(strafe, forward, turn, currentPosition.getHeading(ANGLE_UNIT));
     }
 
-    public void add_telemetry(TelemetryPacket pack) {
-        pack.put("Current X", current_position.getX(DISTANCE_UNIT));
-        pack.put("Current Y", current_position.getY(DISTANCE_UNIT));
+    public void addTelemetry(TelemetryPacket pack) {
+        pack.put("Current X", currentPosition.getX(DISTANCE_UNIT));
+        pack.put("Current Y", currentPosition.getY(DISTANCE_UNIT));
         pack.put("Target X", target.getX(DISTANCE_UNIT));
         pack.put("Target Y", target.getY(DISTANCE_UNIT));
         pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
-        pack.put("Current Heading",current_position.getHeading(ANGLE_UNIT));
-        pack.put("Current Heading Unnormalized", unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)));
+        pack.put("Current Heading", currentPosition.getHeading(ANGLE_UNIT));
+        pack.put("Current Heading Unnormalized", unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)));
         pack.put("Strafe Power", strafe);
         pack.put("Forward Power", forward);
-        pack.put("Strafe Friction", ff_strafe);
-        pack.put("Forward Friction", ff_forward);
+        pack.put("Strafe Friction", ffStrafe);
+        pack.put("Forward Friction", ffForward);
         pack.put("Turn Power", turn);
     }
 }

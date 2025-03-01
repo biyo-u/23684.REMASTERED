@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.OpModes.TELEOP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
@@ -9,82 +8,60 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
-
 
 public abstract class TeleOp extends OpMode {
     GamepadEx driver;
     GamepadEx operator;
     VoltageSensor battery;
     Drive drive;
-    // Arm arm; TODO: create arm subsystem (3)
     ElapsedTime runtime = new ElapsedTime();
     boolean endgameAlertTriggered = false;
     boolean parkAlertTriggered = false;
 
-    public enum Alliance {RED, BLUE};
+    public enum Alliance {RED, BLUE}
+
+    /** @noinspection unused*/
     public abstract Alliance getAlliance();
 
     @Override
     public void init() {
-        // arm = new Arm(hardwareMap, getAlliance() == Alliance.RED);
+        CommandScheduler.getInstance().reset();
         drive = new Drive(hardwareMap);
         drive.reset();
-        // arm.drive = drive; TODO: create arm subsystem
-        // drive.arm = arm; TODO: create arm subsystem
         battery = hardwareMap.voltageSensor.get("Control Hub");
 
         driver = new GamepadEx(gamepad1);
         operator = new GamepadEx(gamepad2);
 
-        // (Do not remove this, we absolutely have problems without cancelling this)
-        // Cancel all previous commands
-        CommandScheduler.getInstance().reset();
-
-        // FIXME TODO we had a "CommandScheduler.getInstance().reset()"
-        // here at some point, but: do we need that? Also deleting
-        // laser-sensor seemed to fix our previous problem anyway
-
-        // Register Subsystem objects to the scheduler
         CommandScheduler.getInstance().registerSubsystem(drive);
-        // CommandScheduler.getInstance().registerSubsystem(arm); TODO: create arm subsystem
-
-        // "mostly" we want to run the HumanInputs commands during teleop
         CommandScheduler.getInstance().setDefaultCommand(drive, drive.new HumanInputs(driver));
-        // CommandScheduler.getInstance().setDefaultCommand(arm, arm.new HumanInputs(operator)); TODO: create arm subsystem
     }
 
     @Override
     public void start() {
-        // arm.reset(); TODO: create arm subsystem
         runtime.reset();
-        // set starting position
-        //drive.setPosition(new SparkFunOTOS.Pose2D(-1.03,-1.61,0));
+
+        drive.reset();
         drive.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
     }
 
     @Override
     public void init_loop() {
-        // runs while the robot is "on" but we haven't pressed "play" yet
-        drive.reset();
+        drive.readSensors();
     }
 
     @Override
     public void loop() {
-        // read controls and sensors
         driver.readButtons();
-//        operator.readButtons();
-        drive.read_sensors(time);
-        // arm.read_sensors();
+        drive.readSensors();
 
-        // Run the CommandScheduler instance (note: this will call
-        // ".periodic()" on all registered subsystems, which is the
-        // correct place to do "per-loop" things)
         CommandScheduler.getInstance().run();
+
+        // TODO: REMOVE ALL OF THESE BECAUSE OUR CONTROLLERS DON'T HAVE RUMBLE OR COLORS
 
         // Check if we're in endgame and trigger gamepad rumble for both drivers
         if (!endgameAlertTriggered && (runtime.seconds() > 90)) {
@@ -126,34 +103,23 @@ public abstract class TeleOp extends OpMode {
         pack.put("Elapsed time", runtime.toString());
         pack.put("time", time);
         pack.put("battery", battery.getVoltage());
-        drive.add_telemetry(pack);
-        // arm.add_telemetry(pack); TODO: create arm subsystem
+        drive.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
-
-        // note, seems that "drawing stuff" commands have to go in their own packet
-
-        // Send telemetry messages to explain controls and show robot status
-        // to see telemetry in Webots, right click on your robot and select "Show Robot Window"
         Pose2D drivePosition = drive.getPosition();
 
-        // FIXME TODO put into FTC Dashboard too, for most of this
         telemetry.addData("Drive/Strafe", "Right Stick")
                 .addData("Turn", "Left Stick")
                 .addData("Wrist Up/Middle/Down", "Dpad Up & Down")
                 .addData("Claw Open/Closed", "X Button")
                 .addData("-", "-------")
                 .addData("Robot Position", "x = %4.2f, y = %4.2f, h = %4.2f", drivePosition.getX(DistanceUnit.INCH), drivePosition.getY(DistanceUnit.INCH), drivePosition.getHeading(AngleUnit.DEGREES));
-                // .addData("Arm Extension", arm.target_extension) TODO: create arm subsystem
-                // .addData("Arm Claw Position", arm.claw_servo.getPosition())
-                // .addData("Arm Wrist Position", arm.wrist_servo.getPosition());
 
         telemetry.update();
     }
 
-    @Override public void stop() {
+    @Override
+    public void stop() {
         drive.stop();
-
-        // Cancel all previous commands
         CommandScheduler.getInstance().reset();
     }
 

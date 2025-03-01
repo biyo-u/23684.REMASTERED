@@ -20,7 +20,7 @@
  *   SOFTWARE.
  */
 
-package org.firstinspires.ftc.teamcode.Subsystems;
+package org.firstinspires.ftc.teamcode.Utilites;
 
 import static com.qualcomm.robotcore.util.TypeConversion.byteArrayToInt;
 
@@ -41,6 +41,7 @@ import java.nio.ByteOrder;
 import java.util.Arrays;
 
 
+/** @noinspection ALL*/
 @I2cDeviceType
 @DeviceProperties(
 		name = "goBILDA® Pinpoint Odometry Computer",
@@ -140,13 +141,13 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
 	//enum that captures the direction the encoders are set to
 	public enum EncoderDirection{
 		FORWARD,
-		REVERSED;
+		REVERSED
 	}
 
 	//enum that captures the kind of goBILDA odometry pods, if goBILDA pods are used
 	public enum GoBildaOdometryPods {
 		goBILDA_SWINGARM_POD,
-		goBILDA_4_BAR_POD;
+		goBILDA_4_BAR_POD
 	}
 	//enum that captures a limited scope of read data. More options may be added in future update
 	public enum readData {
@@ -298,7 +299,7 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
 	 * <strong> Robot MUST be stationary </strong> <br><br>
 	 * Device takes a large number of samples, and uses those as the gyroscope zero-offset. This takes approximately 0.25 seconds.
 	 */
-	public void recalibrateIMU(){writeInt(Register.DEVICE_CONTROL,1<<0);}
+	public void recalibrateIMU(){writeInt(Register.DEVICE_CONTROL, 1);}
 
 	/**
 	 * Resets the current position to 0,0,0 and recalibrates the Odometry Computer's internal IMU. <br><br>
@@ -383,13 +384,13 @@ public class GoBildaPinpointDriver extends I2cDeviceSynchDevice<I2cDeviceSynchSi
 	 * to determine your location. Then when you pull a new position from your secondary sensor,
 	 * send a setPosition command with the new position. The Pinpoint will then track your movement
 	 * relative to that new, more accurate position.
+	 *
 	 * @param pos a Pose2D describing the robot's new position.
 	 */
-	public Pose2D setPosition(Pose2D pos){
+	public void setPosition(Pose2D pos){
 		writeByteArray(Register.X_POSITION,(floatToByteArray((float) pos.getX(DistanceUnit.MM), ByteOrder.LITTLE_ENDIAN)));
 		writeByteArray(Register.Y_POSITION,(floatToByteArray((float) pos.getY(DistanceUnit.MM),ByteOrder.LITTLE_ENDIAN)));
 		writeByteArray(Register.H_ORIENTATION,(floatToByteArray((float) pos.getHeading(AngleUnit.RADIANS),ByteOrder.LITTLE_ENDIAN)));
-		return pos;
 	}
 
 	/**
