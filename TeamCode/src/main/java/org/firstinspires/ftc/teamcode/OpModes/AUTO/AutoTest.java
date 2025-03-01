@@ -97,7 +97,7 @@ public class AutoTest extends OpMode {
 
     @Override
     public void loop() {
-        drive.read_sensors(time);
+        drive.readSensors();
 
         // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
@@ -106,14 +106,14 @@ public class AutoTest extends OpMode {
         pack.put("Elapsed time", runtime.toString());
         pack.put("time", time);
         pack.put("battery", battery.getVoltage());
-        drive.add_telemetry(pack);
+        drive.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
         // note, seems that "drawing stuff" commands have to go in their own packet
     }
 
     @Override
     public void stop() {
-        drive.read_sensors(time);
+        drive.readSensors();
         drive.stop();
     }
 }

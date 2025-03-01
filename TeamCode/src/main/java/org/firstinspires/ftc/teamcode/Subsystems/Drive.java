@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Subsystems.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Utilites.GoBildaPinpointDriver;
 
 @Config
 public class Drive extends SubsystemBase {
@@ -206,18 +206,18 @@ public class Drive extends SubsystemBase {
 
         @Override
         public void execute() {
-            strafe = prevent_strafe.calculate(current_position.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
-            forward = prevent_forward.calculate(current_position.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
-            turn = quick_turn.calculate(unnormalizeHeading(current_position.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
+            strafe = prevent_strafe.calculate(currentPosition.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
+            forward = prevent_forward.calculate(currentPosition.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
+            turn = quick_turn.calculate(unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
 
             // Custom Static Friction Calculations TODO: TUNE STATIC_F_SENSITIVE
-            if (strafe > STATIC_F_SENSITIVE) ff_strafe = STRAFE_PID_QUICK.f;
-            if (strafe < -STATIC_F_SENSITIVE) ff_strafe = -STRAFE_PID_QUICK.f;
-            if (forward > STATIC_F_SENSITIVE) ff_forward = FORWARD_PID_QUICK.f;
-            if (forward < -STATIC_F_SENSITIVE) ff_forward = -FORWARD_PID_QUICK.f;
+            if (strafe > STATIC_F_SENSITIVE) ffStrafe = STRAFE_PID_QUICK.f;
+            if (strafe < -STATIC_F_SENSITIVE) ffStrafe = -STRAFE_PID_QUICK.f;
+            if (forward > STATIC_F_SENSITIVE) ffForward = FORWARD_PID_QUICK.f;
+            if (forward < -STATIC_F_SENSITIVE) ffForward = -FORWARD_PID_QUICK.f;
             // TODO: ADD STATIC FRICTION FOR HEADING
-            if (turn > STATIC_F_SENSITIVE) ff_turn = HEADING_PID_QUICK.f;
-            if (turn < -STATIC_F_SENSITIVE) ff_turn = -HEADING_PID_QUICK.f;
+            if (turn > STATIC_F_SENSITIVE) ffTurn = HEADING_PID_QUICK.f;
+            if (turn < -STATIC_F_SENSITIVE) ffTurn = -HEADING_PID_QUICK.f;
 
             strafe += ffStrafe;
             forward += ffForward;
