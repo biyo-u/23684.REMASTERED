@@ -60,6 +60,10 @@ public class AutoTestNew extends OpMode {
         CommandScheduler.getInstance().schedule(
                 justmovealready.withTimeout(3000)
 
+//        new SequentialCommandGroup(
+//                drive.moveQuickly(0, 24),
+//                drive.moveQuickly(0, 0)
+//        )
         );
     }
 
