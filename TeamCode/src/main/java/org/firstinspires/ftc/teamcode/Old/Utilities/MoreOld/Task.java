@@ -3,9 +3,11 @@ package org.firstinspires.ftc.teamcode.Old.Utilities.MoreOld;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public abstract class Task {
-	public void init(){}
+    public void init() {
+    }
 
-	public void init(Pose2D target){}
+    public void init(Pose2D target) {
+    }
 
-	abstract public boolean run();
+    abstract public boolean run();
 }

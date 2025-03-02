@@ -25,32 +25,32 @@ public class Position {
         return vector2D;
     }
 
+    public void setVector2D(Vector2D vector2D) {
+        this.vector2D = vector2D;
+    }
+
     public double getX() {
         return vector2D.getX();
-    }
-
-    public double getY() {
-        return vector2D.getY();
-    }
-
-    public double getHeading() {
-        return rotation.getAngle();
     }
 
     public void setX(Distance x) {
         vector2D.setX(x);
     }
 
+    public double getY() {
+        return vector2D.getY();
+    }
+
     public void setY(Distance y) {
         vector2D.setY(y);
     }
 
-    public void setHeading(double heading) {
-        rotation.setAngle(heading, AngleUnit.DEGREES);
+    public double getHeading() {
+        return rotation.getAngle();
     }
 
-    public void setVector2D(Vector2D vector2D) {
-        this.vector2D = vector2D;
+    public void setHeading(double heading) {
+        rotation.setAngle(heading, AngleUnit.DEGREES);
     }
 
     public boolean equals(@NotNull Position obj) {

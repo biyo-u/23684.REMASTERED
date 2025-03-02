@@ -8,20 +8,20 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="Mario Kart", group="Opmode")
+@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Mario Kart", group = "Opmode")
 public class MarioKart extends OpMode {
-    GamepadEx controller;
-    Drive drive;
-    VoltageSensor battery;
     public static double X = 0;
     public static double Y = 0;
     public static double HEADING = 0.0;
-
+    GamepadEx controller;
+    Drive drive;
+    VoltageSensor battery;
 
     @Override
     public void init() {

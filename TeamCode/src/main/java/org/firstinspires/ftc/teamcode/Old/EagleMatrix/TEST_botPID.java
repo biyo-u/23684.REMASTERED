@@ -17,7 +17,7 @@ public class TEST_botPID extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap,telemetry);
+        robot = new Robot(hardwareMap, telemetry);
         bot = new botPID(robot, botPIDConstants);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -54,7 +54,7 @@ public class TEST_botPID extends OpMode {
         telemetry.addData("X Target", bot.getXTarget());
         telemetry.addData("Y Target", bot.getYTarget());
         telemetry.addData("Heading Target", bot.getHeadingTarget());
-        telemetry.addData("UnNormalized Heading",bot.getUnNormalizedHeading());
+        telemetry.addData("UnNormalized Heading", bot.getUnNormalizedHeading());
 
         telemetry.addData("\n X Offset", robot.odometry.XOffset());
         telemetry.addData("Y Offset", robot.odometry.YOffset());

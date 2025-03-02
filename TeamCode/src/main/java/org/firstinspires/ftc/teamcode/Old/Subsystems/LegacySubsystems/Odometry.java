@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode.Old.Subsystems.LegacySubsystems;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Utilites.GoBildaPinpointDriver;
 import org.firstinspires.ftc.teamcode.Old.Utilities.MoreOld.Constants;
+import org.firstinspires.ftc.teamcode.Utilites.GoBildaPinpointDriver;
 
 import java.util.Locale;
 
@@ -13,7 +13,6 @@ public class Odometry {
     private final Compass compass;
     // isInitialized starts out false and turns true after the first `setPosition()` or `updateWithWeight()`
     private boolean isInitialized = false;
-
 
 
     public Odometry(GoBildaPinpointDriver odometry, Compass compass) {
@@ -52,6 +51,7 @@ public class Odometry {
      * This method takes the x coordinate, y coordinate, and heading
      * as input and updates the odometry with the new position heading.
      * It also marks the odometry as initialized if it wasn't already.
+     *
      * @param x       The x-coordinate of the robot's position in inches.
      * @param y       The y-coordinate of the robot's position in inches.
      * @param heading The heading of the robot in degrees.
@@ -137,6 +137,7 @@ public class Odometry {
         Pose2D position = odo.getPosition();
         return position.getX(DistanceUnit.INCH);
     }
+
     /**
      * Gets the current Y telemetry data from the robot's odometry.
      *
@@ -146,6 +147,7 @@ public class Odometry {
         Pose2D position = odo.getPosition();
         return position.getY(DistanceUnit.INCH);
     }
+
     /**
      * Gets the current heading telemetry data from the robot's odometry.
      *
@@ -156,11 +158,11 @@ public class Odometry {
         return position.getHeading(AngleUnit.DEGREES);
     }
 
-    public double XOffset(){
+    public double XOffset() {
         return odo.getXOffset();
     }
 
-    public double YOffset(){
+    public double YOffset() {
         return odo.getYOffset();
     }
 }
