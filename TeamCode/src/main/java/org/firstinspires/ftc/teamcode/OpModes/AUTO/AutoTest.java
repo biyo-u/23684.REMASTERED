@@ -51,7 +51,7 @@ public class AutoTest extends OpMode {
     public void start() {
         // set starting position
 
-        drive.setPosition(new Pose2D(DistanceUnit.METER, 0.43, -1.61, AngleUnit.DEGREES, 0));
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, 0.43, -1.61, AngleUnit.DEGREES, 0));
         runtime.reset();
 
         // notes
@@ -88,7 +88,7 @@ public class AutoTest extends OpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         drive.moveQuickly(29.9, 46, 0).withTimeout(3000),
-                                        drive.turnQuickly(29.9, 46, -45).withTimeout(3000)
+                                        drive.turnQuickly(29.9, 46, 45).withTimeout(3000)
                                 )
                         )
                 )
