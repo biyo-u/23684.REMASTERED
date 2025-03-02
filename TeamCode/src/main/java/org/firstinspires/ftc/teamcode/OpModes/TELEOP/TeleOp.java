@@ -125,5 +125,4 @@ public abstract class TeleOp extends OpMode {
     }
 
     public enum Alliance {RED, BLUE}
-
 }

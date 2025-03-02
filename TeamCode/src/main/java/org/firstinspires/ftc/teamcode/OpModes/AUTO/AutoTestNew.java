@@ -24,36 +24,14 @@ public class AutoTestNew extends OpMode {
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
 
-    public enum Alliance {RED, BLUE}
-
+    /** @noinspection unused*/
     public AutoTestNew.Alliance getAlliance() {
         return AutoTestNew.Alliance.RED;
     }
 
     @Override
-    public void init() {
-        // (Do not remove this, we absolutely have problems without cancelling this)
-        // Cancel all previous commands
-        CommandScheduler.getInstance().reset();
-
-        drive = new Drive(hardwareMap);
-        battery = hardwareMap.voltageSensor.get("Control Hub");
-
-        // Register Subsystem objects to the scheduler
-        CommandScheduler.getInstance().registerSubsystem(drive);
-
-        drive.reset();
-    }
-
-    public Command doNothing(long timeout) {
-        return new CommandBase() {}.withTimeout(timeout);
-    }
-
-    @Override
     public void start() {
-        // set starting position
-
-        drive.setPosition(new Pose2D(DistanceUnit.INCH, 0.43, -1.61, AngleUnit.DEGREES, 0));
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));
         runtime.reset();
 
         CommandScheduler.getInstance().schedule(
@@ -65,10 +43,29 @@ public class AutoTestNew extends OpMode {
     }
 
     @Override
+    public void init() {
+        CommandScheduler.getInstance().reset();
+
+        drive = new Drive(hardwareMap);
+        battery = hardwareMap.voltageSensor.get("Control Hub");
+
+        CommandScheduler.getInstance().registerSubsystem(drive);
+
+        drive.reset();
+    }
+
+    public Command doNothing(long timeout) {
+        return new CommandBase() {}.withTimeout(timeout);
+    }
+
+    /**
+     * @noinspection unused
+     */
+    public enum Alliance {RED, BLUE}
+
+    @Override
     public void loop() {
         drive.readSensors();
-
-        // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket();
@@ -77,7 +74,6 @@ public class AutoTestNew extends OpMode {
         pack.put("battery", battery.getVoltage());
         drive.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
-        // note, seems that "drawing stuff" commands have to go in their own packet
     }
 
     @Override
