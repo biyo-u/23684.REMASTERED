@@ -5,7 +5,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -25,8 +24,11 @@ public class AutoTestNew extends OpMode {
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
 
-    public enum Alliance {RED, BLUE};
-    public AutoChamberTest.Alliance getAlliance() { return AutoChamberTest.Alliance.RED; }
+    public enum Alliance {RED, BLUE}
+
+    public AutoTestNew.Alliance getAlliance() {
+        return AutoTestNew.Alliance.RED;
+    }
 
     @Override
     public void init() {
@@ -56,8 +58,8 @@ public class AutoTestNew extends OpMode {
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-                    drive.moveQuickly(0, 24, 0),
-                    drive.moveQuickly(0, 0, 0)
+                        drive.moveQuickly(0, 24),
+                        drive.moveQuickly(0, 0)
                 )
         );
     }
