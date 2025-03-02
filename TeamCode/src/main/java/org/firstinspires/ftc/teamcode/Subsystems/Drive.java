@@ -145,12 +145,12 @@ public class Drive extends SubsystemBase {
         currentPosition = pose;
     }
 
-    public Command moveQuickly(double x, double y, double heading) {
-        return new QuickMoveTo(x, y, heading);
+    public Command moveQuickly(double x, double y) {
+        return new QuickMoveTo(x, y);
     }
 
-    public Command turnQuickly(double x, double y, double heading) {
-        return new TurnMoveTo(x, y, heading);
+    public Command turnQuickly(double heading) {
+        return new TurnMoveTo(heading);
     }
 
     public class QuickMoveTo extends CommandBase {
@@ -158,8 +158,7 @@ public class Drive extends SubsystemBase {
         private final PIDFController quickForward;
         private final PIDFController quickTurn;
 
-        public QuickMoveTo(double x, double y, double h) {
-            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+        public QuickMoveTo(double x, double y) {
             quickStrafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
             quickForward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
             quickTurn = new PIDController(0, 0, 0);
@@ -217,8 +216,8 @@ public class Drive extends SubsystemBase {
         private final PIDFController prevent_forward;
         private final PIDFController quick_turn;
 
-        public TurnMoveTo(double x, double y, double h) {
-            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+        public TurnMoveTo(double h) {
+            target = new Pose2D(DISTANCE_UNIT, 0, 0, ANGLE_UNIT, h);
             prevent_strafe = new PIDController(0, 0, 0);
             prevent_forward = new PIDController(0, 0, 0);
             quick_turn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
@@ -281,7 +280,6 @@ public class Drive extends SubsystemBase {
 
         @Override
         public void execute() {
-            // TODO: Re-add this
 //            strafe = scaleInputs(driver.getRightX());
 //            forward = scaleInputs(-driver.getRightY());
             strafe = driver.getRightX();
@@ -315,21 +313,6 @@ public class Drive extends SubsystemBase {
 //        }
     }
 
-    public void addTelemetry(TelemetryPacket pack) {
-        pack.put("Current X", currentPosition.getX(DISTANCE_UNIT));
-        pack.put("Current Y", currentPosition.getY(DISTANCE_UNIT));
-        pack.put("Target X", target.getX(DISTANCE_UNIT));
-        pack.put("Target Y", target.getY(DISTANCE_UNIT));
-        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
-        pack.put("Current Heading", currentPosition.getHeading(ANGLE_UNIT));
-        pack.put("Current Heading Unnormalized", unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)));
-        pack.put("Strafe Power", strafe);
-        pack.put("Forward Power", forward);
-        pack.put("Strafe Friction", ffStrafe);
-        pack.put("Forward Friction", ffForward);
-        pack.put("Turn Power", turn);
-    }
-
     public void turbo(boolean on) {
         if (on) {
             drivebase.setMaxSpeed(TURBO_FAST_SPEED);
@@ -347,5 +330,20 @@ public class Drive extends SubsystemBase {
     public void periodic() {
         pinpoint.update();
         drivebase.driveFieldCentric(strafe, forward, turn, currentPosition.getHeading(ANGLE_UNIT));
+    }
+
+    public void addTelemetry(TelemetryPacket pack) {
+        pack.put("Current X", currentPosition.getX(DISTANCE_UNIT));
+        pack.put("Current Y", currentPosition.getY(DISTANCE_UNIT));
+        pack.put("Target X", target.getX(DISTANCE_UNIT));
+        pack.put("Target Y", target.getY(DISTANCE_UNIT));
+        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
+        pack.put("Current Heading", currentPosition.getHeading(ANGLE_UNIT));
+        pack.put("Current Heading Unnormalized", unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)));
+        pack.put("Strafe Power", strafe);
+        pack.put("Forward Power", forward);
+        pack.put("Strafe Friction", ffStrafe);
+        pack.put("Forward Friction", ffForward);
+        pack.put("Turn Power", turn);
     }
 }

@@ -55,14 +55,14 @@ public class MarioKart extends OpMode {
 
         if (controller.wasJustPressed(GamepadKeys.Button.X)) {
             CommandScheduler.getInstance().schedule(
-                    drive.moveQuickly(X, Y, HEADING)
+                    drive.moveQuickly(X, Y)
             );
         }
 
         if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
             CommandScheduler.getInstance().schedule(
                     new SequentialCommandGroup(
-                        drive.turnQuickly(X, Y, HEADING)
+                        drive.turnQuickly(HEADING)
                     )
             );
         }
