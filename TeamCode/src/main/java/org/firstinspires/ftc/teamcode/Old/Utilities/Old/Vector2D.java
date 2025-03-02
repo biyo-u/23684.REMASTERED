@@ -16,12 +16,12 @@ public class Vector2D {
         return x.getDistance();
     }
 
-    public double getY() {
-        return y.getDistance();
-    }
-
     public void setX(Distance x) {
         this.x = x;
+    }
+
+    public double getY() {
+        return y.getDistance();
     }
 
     public void setY(Distance y) {

@@ -11,21 +11,24 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-@Autonomous(name="AutoChamberTest")
+@Autonomous(name = "AutoChamberTest")
 public class AutoChamberTest extends OpMode {
     Drive drive;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
-    // TODO: FIGURE OUT WHY BLUE ISN'T BEING USED
-    public enum Alliance {RED, BLUE}
 
-    /** @noinspection unused*/
-    public Alliance getAlliance() { return Alliance.RED; }
+    /**
+     * @noinspection unused
+     */
+    public Alliance getAlliance() {
+        return Alliance.RED;
+    }
 
     @Override
     public void init() {
@@ -45,7 +48,8 @@ public class AutoChamberTest extends OpMode {
     }
 
     public Command doNothing(long timeout) {
-        return new CommandBase() {}.withTimeout(timeout);
+        return new CommandBase() {
+        }.withTimeout(timeout);
     }
 
     @Override
@@ -60,118 +64,118 @@ public class AutoChamberTest extends OpMode {
         double pickup_y = -1.56;
 
         CommandScheduler.getInstance().schedule(
-            new SequentialCommandGroup(
-                // score our preload
+                new SequentialCommandGroup(
+                        // score our preload
 
-                new ParallelCommandGroup(
-                    //arm.highChamber(),
-                    drive.moveQuickly(-0.08, score_y, 0).withTimeout(2000)
-                ),
-                //arm.highChamberScore(true),
-                //arm.highChamberScore(false),
+                        new ParallelCommandGroup(
+                                //arm.highChamber(),
+                                drive.moveQuickly(-0.08, score_y, 0).withTimeout(2000)
+                        ),
+                        //arm.highChamberScore(true),
+                        //arm.highChamberScore(false),
 
 
-                // get first spike-mark sample
-                new ParallelCommandGroup(
-                    drive.moveQuickly(0.76, -1.17, -45).withTimeout(2400),
-                    new SequentialCommandGroup(
-                        doNothing(500)
-                        //arm.moveTo(40,200,0,0.2,Arm.CLAW_OPEN)
-                    )
-                ),
-                //arm.moveTo(0,1800,0,0.2,Arm.CLAW_OPEN),
-                //arm.moveTo(0,1800,0,0.2,Arm.CLAW_CLOSED),
-                new ParallelCommandGroup(
-                    //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
-                    drive.moveQuickly(0.77, -1.10, -135).withTimeout(1300)
-                ),
-                //drop off in human player zone
-                //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_OPEN),
+                        // get first spike-mark sample
+                        new ParallelCommandGroup(
+                                drive.moveQuickly(0.76, -1.17, -45).withTimeout(2400),
+                                new SequentialCommandGroup(
+                                        doNothing(500)
+                                        //arm.moveTo(40,200,0,0.2,Arm.CLAW_OPEN)
+                                )
+                        ),
+                        //arm.moveTo(0,1800,0,0.2,Arm.CLAW_OPEN),
+                        //arm.moveTo(0,1800,0,0.2,Arm.CLAW_CLOSED),
+                        new ParallelCommandGroup(
+                                //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
+                                drive.moveQuickly(0.77, -1.10, -135).withTimeout(1300)
+                        ),
+                        //drop off in human player zone
+                        //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_OPEN),
 
-                //go back to second spike mark
-                // (the "just turn" timeouts are only 1500 because it "should' be fast)
-                new ParallelCommandGroup(
-                    //arm.moveTo(0,1800,0,0.2,Arm.CLAW_OPEN),
-                    drive.moveQuickly(1.03, -1.17, -45).withTimeout(1800)
-                ),
-                //grab spike mark
-                //arm.moveTo(0,1800,0,0.2,Arm.CLAW_CLOSED),
-                //drop in human zone
-                new ParallelCommandGroup(
-                    //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
-                    drive.moveQuickly(0.77, -1.10, -135).withTimeout(1300)
-                ),
-                //arm.moveTo(0,1800,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
-                //arm.moveTo(0,500,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
+                        //go back to second spike mark
+                        // (the "just turn" timeouts are only 1500 because it "should' be fast)
+                        new ParallelCommandGroup(
+                                //arm.moveTo(0,1800,0,0.2,Arm.CLAW_OPEN),
+                                drive.moveQuickly(1.03, -1.17, -45).withTimeout(1800)
+                        ),
+                        //grab spike mark
+                        //arm.moveTo(0,1800,0,0.2,Arm.CLAW_CLOSED),
+                        //drop in human zone
+                        new ParallelCommandGroup(
+                                //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
+                                drive.moveQuickly(0.77, -1.10, -135).withTimeout(1300)
+                        ),
+                        //arm.moveTo(0,1800,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
+                        //arm.moveTo(0,500,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
 
-                // grab completed specimen from human #1
-                new ParallelCommandGroup(
-                    new SequentialCommandGroup(
-                        doNothing(500)
-                        //arm.moveTo(0,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN)
-                    ),
-                    drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(1800)
-                ),
-                //arm.moveTo(0, 1750, 0.15, Arm.PALM_MIDDLE, Arm.CLAW_OPEN),
-                //arm.moveTo(0, 1750, 0.15, Arm.PALM_MIDDLE, Arm.CLAW_CLOSED),
+                        // grab completed specimen from human #1
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        doNothing(500)
+                                        //arm.moveTo(0,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN)
+                                ),
+                                drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(1800)
+                        ),
+                        //arm.moveTo(0, 1750, 0.15, Arm.PALM_MIDDLE, Arm.CLAW_OPEN),
+                        //arm.moveTo(0, 1750, 0.15, Arm.PALM_MIDDLE, Arm.CLAW_CLOSED),
 
-                // score it
-                new ParallelCommandGroup(
-                    //arm.highChamber(),
-                    drive.moveQuickly(0.0, score_y, 0).withTimeout(1800)
-                ),
-                //arm.highChamberScore(true),
-                //arm.highChamberScore(false),
+                        // score it
+                        new ParallelCommandGroup(
+                                //arm.highChamber(),
+                                drive.moveQuickly(0.0, score_y, 0).withTimeout(1800)
+                        ),
+                        //arm.highChamberScore(true),
+                        //arm.highChamberScore(false),
 
-                // grab completed specimen from human #2
-                new ParallelCommandGroup(
-                    new SequentialCommandGroup(
-                        doNothing(500)
-                        //arm.moveTo(35,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
-                        //arm.moveTo(0,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN)
-                    ),
-                    drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(2000)
-                ),
-                //arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_OPEN),
-                //arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_CLOSED),
+                        // grab completed specimen from human #2
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        doNothing(500)
+                                        //arm.moveTo(35,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
+                                        //arm.moveTo(0,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN)
+                                ),
+                                drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(2000)
+                        ),
+                        //arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_OPEN),
+                        //arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_CLOSED),
 
-                // score it
-                new ParallelCommandGroup(
-                    //arm.highChamber(),
-                    drive.moveQuickly(0.08, score_y, 0).withTimeout(1800)
-                ),
-                //arm.highChamberScore(true),
-                //arm.highChamberScore(false),
+                        // score it
+                        new ParallelCommandGroup(
+                                //arm.highChamber(),
+                                drive.moveQuickly(0.08, score_y, 0).withTimeout(1800)
+                        ),
+                        //arm.highChamberScore(true),
+                        //arm.highChamberScore(false),
 
-                // grab completed specimen from human #3
-                new ParallelCommandGroup(
-                    new SequentialCommandGroup(
-                        doNothing(500)
-                        //arm.moveTo(35,10,0.5,0.5,Arm.CLAW_OPEN),
-                        //arm.moveTo(0,10,0.5,0.5,Arm.CLAW_OPEN)
-                    ),
-                    drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(2000)
-                ),
-                //arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_OPEN),
-               // arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_CLOSED),
+                        // grab completed specimen from human #3
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        doNothing(500)
+                                        //arm.moveTo(35,10,0.5,0.5,Arm.CLAW_OPEN),
+                                        //arm.moveTo(0,10,0.5,0.5,Arm.CLAW_OPEN)
+                                ),
+                                drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(2000)
+                        ),
+                        //arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_OPEN),
+                        // arm.moveTo(0, 1750, 0.15, 0.5, Arm.CLAW_CLOSED),
 
-                // score it
-                new ParallelCommandGroup(
-                    //arm.highChamber(),
-                    drive.moveQuickly(0.16, score_y, 0).withTimeout(1800)
-                ),
-                //arm.highChamberScore(true),
-                //arm.highChamberScore(false),
+                        // score it
+                        new ParallelCommandGroup(
+                                //arm.highChamber(),
+                                drive.moveQuickly(0.16, score_y, 0).withTimeout(1800)
+                        ),
+                        //arm.highChamberScore(true),
+                        //arm.highChamberScore(false),
 
-                // try to park
-                new ParallelCommandGroup(
-                    new SequentialCommandGroup(
-                        doNothing(500)
-                        //arm.moveTo(0,1800,0.5,0.5,Arm.CLAW_OPEN)
-                    ),
-                    drive.moveQuickly(0.85, -1.65, -90).withTimeout(2800)
+                        // try to park
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                        doNothing(500)
+                                        //arm.moveTo(0,1800,0.5,0.5,Arm.CLAW_OPEN)
+                                ),
+                                drive.moveQuickly(0.85, -1.65, -90).withTimeout(2800)
+                        )
                 )
-            )
         );
     }
 
@@ -207,4 +211,7 @@ public class AutoChamberTest extends OpMode {
 
         CommandScheduler.getInstance().reset();
     }
+
+    // TODO: FIGURE OUT WHY BLUE ISN'T BEING USED
+    public enum Alliance {RED, BLUE}
 }

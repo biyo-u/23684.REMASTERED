@@ -15,7 +15,7 @@ public class MovingAverage {
     }
 
     public void add_sample(double value) {
-        samples.add(0,new Double(value));
+        samples.add(0, new Double(value));
         while (samples.size() > desired_samples) {
             samples.removeLast();
         }

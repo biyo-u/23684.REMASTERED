@@ -12,32 +12,32 @@ import java.util.ArrayList;
 	TODO For 23684 Devs: Make a Interface called driver that this should implement
  */
 public class AutoDriver {
-	public AutoActions autoActions;
+    public AutoActions autoActions;
 
-	public AutoDriver(AutoActions autoActions){
-		this.autoActions = autoActions;
-	}
+    public AutoDriver(AutoActions autoActions) {
+        this.autoActions = autoActions;
+    }
 
-	public void run(){
-		ArrayList<Action> actions = autoActions.getActions();
-		ArrayList<String> ids = autoActions.getIds();
-		ArrayList<Integer> idsToRemove = new ArrayList<>();
+    public void run() {
+        ArrayList<Action> actions = autoActions.getActions();
+        ArrayList<String> ids = autoActions.getIds();
+        ArrayList<Integer> idsToRemove = new ArrayList<>();
 
-		for (int i = 0; i < actions.size(); i++) {
-			Action action = actions.get(i);
-			if (!ids.contains(action.getRequirement())){
-				if (action.getTask().run()){
-					idsToRemove.add(i);
-				}
-			}
-		}
+        for (int i = 0; i < actions.size(); i++) {
+            Action action = actions.get(i);
+            if (!ids.contains(action.getRequirement())) {
+                if (action.getTask().run()) {
+                    idsToRemove.add(i);
+                }
+            }
+        }
 
-		for (int i = 0; i < idsToRemove.size(); i++) {
-			int id = idsToRemove.get(i);
-			actions.remove(id);
-			ids.remove(id);
-		}
+        for (int i = 0; i < idsToRemove.size(); i++) {
+            int id = idsToRemove.get(i);
+            actions.remove(id);
+            ids.remove(id);
+        }
 
-		this.autoActions = new AutoActions(actions, ids);
-	}
+        this.autoActions = new AutoActions(actions, ids);
+    }
 }

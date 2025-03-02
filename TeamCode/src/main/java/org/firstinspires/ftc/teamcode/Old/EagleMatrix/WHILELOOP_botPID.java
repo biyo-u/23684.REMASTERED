@@ -8,9 +8,9 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.Old.Subsystems.LegacySubsystems.Robot;
 import org.firstinspires.ftc.teamcode.Old.EagleMatrix.botPIDConstants.Arm_Constants;
 import org.firstinspires.ftc.teamcode.Old.EagleMatrix.botPIDConstants.Lift_Constants;
+import org.firstinspires.ftc.teamcode.Old.Subsystems.LegacySubsystems.Robot;
 
 public class WHILELOOP_botPID extends OpMode {
     botPID bot;
@@ -22,7 +22,7 @@ public class WHILELOOP_botPID extends OpMode {
 
     @Override
     public void init() {
-        robot = new Robot(hardwareMap,telemetry);
+        robot = new Robot(hardwareMap, telemetry);
         bot = new botPID(robot, botPIDConstants);
 
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
@@ -33,7 +33,7 @@ public class WHILELOOP_botPID extends OpMode {
         bot.setXTarget(0);
         bot.setYTarget(0);
         bot.setHeadingTarget(0);
-        bot.setDriveTarget(0,0,0);
+        bot.setDriveTarget(0, 0, 0);
         robot.lift.getLiftMotorLeft().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         robot.lift.getLiftMotorRight().setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -49,15 +49,15 @@ public class WHILELOOP_botPID extends OpMode {
         double errorLift = bot.getLiftController().calculate(bot.getLiftPosition(), bot.getLiftTarget());
         double errorArm = Double.compare(bot.getArmPosition(), bot.getArmTarget());
 
-        if (errorLift <= 0.1 && errorArm == 0){
+        if (errorLift <= 0.1 && errorArm == 0) {
             LiftAtTarget = true;
         }
-        if (LiftAtTarget == true){
+        if (LiftAtTarget == true) {
             bot.stopLift();
             bot.stopArm();
             LiftAtTarget = false;
             functionsRunning = false;
-            if (functionsRunning == false){
+            if (functionsRunning == false) {
                 bot.runArm(Arm_Constants.Arm_Home);
                 bot.runLift(Lift_Constants.Lift_Home);
             }
@@ -74,7 +74,7 @@ public class WHILELOOP_botPID extends OpMode {
         telemetry.addData("X Target", bot.getXTarget());
         telemetry.addData("Y Target", bot.getYTarget());
         telemetry.addData("Heading Target", bot.getHeadingTarget());
-        telemetry.addData("UnNormalized Heading",bot.getUnNormalizedHeading());
+        telemetry.addData("UnNormalized Heading", bot.getUnNormalizedHeading());
 
         telemetry.addData("\n X Offset", robot.odometry.XOffset());
         telemetry.addData("Y Offset", robot.odometry.YOffset());

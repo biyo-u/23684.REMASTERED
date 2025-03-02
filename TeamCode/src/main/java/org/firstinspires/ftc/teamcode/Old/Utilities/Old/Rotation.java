@@ -8,7 +8,7 @@ public class Rotation {
     public Rotation(double angle, AngleUnit unit) {
         if (unit == AngleUnit.DEGREES) {
             this.angle = angle;
-        } else if (unit == AngleUnit.RADIANS){
+        } else if (unit == AngleUnit.RADIANS) {
             this.angle = Math.toDegrees(angle);
         }
     }
@@ -20,7 +20,7 @@ public class Rotation {
     public void setAngle(double angle, AngleUnit unit) {
         if (unit == AngleUnit.DEGREES) {
             this.angle = angle;
-        } else if (unit == AngleUnit.RADIANS){
+        } else if (unit == AngleUnit.RADIANS) {
             this.angle = Math.toDegrees(angle);
         }
     }

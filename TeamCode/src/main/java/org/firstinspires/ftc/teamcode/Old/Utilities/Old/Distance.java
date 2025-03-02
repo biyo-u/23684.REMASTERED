@@ -5,7 +5,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 public class Distance {
     private double distance;
 
-    public Distance(double distance, DistanceUnit unit){
+    public Distance(double distance, DistanceUnit unit) {
         if (unit == DistanceUnit.INCH) {
             this.distance = distance;
         } else if (unit == DistanceUnit.METER) {
@@ -17,11 +17,11 @@ public class Distance {
         }
     }
 
-    public double getDistance(){
+    public double getDistance() {
         return distance;
     }
 
-    public void setDistance(double distance, DistanceUnit unit){
+    public void setDistance(double distance, DistanceUnit unit) {
         if (unit == DistanceUnit.INCH) {
             this.distance = distance;
         } else if (unit == DistanceUnit.METER) {

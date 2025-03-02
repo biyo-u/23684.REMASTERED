@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -22,9 +23,9 @@ public abstract class TeleOp extends OpMode {
     boolean endgameAlertTriggered = false;
     boolean parkAlertTriggered = false;
 
-    public enum Alliance {RED, BLUE}
-
-    /** @noinspection unused*/
+    /**
+     * @noinspection unused
+     */
     public abstract Alliance getAlliance();
 
     @Override
@@ -122,5 +123,7 @@ public abstract class TeleOp extends OpMode {
         drive.stop();
         CommandScheduler.getInstance().reset();
     }
+
+    public enum Alliance {RED, BLUE}
 
 }
