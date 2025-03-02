@@ -49,7 +49,11 @@ public class Drive extends SubsystemBase {
     Pose2D target = new Pose2D(DISTANCE_UNIT, 0, 0, ANGLE_UNIT, 0);
 
     // NOTE: we give "Drive" access to "Arm" here so that our Driver can initiate climbing
-    //public Arm arm = null; TODO: CREATE ARM!!!!!!!!!!!!!
+    // TODO: CREATE ARM (READ BELOW)
+    // We may not need an arm here, here's why:
+    // In the Hyperdroid's code, they had their arm in the Drive class for climbing
+    // Since we don't climb with our arm, we could leave it for a separate class
+    // And then use it in TeleOp and our Autonomous classes.
 
     public Drive(HardwareMap hardwareMap) {
         Motor motorFL = new Motor(hardwareMap, "frontLeft", Motor.GoBILDA.RPM_312);
