@@ -15,6 +15,6 @@ public class justmovealready extends SequentialCommandGroup {
             drive.moveQuickly(0, 0).withTimeout(3000)
         );
 
-        addRequirements(drive);
+        addRequirements(drive);// just work already
     }
 }
