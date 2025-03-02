@@ -2,7 +2,6 @@ package org.firstinspires.ftc.teamcode.Old.Utilities.EvenMoreOld;
 
 import java.util.LinkedList;
 
-// Kalman Filter would be better; are there already utility classes for this?
 // TODO: change to a kalman filter in future
 public class MovingAverage {
 
@@ -11,11 +10,11 @@ public class MovingAverage {
 
     public MovingAverage(int samples) {
         this.desired_samples = samples;
-        this.samples = new LinkedList();
+        this.samples = new LinkedList<>();
     }
 
     public void add_sample(double value) {
-        samples.add(0, new Double(value));
+        samples.add(0, value);
         while (samples.size() > desired_samples) {
             samples.removeLast();
         }
@@ -25,7 +24,7 @@ public class MovingAverage {
         double total = 0.0;
         int number = 0;
         for (Double v : samples) {
-            total += v.doubleValue();
+            total += v;
             number++;
         }
         if (number == 0) return 0.0;
