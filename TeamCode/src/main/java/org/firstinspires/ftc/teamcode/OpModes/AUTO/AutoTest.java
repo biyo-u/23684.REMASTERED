@@ -95,8 +95,8 @@ public class AutoTest extends OpMode {
                         // action three: return.
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
-                                     drive.turnQuickly(0).withTimeout(2400),
-                                     drive.moveQuickly(0, -20).withTimeout(3000)
+                                        drive.turnQuickly(0).withTimeout(2400),
+                                        drive.moveQuickly(0, -20).withTimeout(3000)
                                 )
                         )
                 )

@@ -16,17 +16,18 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
+import org.firstinspires.ftc.teamcode.OpModes.AUTO.justmovealready;
 
-
-@Autonomous(name="AutoTest")
+@Autonomous(name="AutoTest New!")
 public class AutoTestNew extends OpMode {
 
     Drive drive;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
+    justmovealready justmovealready;
 
     public enum Alliance {RED, BLUE};
-    public AutoChamberTest.Alliance getAlliance() { return AutoChamberTest.Alliance.RED; }
+    public AutoTestNew.Alliance getAlliance() { return AutoTestNew.Alliance.RED; }
 
     @Override
     public void init() {
@@ -55,10 +56,7 @@ public class AutoTestNew extends OpMode {
         runtime.reset();
 
         CommandScheduler.getInstance().schedule(
-                new SequentialCommandGroup(
-                    drive.moveQuickly(0, 24, 0),
-                    drive.moveQuickly(0, 0, 0)
-                )
+                justmovealready.withTimeout(3000)
         );
     }
 

@@ -16,6 +16,8 @@
 //import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 //import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 //import org.firstinspires.ftc.teamcode.Subsystems.Drive;
+
+// TODO: ADJUST TO MATCH NEW DRIVE SYSTEM ETC. LATER
 //
 //@Autonomous(name = "AutoChamberTest")
 //public class AutoChamberTest extends OpMode {

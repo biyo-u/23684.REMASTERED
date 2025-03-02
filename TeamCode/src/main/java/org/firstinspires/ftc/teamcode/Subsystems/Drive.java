@@ -195,7 +195,7 @@ public class Drive extends SubsystemBase {
         @Override
         public boolean isFinished() {
             // Check if target is reached
-            return quickStrafe.atSetPoint() && quickForward.atSetPoint() && quickTurn.atSetPoint();
+            return quickStrafe.atSetPoint() && quickForward.atSetPoint();
         }
 
         @Override
