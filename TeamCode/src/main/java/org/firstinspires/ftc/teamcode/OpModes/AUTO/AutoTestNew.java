@@ -26,19 +26,21 @@ public class AutoTestNew extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
     justmovealready justmovealready;
 
+    /** @noinspection unused*/
+
     public enum Alliance {RED, BLUE};
-    public AutoTestNew.Alliance getAlliance() { return AutoTestNew.Alliance.RED; }
+
+    public AutoTestNew.Alliance getAlliance() {
+        return AutoTestNew.Alliance.RED;
+    }
 
     @Override
     public void init() {
-        // (Do not remove this, we absolutely have problems without cancelling this)
-        // Cancel all previous commands
         CommandScheduler.getInstance().reset();
 
         drive = new Drive(hardwareMap);
         battery = hardwareMap.voltageSensor.get("Control Hub");
 
-        // Register Subsystem objects to the scheduler
         CommandScheduler.getInstance().registerSubsystem(drive);
 
         drive.reset();
@@ -57,14 +59,13 @@ public class AutoTestNew extends OpMode {
 
         CommandScheduler.getInstance().schedule(
                 justmovealready.withTimeout(3000)
+
         );
     }
 
     @Override
     public void loop() {
         drive.readSensors();
-
-        // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket();

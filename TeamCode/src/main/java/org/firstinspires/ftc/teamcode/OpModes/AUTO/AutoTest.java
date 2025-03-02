@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -20,68 +20,28 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
 @Autonomous(name="AutoTest")
 public class AutoTest extends OpMode {
-
     Drive drive;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
 
-    public enum Alliance {RED, BLUE};
+    /**
+     * @noinspection unused
+     */
     public AutoTest.Alliance getAlliance() { return AutoTest.Alliance.RED; }
 
     @Override
-    public void init() {
-        // (Do not remove this, we absolutely have problems without cancelling this)
-        // Cancel all previous commands
-        CommandScheduler.getInstance().reset();
-
-        drive = new Drive(hardwareMap);
-        battery = hardwareMap.voltageSensor.get("Control Hub");
-
-        // Register Subsystem objects to the scheduler
-        CommandScheduler.getInstance().registerSubsystem(drive);
-
-        drive.reset();
-    }
-
-    public Command doNothing(long timeout) {
-        return new CommandBase() {}.withTimeout(timeout);
-    }
-
-    @Override
     public void start() {
-        // set starting position
-
         drive.setPosition(new Pose2D(DistanceUnit.INCH, 0.43, -1.61, AngleUnit.DEGREES, 0));
         runtime.reset();
 
-        // notes
-        // robot-relative, from starting at "right edge of 3rd tile from human" (A4)
-        // -> from start, we move 87cm forward, 31cm left
-        // -> move back to where we were, but facing the human player
-
-        // actuals from smashing the chamber
-        //position-x-cm: -8.23974609375
-        //position-y: 0.294189453125
-        //position-y-cm: 29.4189453125
-
-
-        // notes for "backwards specimen score"
-        // shoulder_actual = 69
-        // shoulder starts at ext = 0
-        // shoulder score ext = 1219
-        // (skunkwords still)
-
-        // "score x" changes each time
-        double score_y = -28.3;
-        double pickup_x = 0.56;
-        double pickup_y = -1.56;
+        double scoreY = -28.3;
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
                         // action one: move first
                         new ParallelCommandGroup(
-                                drive.moveQuickly(3.1, score_y).withTimeout(3000)
+                                drive.moveQuickly(3.1, scoreY).withTimeout(3000)
                         ),
 
                         // action two: move again and then turn
@@ -102,6 +62,27 @@ public class AutoTest extends OpMode {
                 )
         );
     }
+
+    @Override
+    public void init() {
+        CommandScheduler.getInstance().reset();
+
+        drive = new Drive(hardwareMap);
+        battery = hardwareMap.voltageSensor.get("Control Hub");
+
+        CommandScheduler.getInstance().registerSubsystem(drive);
+
+        drive.reset();
+    }
+
+    public Command doNothing(long timeout) {
+        return new CommandBase() {}.withTimeout(timeout);
+    }
+
+    /**
+     * @noinspection unused
+     */
+    public enum Alliance {RED, BLUE}
 
     @Override
     public void loop() {
