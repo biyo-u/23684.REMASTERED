@@ -145,38 +145,8 @@ public class Drive extends SubsystemBase {
         return new QuickMoveTo(x, y, heading);
     }
 
-    public void turbo(boolean on) {
-        if (on) {
-            drivebase.setMaxSpeed(TURBO_FAST_SPEED);
-        } else {
-            drivebase.setMaxSpeed(TURBO_SLOW_SPEED);
-        }
-    }
-
-    public void readSensors() {
-        // Get the latest pose
-        currentPosition = pinpoint.getPosition();
-    }
-
-    @Override
-    public void periodic() {
-        pinpoint.update();
-        drivebase.driveFieldCentric(strafe, forward, turn, currentPosition.getHeading(ANGLE_UNIT));
-    }
-
-    public void addTelemetry(TelemetryPacket pack) {
-        pack.put("Current X", currentPosition.getX(DISTANCE_UNIT));
-        pack.put("Current Y", currentPosition.getY(DISTANCE_UNIT));
-        pack.put("Target X", target.getX(DISTANCE_UNIT));
-        pack.put("Target Y", target.getY(DISTANCE_UNIT));
-        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
-        pack.put("Current Heading", currentPosition.getHeading(ANGLE_UNIT));
-        pack.put("Current Heading Unnormalized", unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)));
-        pack.put("Strafe Power", strafe);
-        pack.put("Forward Power", forward);
-        pack.put("Strafe Friction", ffStrafe);
-        pack.put("Forward Friction", ffForward);
-        pack.put("Turn Power", turn);
+    public Command turnQuickly(double x, double y, double heading) {
+        return new TurnMoveTo(x, y, heading);
     }
 
     public class QuickMoveTo extends CommandBase {
@@ -188,7 +158,7 @@ public class Drive extends SubsystemBase {
             target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
             quickStrafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
             quickForward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
-            quickTurn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
+            quickTurn = new PIDController(0, 0, 0);
             quickStrafe.setTolerance(DISTANCE_TOLERANCE_LOW);
             quickForward.setTolerance(DISTANCE_TOLERANCE_LOW);
             quickTurn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
@@ -227,6 +197,65 @@ public class Drive extends SubsystemBase {
         public boolean isFinished() {
             // Check if target is reached
             return quickStrafe.atSetPoint() && quickForward.atSetPoint() && quickTurn.atSetPoint();
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            strafe = 0;
+            forward = 0;
+            turn = 0;
+            stop();
+        }
+    }
+
+    public class TurnMoveTo extends CommandBase {
+        private final PIDFController prevent_strafe;
+        private final PIDFController prevent_forward;
+        private final PIDFController quick_turn;
+
+        public TurnMoveTo(double x, double y, double h) {
+            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+            prevent_strafe = new PIDController(0, 0, 0);
+            prevent_forward = new PIDController(0, 0, 0);
+            quick_turn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
+            prevent_strafe.setTolerance(DISTANCE_TOLERANCE_LOW);
+            prevent_forward.setTolerance(DISTANCE_TOLERANCE_LOW);
+            quick_turn.setTolerance(ANGLE_TOLERANCE, ANGLE_VELOCITY_TOLERANCE);
+            prevent_strafe.setSetPoint(target.getX(DISTANCE_UNIT));
+            prevent_forward.setSetPoint(target.getY(DISTANCE_UNIT));
+            quick_turn.setSetPoint(target.getHeading(ANGLE_UNIT));
+            addRequirements(Drive.this);
+        }
+
+        @Override
+        public void initialize() {
+            drivebase.setMaxSpeed(TURBO_FAST_SPEED);
+        }
+
+        @Override
+        public void execute() {
+            strafe = prevent_strafe.calculate(currentPosition.getX(DISTANCE_UNIT), target.getX(DISTANCE_UNIT));
+            forward = prevent_forward.calculate(currentPosition.getY(DISTANCE_UNIT), target.getY(DISTANCE_UNIT));
+            turn = quick_turn.calculate(unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)), target.getHeading(ANGLE_UNIT));
+
+            // Custom Static Friction Calculations TODO: TUNE STATIC_F_SENSITIVE
+            if (strafe > STATIC_F_SENSITIVE) ffStrafe = STRAFE_PID_QUICK.f;
+            if (strafe < -STATIC_F_SENSITIVE) ffStrafe = -STRAFE_PID_QUICK.f;
+            if (forward > STATIC_F_SENSITIVE) ffForward = FORWARD_PID_QUICK.f;
+            if (forward < -STATIC_F_SENSITIVE) ffForward = -FORWARD_PID_QUICK.f;
+            // TODO: ADD STATIC FRICTION FOR HEADING
+            if (turn > STATIC_F_SENSITIVE) ffTurn = HEADING_PID_QUICK.f;
+            if (turn < -STATIC_F_SENSITIVE) ffTurn = -HEADING_PID_QUICK.f;
+
+            strafe += ffStrafe;
+            forward += ffForward;
+            turn += 0;
+        }
+
+        @Override
+        public boolean isFinished() {
+            // Check if target is reached
+            return prevent_strafe.atSetPoint() && prevent_forward.atSetPoint() && quick_turn.atSetPoint();
         }
 
         @Override
@@ -280,5 +309,39 @@ public class Drive extends SubsystemBase {
 //            else
 //                return 0;
 //        }
+    }
+
+    public void addTelemetry(TelemetryPacket pack) {
+        pack.put("Current X", currentPosition.getX(DISTANCE_UNIT));
+        pack.put("Current Y", currentPosition.getY(DISTANCE_UNIT));
+        pack.put("Target X", target.getX(DISTANCE_UNIT));
+        pack.put("Target Y", target.getY(DISTANCE_UNIT));
+        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
+        pack.put("Current Heading", currentPosition.getHeading(ANGLE_UNIT));
+        pack.put("Current Heading Unnormalized", unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)));
+        pack.put("Strafe Power", strafe);
+        pack.put("Forward Power", forward);
+        pack.put("Strafe Friction", ffStrafe);
+        pack.put("Forward Friction", ffForward);
+        pack.put("Turn Power", turn);
+    }
+
+    public void turbo(boolean on) {
+        if (on) {
+            drivebase.setMaxSpeed(TURBO_FAST_SPEED);
+        } else {
+            drivebase.setMaxSpeed(TURBO_SLOW_SPEED);
+        }
+    }
+
+    public void readSensors() {
+        // Get the latest pose
+        currentPosition = pinpoint.getPosition();
+    }
+
+    @Override
+    public void periodic() {
+        pinpoint.update();
+        drivebase.driveFieldCentric(strafe, forward, turn, currentPosition.getHeading(ANGLE_UNIT));
     }
 }
