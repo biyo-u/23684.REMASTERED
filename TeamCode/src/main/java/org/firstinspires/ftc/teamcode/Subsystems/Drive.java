@@ -113,12 +113,12 @@ public class Drive extends SubsystemBase {
         return currentPosition;
     }
 
-    public Command moveQuickly(double x, double y, double heading) {
-        return new QuickMoveTo(x, y, heading);
+    public Command moveQuickly(double x, double y) {
+        return new QuickMoveTo(x, y);
     }
 
-    public Command turnQuickly(double x, double y, double heading) {
-        return new TurnMoveTo(x, y, heading);
+    public Command turnQuickly(double heading) {
+        return new TurnMoveTo(heading);
     }
 
     public class QuickMoveTo extends CommandBase {
@@ -126,8 +126,7 @@ public class Drive extends SubsystemBase {
         private final PIDFController quickForward;
         private final PIDFController quickTurn;
 
-        public QuickMoveTo(double x, double y, double h) {
-            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+        public QuickMoveTo(double x, double y) {
             quickStrafe = new PIDController(STRAFE_PID_QUICK.p, STRAFE_PID_QUICK.i, STRAFE_PID_QUICK.d);
             quickForward = new PIDController(FORWARD_PID_QUICK.p, FORWARD_PID_QUICK.i, FORWARD_PID_QUICK.d);
             quickTurn = new PIDController(0, 0, 0);
@@ -185,8 +184,8 @@ public class Drive extends SubsystemBase {
         private final PIDFController prevent_forward;
         private final PIDFController quick_turn;
 
-        public TurnMoveTo(double x, double y, double h) {
-            target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
+        public TurnMoveTo(double h) {
+            target = new Pose2D(DISTANCE_UNIT, 0, 0, ANGLE_UNIT, h);
             prevent_strafe = new PIDController(0, 0, 0);
             prevent_forward = new PIDController(0, 0, 0);
             quick_turn = new PIDController(HEADING_PID_QUICK.p, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);

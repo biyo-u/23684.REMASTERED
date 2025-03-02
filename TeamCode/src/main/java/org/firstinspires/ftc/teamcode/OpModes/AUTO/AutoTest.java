@@ -26,7 +26,7 @@ public class AutoTest extends OpMode {
     ElapsedTime runtime = new ElapsedTime();
 
     public enum Alliance {RED, BLUE};
-    public AutoChamberTest.Alliance getAlliance() { return AutoChamberTest.Alliance.RED; }
+    public AutoTest.Alliance getAlliance() { return AutoTest.Alliance.RED; }
 
     @Override
     public void init() {
@@ -81,14 +81,22 @@ public class AutoTest extends OpMode {
 
                         // action one: move first
                         new ParallelCommandGroup(
-                                drive.moveQuickly(3.1, score_y, 0).withTimeout(3000)
+                                drive.moveQuickly(3.1, score_y).withTimeout(3000)
                         ),
 
                         // action two: move again and then turn
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
-                                        drive.moveQuickly(29.9, 46, 0).withTimeout(3000),
-                                        drive.turnQuickly(29.9, 46, 45).withTimeout(3000)
+                                        drive.moveQuickly(29.9, 46).withTimeout(3000),
+                                        drive.turnQuickly(45).withTimeout(3000)
+                                )
+                        ),
+
+                        // action three: return.
+                        new ParallelCommandGroup(
+                                new SequentialCommandGroup(
+                                     drive.turnQuickly(0).withTimeout(2400),
+                                     drive.moveQuickly(0, -20).withTimeout(3000)
                                 )
                         )
                 )
