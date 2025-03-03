@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.OpModes.AUTO;
+package org.firstinspires.ftc.teamcode.Old;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -19,8 +20,9 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
  // FIXME: almost EVERYTHING???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
+@Disabled
 @Autonomous(name = "AutoChamberTest")
-public class AutoChamberTest extends OpMode {
+public class TODELETEARCHIVEDAutoChamberTest extends OpMode {
     Drive drive;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
@@ -74,14 +76,14 @@ public class AutoChamberTest extends OpMode {
                         // score our preload
                         new ParallelCommandGroup(
                                 //arm.highChamber(),
-                                drive.moveQuickly(-3.1, score_y, 0).withTimeout(2000)
+                                drive.moveTo(-3.1, score_y, 0).withTimeout(2000)
                         ),
                         //arm.highChamberScore(true),
                         //arm.highChamberScore(false),
 
                         // get first spike-mark sample
                         new SequentialCommandGroup(
-                                drive.moveQuickly(29.9, -46, -45).withTimeout(2400),
+                                drive.moveTo(29.9, -46, -45).withTimeout(2400),
 //                                drive.turnQuickly(-45).withTimeout(2400),
                                 new SequentialCommandGroup(
                                         doNothing(500)
@@ -93,7 +95,7 @@ public class AutoChamberTest extends OpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                 //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
-                                drive.moveQuickly(30.3, -43.3, -135).withTimeout(1300)
+                                        drive.moveTo(30.3, -43.3, -135).withTimeout(1300)
 //                                drive.turnQuickly(-135).withTimeout(1300)
                                 )
                         ),
@@ -105,7 +107,7 @@ public class AutoChamberTest extends OpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         //arm.moveTo(0,1800,0,0.2,Arm.CLAW_OPEN),
-                                        drive.moveQuickly(40.55, -46, -45).withTimeout(1800)
+                                        drive.moveTo(40.55, -46, -45).withTimeout(1800)
 //                                        drive.turnQuickly(-45).withTimeout(1800)
                                 )
                         ),
@@ -115,7 +117,7 @@ public class AutoChamberTest extends OpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         //arm.moveTo(0,1800,0.5,0.45,Arm.CLAW_CLOSED),
-                                        drive.moveQuickly(30.3, -43.3, -135).withTimeout(1300)
+                                        drive.moveTo(30.3, -43.3, -135).withTimeout(1300)
 //                                        drive.turnQuickly(-135).withTimeout(1300)
                                 )
                         ),
@@ -128,7 +130,7 @@ public class AutoChamberTest extends OpMode {
                                         doNothing(500),
                                         //arm.moveTo(0,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN)
                                         new SequentialCommandGroup(
-                                                drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(1800)
+                                                drive.moveTo(pickup_x, pickup_y, -90).withTimeout(1800)
 //                                                drive.turnQuickly(-90).withTimeout(1800)
                                         )
                                 )
@@ -140,7 +142,7 @@ public class AutoChamberTest extends OpMode {
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
                                         //arm.highChamber(),
-                                        drive.moveQuickly(0.0, score_y, 0).withTimeout(1800)
+                                        drive.moveTo(0.0, score_y, 0).withTimeout(1800)
 //                                        drive.turnQuickly(0).withTimeo, ut(1800)
                                 )
                         ),
@@ -154,7 +156,7 @@ public class AutoChamberTest extends OpMode {
                                         //arm.moveTo(35,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN),
                                         //arm.moveTo(0,10,0.5,Arm.PALM_MIDDLE,Arm.CLAW_OPEN)
                                         new SequentialCommandGroup(
-                                                drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(1800)
+                                                drive.moveTo(pickup_x, pickup_y, -90).withTimeout(1800)
 //                                                drive.turnQuickly(-90).withTimeout(1800)
                                         )
                                 )
@@ -165,7 +167,7 @@ public class AutoChamberTest extends OpMode {
                         // score it
                         new ParallelCommandGroup(
                                 //arm.highChamber(),
-                                drive.moveQuickly(-3.1, score_y,-90).withTimeout(2000)
+                                drive.moveTo(-3.1, score_y, -90).withTimeout(2000)
                         ),
                         //arm.highChamberScore(true),
                         //arm.highChamberScore(false),
@@ -177,7 +179,7 @@ public class AutoChamberTest extends OpMode {
                                         //arm.moveTo(35,10,0.5,0.5,Arm.CLAW_OPEN),
                                         //arm.moveTo(0,10,0.5,0.5,Arm.CLAW_OPEN)
                                         new SequentialCommandGroup(
-                                                drive.moveQuickly(pickup_x, pickup_y, -90).withTimeout(1800)
+                                                drive.moveTo(pickup_x, pickup_y, -90).withTimeout(1800)
 //                                                drive.turnQuickly(-90).withTimeout(1800)
                                         )
                                 )
@@ -188,7 +190,7 @@ public class AutoChamberTest extends OpMode {
                         // score it
                         new ParallelCommandGroup(
                                 new SequentialCommandGroup(
-                                        drive.moveQuickly(6.29, score_y,0).withTimeout(1800)
+                                        drive.moveTo(6.29, score_y, 0).withTimeout(1800)
 //                                        drive.turnQuickly(0).withTimeout(1800)
                                 )//,
                                 //arm.highChamber()
@@ -202,7 +204,7 @@ public class AutoChamberTest extends OpMode {
                                         doNothing(500),
                                         //arm.moveTo(0,1800,0.5,0.5,Arm.CLAW_OPEN)
                                         new SequentialCommandGroup(
-                                                drive.moveQuickly(33.4, -64.9, -90).withTimeout(2800)
+                                                drive.moveTo(33.4, -64.9, -90).withTimeout(2800)
 //                                                drive.turnQuickly(-90).withTimeout(2800)
                                         )
                                 )

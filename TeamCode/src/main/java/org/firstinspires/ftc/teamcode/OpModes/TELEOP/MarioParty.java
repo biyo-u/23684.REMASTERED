@@ -6,8 +6,8 @@ import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
+
 import org.firstinspires.ftc.teamcode.Subsystems.LiftArm;
 
 @Config
@@ -25,7 +25,7 @@ public class MarioParty extends OpMode {
     public void init() {
         CommandScheduler.getInstance().reset();
 
-        liftArm = new LiftArm(hardwareMap, false);
+        liftArm = new LiftArm(hardwareMap);
         battery = hardwareMap.voltageSensor.get("Control Hub");
         controller = new GamepadEx(gamepad2);
 
