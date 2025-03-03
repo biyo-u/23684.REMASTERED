@@ -18,6 +18,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Utilites.GoBildaPinpointDriver;
+import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
 @Config
 public class Drive extends SubsystemBase {
@@ -381,7 +382,7 @@ public class Drive extends SubsystemBase {
         pack.put("Strafe Friction", ffStrafe);
         pack.put("Forward Friction", ffForward);
         //pack.put("Turn Power", turn); FIXME
-        pack.field().drawImage("", 0,0,144,144);
-        pack.fieldOverlay().strokeCircle(currentPosition.getY(DISTANCE_UNIT), -currentPosition.getX(DISTANCE_UNIT), circleRadius).strokeLine(x1, y1, x2, y2);
+        pack.field();
+        pack.fieldOverlay().drawImage(ConstantsPro.FieldURL, 0,0,144,144).strokeCircle(currentPosition.getY(DISTANCE_UNIT), -currentPosition.getX(DISTANCE_UNIT), circleRadius).strokeLine(x1, y1, x2, y2);
     }
 }
