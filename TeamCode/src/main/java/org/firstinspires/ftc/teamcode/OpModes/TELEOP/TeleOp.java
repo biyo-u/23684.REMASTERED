@@ -100,7 +100,7 @@ public abstract class TeleOp extends OpMode {
             parkAlertTriggered = true;
         }
 
-        TelemetryPacket pack = new TelemetryPacket();
+        TelemetryPacket pack = new TelemetryPacket(false);
         pack.put("Elapsed time", runtime.toString());
         pack.put("time", time);
         pack.put("battery", battery.getVoltage());

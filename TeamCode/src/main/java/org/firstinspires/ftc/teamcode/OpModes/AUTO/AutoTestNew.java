@@ -215,7 +215,7 @@ public class AutoTestNew extends OpMode {
         // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
-        TelemetryPacket pack = new TelemetryPacket();
+        TelemetryPacket pack = new TelemetryPacket(false);
         pack.put("Elapsed Time", runtime.toString());
         pack.put("Time", time);
         pack.put("Battery", battery.getVoltage());
