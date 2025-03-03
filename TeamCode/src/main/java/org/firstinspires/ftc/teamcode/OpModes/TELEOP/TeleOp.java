@@ -109,11 +109,10 @@ public abstract class TeleOp extends OpMode {
         Pose2D drivePosition = drive.getPosition();
 
         telemetry.addData("Drive/Strafe", "Right Stick")
-                .addData("Turn", "Left Stick")
-                .addData("Wrist Up/Middle/Down", "Dpad Up & Down")
-                .addData("Claw Open/Closed", "X Button")
-                .addData("-", "-------")
-                .addData("Robot Position", "x = %4.2f, y = %4.2f, h = %4.2f", drivePosition.getX(DistanceUnit.INCH), drivePosition.getY(DistanceUnit.INCH), drivePosition.getHeading(AngleUnit.DEGREES));
+                .addData("Turn", "Left Stick + DPad for Heading Lock")
+                .addData("Wrist Up/Middle/Down", "TBA")
+                .addData("Claw Open/Closed", "TBA")
+                .addData("\n Robot Position", "x = %4.2f, y = %4.2f, h = %4.2f", drivePosition.getX(DistanceUnit.INCH), drivePosition.getY(DistanceUnit.INCH), drivePosition.getHeading(AngleUnit.DEGREES));
 
         telemetry.update();
     }

@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.OpModes.TELEOP;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
@@ -13,9 +14,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
-
 // FIXME: EVERYTHING???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
 
+@Config
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name = "Mario Kart", group = "Opmode")
 public class MarioKart extends OpMode {
     public static double X = 0;
@@ -24,6 +25,9 @@ public class MarioKart extends OpMode {
     GamepadEx controller;
     Drive drive;
     VoltageSensor battery;
+
+    public enum Alliance {RED, BLUE};
+    public Alliance getAlliance() { return Alliance.RED; }
 
     @Override
     public void init() {
@@ -57,15 +61,7 @@ public class MarioKart extends OpMode {
 
         if (controller.wasJustPressed(GamepadKeys.Button.X)) {
             CommandScheduler.getInstance().schedule(
-                    drive.moveQuickly(X, Y)
-            );
-        }
-
-        if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
-            CommandScheduler.getInstance().schedule(
-                    new SequentialCommandGroup(
-                        drive.turnQuickly(HEADING)
-                    )
+                    drive.moveQuickly(X, Y, HEADING)
             );
         }
 
