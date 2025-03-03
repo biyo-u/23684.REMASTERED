@@ -33,7 +33,8 @@ public class LiftArm extends SubsystemBase {
     public static double shoulder_pid_min_f = 0.14;
     public static double extension_pid_f = 0.08;
 
-    public static double EXTENSION_HORIZONTAL_MAX = 1800;
+    // IN TICKS
+    public static double EXTENSION_HORIZONTAL_MAX = 6000;
     public static double EXTENSION_MAX = 2600;  // absolute max extension
     public static double EXTENSION_MIN = 0;
 
@@ -129,8 +130,8 @@ public class LiftArm extends SubsystemBase {
     PIDController extension_control;
     double target_extension = 0;  // in ticks! should be mm
     double current_extension_distance = 0.0;
-
-    MotorGroup ViperSlides;
+    Motor liftMotorLeft;
+    Motor liftMotorRight;
     Motor shoulder;
     double target_angle = 0.0;
     public double grab_angle;
@@ -141,13 +142,13 @@ public class LiftArm extends SubsystemBase {
 
         // extension is a group of two 312 RPM goBILDA motors
         // the left lift motor in the configuration will be set as the leader for the group
-        Motor liftMotorLeft = new Motor(hardwareMap, "liftMotorLeft", Motor.GoBILDA.RPM_312);
+        liftMotorLeft = new Motor(hardwareMap, "liftMotorLeft", Motor.GoBILDA.RPM_117);
         liftMotorLeft.setInverted(true);
-        Motor liftMotorRight = new Motor(hardwareMap, "liftMotorRight", Motor.GoBILDA.RPM_312);
+        liftMotorRight = new Motor(hardwareMap, "liftMotorRight", Motor.GoBILDA.RPM_117);
         liftMotorRight.setInverted(false);
-        ViperSlides = new MotorGroup(liftMotorLeft, liftMotorRight);
+//        ViperSlides = new MotorGroup(liftMotorLeft, liftMotorRight);
 
-        shoulder = new Motor(hardwareMap,"shoulder", Motor.GoBILDA.NONE);
+        shoulder = new Motor(hardwareMap,"shoulder");
 
         shoulder_control = new PIDController(0.0, 0.0, 0.0);
         extension_control = new PIDController(0.0, 0.0, 0.0);
@@ -158,7 +159,8 @@ public class LiftArm extends SubsystemBase {
     public void reset() {
         // important: robot must start with arm down and fully "in" the robot.
         shoulder.stopAndResetEncoder();
-        ViperSlides.stopAndResetEncoder();
+        liftMotorLeft.stopAndResetEncoder();
+        liftMotorRight.stopAndResetEncoder();
     }
 
     // TODO: REWRITE COMMANDS TO FIT OUR USES
@@ -293,6 +295,9 @@ public class LiftArm extends SubsystemBase {
 
         @Override
         public void execute() {
+            double liftSpeed = extension_control.calculate(current_extension_distance, target_extension);
+            liftMotorLeft.set(liftSpeed);
+            liftMotorRight.set(liftSpeed);
         }
 
         @Override
@@ -306,7 +311,8 @@ public class LiftArm extends SubsystemBase {
         public void end(boolean interrupted) {
             // FIXME TODO: do we need to do this?
             shoulder.stopMotor();
-            ViperSlides.stopMotor();
+            liftMotorLeft.stopMotor();
+            liftMotorRight.stopMotor();
 //            wrist_servo.rotateBy(0);
 //            claw_servo.rotateBy(0);
         }
@@ -315,37 +321,38 @@ public class LiftArm extends SubsystemBase {
 
     // special case command for climber, because we want to uncap the
     // "down" motor power so we have enough power to move the robot
-    public class ClimbMove extends CommandBase {
-        public ClimbMove() {
-            addRequirements(LiftArm.this);
-        }
-
-        @Override
-        public void initialize() {
-            target_angle = 5; // we never "really" get here, but ...
-            target_extension = -200;
-            shoulder_control.setSetPoint(target_angle);
-            extension_control.setP(0.01);
-            extension_control.setSetPoint(target_extension);
-            wrist_angle = 0.5;
-            claw_position = CLAW_OPEN;
-        }
-        public void execute() {
-            SHOULDER_MAX_DOWN_POWER = -1.0;
-        }
-
-        @Override
-        public boolean isFinished() {
-            return false;
-        }
-
-        public void end(boolean interrupted) {
-            SHOULDER_MAX_DOWN_POWER = -1.0;
-            // FIXME TODO: do we need to do this?
-            shoulder.stopMotor();
-            ViperSlides.stopMotor();
-        }
-    }
+//    public class ClimbMove extends CommandBase {
+//        public ClimbMove() {
+//            addRequirements(LiftArm.this);
+//        }
+//
+//        @Override
+//        public void initialize() {
+//            target_angle = 5; // we never "really" get here, but ...
+//            target_extension = -200;
+//            shoulder_control.setSetPoint(target_angle);
+//            extension_control.setP(0.01);
+//            extension_control.setSetPoint(target_extension);
+//            wrist_angle = 0.5;
+//            claw_position = CLAW_OPEN;
+//        }
+//        public void execute() {
+//            SHOULDER_MAX_DOWN_POWER = -1.0;
+//        }
+//
+//        @Override
+//        public boolean isFinished() {
+//            return false;
+//        }
+//
+//        public void end(boolean interrupted) {
+//            SHOULDER_MAX_DOWN_POWER = -1.0;
+//            // FIXME TODO: do we need to do this?
+//            shoulder.stopMotor();
+//            liftMotorLeft.stopMotor();
+//            liftMotorRight.stopMotor();
+//        }
+//    }
 
     // all interaction with gamepads should go through this inner class
     public class HumanInputs extends CommandBase {
@@ -536,7 +543,7 @@ public class LiftArm extends SubsystemBase {
         shoulder_control.setPID(shoulderPID.p, shoulderPID.i, shoulderPID.d);
         extension_control.setPID(slidePID.p, slidePID.i, slidePID.d);
         current_shoulder_angle = shoulder.getCurrentPosition() / ticks_per_degrees;
-        current_extension_distance = ViperSlides.getCurrentPosition();
+        current_extension_distance = (double) (liftMotorLeft.getCurrentPosition() + liftMotorRight.getCurrentPosition()) / 2;
 //        // FIXME just for tuning
 //        if (false && camera_open) {
 //            if (palmcam.getWhiteBalanceControl().getWhiteBalanceTemperature() != WHITE_BALANCE) {
@@ -561,13 +568,12 @@ public class LiftArm extends SubsystemBase {
         pack.put("palm_actual", palm_input.getVoltage());
         pack.put("extension_ticks", current_extension_distance);
         pack.put("extension_target", target_extension);
-        pack.put("extension_power", ViperSlides.get());
+        pack.put("extension_power_left", liftMotorLeft.get());
+        pack.put("extension_power_right", liftMotorRight.get());
         pack.put("shoulder_error", current_shoulder_angle-target_angle);
         pack.put("shoulder_actual", current_shoulder_angle);
         pack.put("shoulder_target", target_angle);  // XXX rename one to match
         pack.put("shoulder_power", shoulder.get());
-        pack.put("extension_power", ViperSlides.get());
-//        pack.put("laser_average",laser_average.current_value());
 //        if (vision != null) {
 //            pack.put("vision_scan", scanning_for_piece);
 //            pack.put("vision_lock", locked_for_grab);
