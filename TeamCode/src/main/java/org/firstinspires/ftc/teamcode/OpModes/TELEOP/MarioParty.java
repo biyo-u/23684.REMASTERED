@@ -23,29 +23,29 @@ public class MarioParty extends OpMode {
     VoltageSensor battery;
 
     public void init() {
-        CommandScheduler.getInstance().reset();
-
-        liftArm = new LiftArm(hardwareMap, false);
-        battery = hardwareMap.voltageSensor.get("Control Hub");
-        controller = new GamepadEx(gamepad2);
-
-        // Register Subsystem objects to the scheduler
-        CommandScheduler.getInstance().registerSubsystem(liftArm);
-        liftArm.reset();
+//        CommandScheduler.getInstance().reset();
+//
+//        liftArm = new LiftArm(hardwareMap, false);
+//        battery = hardwareMap.voltageSensor.get("Control Hub");
+//        controller = new GamepadEx(gamepad2);
+//
+//        // Register Subsystem objects to the scheduler
+//        CommandScheduler.getInstance().registerSubsystem(liftArm);
+//        liftArm.reset();
     }
 
     public void init_loop() {
-        liftArm.read_sensors();
-        liftArm.periodic();
+//        liftArm.read_sensors();
+//        liftArm.periodic();
     }
 
     @Override
     public void loop() {
-        controller.readButtons();
-        liftArm.read_sensors();
-
-        if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
-            liftArm.moveTo(SHOULDER_ANGLE,LIFT_EXTENSION,WRIST_ANGLE,CLAW_STATE);
-        }
+//        controller.readButtons();
+//        liftArm.read_sensors();
+//
+//        if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
+//            liftArm.moveTo(SHOULDER_ANGLE,LIFT_EXTENSION,WRIST_ANGLE,CLAW_STATE);
+//        }
     }
 }
