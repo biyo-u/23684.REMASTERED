@@ -71,7 +71,7 @@ public class AutoTestNew extends OpMode {
                         // score our preload
                         new ParallelCommandGroup(
                                 //arm.highChamber(),
-                                drive.moveQuickly(-48, -48, -135).withTimeout(5000)
+                                drive.moveTo(-48, -48, -135).withTimeout(5000)
                         )
 //                        //arm.highChamberScore(true),
 //                        //arm.highChamberScore(false),

@@ -4,48 +4,54 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.arcrobotics.ftclib.command.CommandScheduler;
-import com.arcrobotics.ftclib.command.SequentialCommandGroup;
 import com.arcrobotics.ftclib.gamepad.GamepadEx;
 import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
+import org.firstinspires.ftc.teamcode.Subsystems.Intake;
 
 @Config
 @TeleOp(name = "Mario Kart", group = "Opmode")
 public class MarioKart extends OpMode {
-    public static double X = 0;
-    public static double Y = 0;
+    public static double X = 0.0;
+    public static double Y = 0.0;
     public static double HEADING = 0.0;
+    public static double LIFT = 0.0;
+    public static double ANGLE = 0.0;
     GamepadEx controller;
     Drive drive;
-    VoltageSensor battery;
-
-    public enum Alliance {RED, BLUE};
-    public Alliance getAlliance() { return Alliance.RED; }
+    Arm arm;
+    Intake intake;
 
     @Override
     public void init() {
         CommandScheduler.getInstance().reset();
 
         drive = new Drive(hardwareMap);
-        battery = hardwareMap.voltageSensor.get("Control Hub");
+        arm = new Arm(hardwareMap);
+        intake = new Intake(hardwareMap);
         controller = new GamepadEx(gamepad1);
 
-        // Register Subsystem objects to the scheduler
         CommandScheduler.getInstance().registerSubsystem(drive);
+        CommandScheduler.getInstance().registerSubsystem(arm);
+        CommandScheduler.getInstance().registerSubsystem(intake);
 
         drive.reset();
+        arm.reset();
+        intake.reset();
     }
 
     @Override
     public void init_loop() {
         drive.readSensors();
+        arm.readSensors();
+        intake.readSensors();
     }
 
     @Override
@@ -57,11 +63,24 @@ public class MarioKart extends OpMode {
     public void loop() {
         controller.readButtons();
         drive.readSensors();
-
+        arm.readSensors();
+        intake.readSensors();
 
         if (controller.wasJustPressed(GamepadKeys.Button.X)) {
             CommandScheduler.getInstance().schedule(
-                    drive.moveQuickly(X, Y, HEADING)
+                    drive.moveTo(X, Y, HEADING)
+            );
+        }
+
+        if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
+            CommandScheduler.getInstance().schedule(
+                    arm.liftTo(LIFT)
+            );
+        }
+
+        if (controller.wasJustPressed(GamepadKeys.Button.B)) {
+            CommandScheduler.getInstance().schedule(
+                    intake.riseTo(ANGLE)
             );
         }
 
@@ -69,19 +88,18 @@ public class MarioKart extends OpMode {
 
         TelemetryPacket pack = new TelemetryPacket(false);
         drive.addTelemetry(pack);
+        arm.addTelemetry(pack);
+        intake.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
     }
 
     @Override
     public void stop() {
         drive.readSensors();
+        arm.readSensors();
         drive.stop();
-
-        // TODO: Add robot's current position here
-//        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(hardwareMap.appContext);
-//        SharedPreferences.Editor editor = prefs.edit();
-//        editor.putFloat("heading", (float)drive.getPosition().getHeading(AngleUnit.DEGREES));
-//        editor.apply();
+        arm.stop();
+        intake.stop();
 
         CommandScheduler.getInstance().reset();
     }
