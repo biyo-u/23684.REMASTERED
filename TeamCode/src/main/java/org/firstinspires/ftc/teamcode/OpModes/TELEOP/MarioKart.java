@@ -22,8 +22,8 @@ public class MarioKart extends OpMode {
     public static double X = 0.0;
     public static double Y = 0.0;
     public static double HEADING = 0.0;
-    public static double LIFT = 0.0;
-    public static double ANGLE = 0.0;
+    public static double LIFT_TARGET_TICKS = 0.0;
+    public static double SHOULDER_TARGET_TICKS = 0.0;
     GamepadEx controller;
     Drive drive;
     Arm arm;
@@ -74,13 +74,13 @@ public class MarioKart extends OpMode {
 
         if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
             CommandScheduler.getInstance().schedule(
-                    arm.liftTo(LIFT)
+                    arm.liftTo(LIFT_TARGET_TICKS)
             );
         }
 
         if (controller.wasJustPressed(GamepadKeys.Button.B)) {
             CommandScheduler.getInstance().schedule(
-                    intake.riseTo(ANGLE)
+                    intake.riseTo(SHOULDER_TARGET_TICKS)
             );
         }
 
