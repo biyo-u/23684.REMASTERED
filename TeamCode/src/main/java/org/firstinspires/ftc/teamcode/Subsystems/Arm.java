@@ -12,6 +12,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 public class Arm extends SubsystemBase {
     public static PIDFCoefficients liftPIDF = new PIDFCoefficients(0, 0, 0, 0);
+    Motor liftMotorLeft;
+    Motor liftMotorRight;
     private final MotorGroup lift;
     private final PIDFController liftController;
     // TODO: Find this
@@ -20,7 +22,13 @@ public class Arm extends SubsystemBase {
     private double liftTarget = 0;
 
     public Arm(HardwareMap hardwareMap) {
-        this.lift = new MotorGroup(new Motor(hardwareMap, "liftMotorLeft"), new Motor(hardwareMap, "liftMotorRight"));
+        liftMotorLeft = new Motor(hardwareMap, "liftMotorLeft", Motor.GoBILDA.RPM_117);
+        liftMotorLeft.setInverted(true);
+
+        liftMotorRight = new Motor(hardwareMap, "liftMotorRight", Motor.GoBILDA.RPM_117);
+        liftMotorRight.setInverted(false);
+
+        this.lift = new MotorGroup(liftMotorLeft, liftMotorRight);
         this.liftController = new PIDFController(liftPIDF.p, liftPIDF.i, liftPIDF.d, liftPIDF.f);
         double liftTolerance = 0.1 * liftTicksPerInch;
         this.liftController.setTolerance(liftTolerance);
@@ -41,14 +49,6 @@ public class Arm extends SubsystemBase {
 
     public void stop() {
         lift.set(0);
-    }
-
-    public void readSensors() {
-        liftPosition = lift.getCurrentPosition();
-    }
-
-    public void addTelemetry(TelemetryPacket telemetryPacket) {
-        telemetryPacket.put("Lift Position", liftPosition);
     }
 
     public class LiftTo extends CommandBase {
@@ -72,5 +72,13 @@ public class Arm extends SubsystemBase {
         public void end(boolean interrupted) {
             lift.set(0);
         }
+    }
+
+    public void readSensors() {
+        liftPosition = lift.getCurrentPosition();
+    }
+
+    public void addTelemetry(TelemetryPacket telemetryPacket) {
+        telemetryPacket.put("Lift Position", liftPosition);
     }
 }
