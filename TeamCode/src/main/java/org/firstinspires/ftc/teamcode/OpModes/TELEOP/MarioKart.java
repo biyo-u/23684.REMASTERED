@@ -12,9 +12,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.teamcode.Subsystems.Arm;
+import org.firstinspires.ftc.teamcode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Intake;
+import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 
 @Config
 @TeleOp(name = "Mario Kart", group = "Opmode")
@@ -26,32 +26,32 @@ public class MarioKart extends OpMode {
     public static double SHOULDER_TARGET_TICKS = 0.0;
     GamepadEx controller;
     Drive drive;
+    Lift lift;
     Arm arm;
-    Intake intake;
 
     @Override
     public void init() {
         CommandScheduler.getInstance().reset();
 
         drive = new Drive(hardwareMap);
+        lift = new Lift(hardwareMap);
         arm = new Arm(hardwareMap);
-        intake = new Intake(hardwareMap);
         controller = new GamepadEx(gamepad1);
 
         CommandScheduler.getInstance().registerSubsystem(drive);
+        CommandScheduler.getInstance().registerSubsystem(lift);
         CommandScheduler.getInstance().registerSubsystem(arm);
-        CommandScheduler.getInstance().registerSubsystem(intake);
 
         drive.reset();
+        lift.reset();
         arm.reset();
-        intake.reset();
     }
 
     @Override
     public void init_loop() {
         drive.readSensors();
+        lift.readSensors();
         arm.readSensors();
-        intake.readSensors();
     }
 
     @Override
@@ -63,8 +63,8 @@ public class MarioKart extends OpMode {
     public void loop() {
         controller.readButtons();
         drive.readSensors();
+        lift.readSensors();
         arm.readSensors();
-        intake.readSensors();
 
         if (controller.wasJustPressed(GamepadKeys.Button.X)) {
             CommandScheduler.getInstance().schedule(
@@ -74,13 +74,13 @@ public class MarioKart extends OpMode {
 
         if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
             CommandScheduler.getInstance().schedule(
-                    arm.liftTo(LIFT_TARGET_TICKS)
+                    lift.liftTo(LIFT_TARGET_TICKS)
             );
         }
 
         if (controller.wasJustPressed(GamepadKeys.Button.B)) {
             CommandScheduler.getInstance().schedule(
-                    intake.riseTo(SHOULDER_TARGET_TICKS)
+                    arm.riseTo(SHOULDER_TARGET_TICKS)
             );
         }
 
@@ -88,18 +88,18 @@ public class MarioKart extends OpMode {
 
         TelemetryPacket pack = new TelemetryPacket(false);
         drive.addTelemetry(pack);
+        lift.addTelemetry(pack);
         arm.addTelemetry(pack);
-        intake.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
     }
 
     @Override
     public void stop() {
         drive.readSensors();
-        arm.readSensors();
+        lift.readSensors();
         drive.stop();
+        lift.stop();
         arm.stop();
-        intake.stop();
 
         CommandScheduler.getInstance().reset();
     }

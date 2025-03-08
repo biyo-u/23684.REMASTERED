@@ -7,96 +7,79 @@ import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
-import com.arcrobotics.ftclib.hardware.motors.MotorGroup;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @Config
 public class Arm extends SubsystemBase {
-    public static PIDFCoefficients liftPIDF = new PIDFCoefficients(0.0028, 0, 0, 0);
-    Motor liftMotorLeft;
-    Motor liftMotorRight;
-    private final MotorGroup lift;
-    private final double liftTicksPerInch = 1; // TODO: CALCULATE TICKS TO INCH IN FUTURE!!!
-    private double liftPosition = 0;
-    private double liftTarget = 0;
-    private double liftPower = 0;
+
+    public static PIDFCoefficients shoulderPIDF = new PIDFCoefficients(0.002, 0, 0, 0);
+    private final Motor shoulder;
+    public static double shoulderTolerance;
+    private double shoulderPosition = 0;
+    private double shoulderTarget = 0;
+    public static double shoulderTicksPerAngle = 1;
+    public double shoulderPower = 0;
 
     public Arm(HardwareMap hardwareMap) {
-        liftMotorLeft = new Motor(hardwareMap, "liftMotorLeft", Motor.GoBILDA.RPM_117);
-        liftMotorLeft.setInverted(true);
-        liftMotorLeft.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-        liftMotorRight = new Motor(hardwareMap, "liftMotorRight", Motor.GoBILDA.RPM_117);
-        liftMotorRight.setInverted(false);
-        liftMotorRight.setZeroPowerBehavior(Motor.ZeroPowerBehavior.BRAKE);
-
-
-        this.lift = new MotorGroup(liftMotorLeft, liftMotorRight);
+        this.shoulder = new Motor(hardwareMap, "shoulder");
     }
 
     public void reset() {
-        lift.stopAndResetEncoder();
-        liftMotorLeft.stopAndResetEncoder();
-        liftMotorRight.stopAndResetEncoder();
+        shoulder.stopAndResetEncoder();
     }
 
-    public Command liftTo(double target) {
-        return new LiftTo(target);
+    public Command riseTo (double target) {
+        return new RiseTo(target);
     }
 
-    @Override
     public void periodic() {
-        lift.set(liftPower);
+        shoulder.set(shoulderPower);
     }
 
-    public void stop() {
-        lift.set(0);
-    }
+    public class RiseTo extends CommandBase {
 
+        private final PIDFController shoulderController;
 
-    public class LiftTo extends CommandBase {
-        private final PIDFController liftController;
-        public LiftTo(double target) {
-            liftController = new PIDFController(liftPIDF.p, liftPIDF.i, liftPIDF.d, liftPIDF.f);
-            double liftTolerance = 0.1 * liftTicksPerInch;
-            liftController.setTolerance(liftTolerance);
-            liftTarget = target * liftTicksPerInch; // CURRENTLY ACCEPTS ONLY TICKS. CALCULATE FOR TICKS TO INCH IN FUTURE!!!
+        public RiseTo(double target) {
+            shoulderController = new PIDFController(shoulderPIDF.p, shoulderPIDF.i, shoulderPIDF.d, shoulderPIDF.f);
+            shoulderController.setTolerance(shoulderTolerance);
+            shoulderTarget = target * shoulderTicksPerAngle;
+
             addRequirements(Arm.this);
         }
 
         @Override
         public void initialize() {
-            lift.set(1);
+            shoulder.set(0);
         }
 
         @Override
         public void execute() {
-            liftPower = liftController.calculate(liftPosition, liftTarget);
+            shoulderPower = shoulderController.calculate(shoulderPosition, shoulderTarget);
         }
 
         @Override
         public boolean isFinished() {
-            return liftController.atSetPoint();
+            return shoulderController.atSetPoint();
         }
 
         @Override
         public void end(boolean interrupted) {
-            lift.set(0);
+            shoulder.set(0);
         }
     }
 
+    public void stop() {
+        shoulder.set(0);
+    }
+
     public void readSensors() {
-//        liftPosition = lift.getCurrentPosition();
-        double leftLiftPosition = liftMotorLeft.getCurrentPosition();
-        double rightLiftPosition = liftMotorRight.getCurrentPosition();
-        liftPosition = (leftLiftPosition + rightLiftPosition) / 2;
+        shoulderPosition = shoulder.getCurrentPosition();
     }
 
     public void addTelemetry(TelemetryPacket telemetryPacket) {
-        telemetryPacket.put("Lift Position", liftPosition);
-        telemetryPacket.put("Right Lift Position", liftMotorRight.getCurrentPosition());
-        telemetryPacket.put("Left Lift Position", liftMotorLeft.getCurrentPosition());
-        telemetryPacket.put("Target Lift", liftTarget);
+        telemetryPacket.put("Shoulder Position", shoulderPosition);
+        telemetryPacket.put("Target Shoulder", shoulderTarget);
     }
 }
