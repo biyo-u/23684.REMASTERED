@@ -41,9 +41,9 @@ public class OldTeleOp extends OpMode {
         }
 
         // Wrist
-        if (gamepad2.x){
+        if (gamepad2.b){
             robot.intake.wristUp();
-        } else if (gamepad2.b) {
+        } else if (gamepad2.x) {
             robot.intake.wristDown();
         }
 

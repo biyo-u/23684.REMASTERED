@@ -4,7 +4,7 @@ public class ConstantsPro {
 
     public static class SHOULDER_PRESETS {
         public static double CHAMBER = 3500; // directly parallel to floor
-        public static double BASKET = 5000; // optimal angle for scoring basket
+        public static double BASKET = 4500; // optimal angle for scoring basket
         public static double COLLECT_SPECIMEN = 2500; // optimal angle for collecting specimen from human player/observation zone
         public static double HOME = 0;
         public static double COLLECT_SAMPLE = 1000; // TODO: Find specific value
@@ -20,8 +20,8 @@ public class ConstantsPro {
     }
 
     public static class WRIST_AND_CLAW_PRESETS {
-        public static double WRIST_UP = 0;
-        public static double WRIST_DOWN = 1;
+        public static double WRIST_UP = 1;
+        public static double WRIST_DOWN = 0;
         public static double CLAW_CLOSED = 1;
         public static double CLAW_OPEN = 0;
         public static double WRIST_HALFWAY = 0.5;
