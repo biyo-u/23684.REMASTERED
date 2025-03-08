@@ -7,7 +7,7 @@ import org.firstinspires.ftc.teamcode.Old.Subsystems.LegacySubsystems.Robot;
 
 // TODO: DELETE THIS WHEN IT IS NOT NECESSARY, WHICH IS SOMETHING THAT WILL BE DETERMINED AT A TIME IN THE NEAR FUTURE. TILL THEN, TOUCH THIS NOT!!!
 
-@TeleOp (name = "Arm 2.0 Testing (DELETE LATER)")
+//@TeleOp (name = "Arm 2.0 Testing (DELETE LATER)")
 public class TempNewArmTest extends OpMode {
     private Robot robot;
 

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import org.firstinspires.ftc.teamcode.Subsystems.LiftArm;
 
 @Config
-@TeleOp(name = "Mario Party 8")
+//@TeleOp(name = "Mario Party 8")
 public class MarioParty extends OpMode {
 
     public static double LIFT_EXTENSION = 0;

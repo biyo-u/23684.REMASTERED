@@ -17,7 +17,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Arm;
 
 @Config
-@TeleOp(name = "Mario Kart", group = "Opmode")
+//@TeleOp(name = "Mario Kart", group = "Opmode")
 public class MarioKart extends OpMode {
     public static double X = 0.0;
     public static double Y = 0.0;

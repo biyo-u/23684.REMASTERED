@@ -17,7 +17,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 
-@Autonomous(name = "AutoTest New!!")
+//@Autonomous(name = "AutoTest New!!")
 public class AutoTestNew extends OpMode {
     Drive drive;
     VoltageSensor battery;
