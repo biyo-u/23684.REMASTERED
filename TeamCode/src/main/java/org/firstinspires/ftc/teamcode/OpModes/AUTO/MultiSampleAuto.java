@@ -97,7 +97,7 @@ public class MultiSampleAuto extends OpMode {
 
                         // move to next specimen!!
                         new ParallelCommandGroup(
-                                drive.moveTo(-48, -36, 0).withTimeout(SHORT_TIMEOUT),
+                                drive.moveTo(-48, -40.75, 0).withTimeout(SHORT_TIMEOUT),
                                 hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.HOME).withTimeout(SHORT_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT)

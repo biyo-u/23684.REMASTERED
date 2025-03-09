@@ -77,7 +77,7 @@ public class Lift extends SubsystemBase {
 
         @Override
         public boolean isFinished() {
-            return liftController.atSetPoint();
+            return Math.abs(liftPosition - liftTarget) < 10;
         }
 
         @Override

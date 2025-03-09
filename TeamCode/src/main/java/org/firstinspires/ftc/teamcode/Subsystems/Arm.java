@@ -61,7 +61,7 @@ public class Arm extends SubsystemBase {
 
         @Override
         public boolean isFinished() {
-            return shoulderController.atSetPoint();
+            return Math.abs(shoulderPosition - shoulderTarget) < 10;
         }
 
         @Override
