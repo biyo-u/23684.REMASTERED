@@ -11,7 +11,7 @@ public class ConstantsPro {
         public static double BASKET = 4500; // optimal angle for scoring basket
         public static double COLLECT_SPECIMEN = 2500; // optimal angle for collecting specimen from human player/observation zone
         public static double HOME = 0;
-        public static double COLLECT_SAMPLE = 1000; // TODO: Find specific value
+        public static double COLLECT_SAMPLE = 600; // TODO: Find specific value
     }
 
     public static class LIFT_PRESETS {

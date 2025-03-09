@@ -82,26 +82,26 @@ public class MultiSampleAuto extends OpMode {
                         ),
 
                         // move to baskets
-                        new SequentialCommandGroup(
-                                drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
-                                drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
-                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT)
-                        ),
+                        drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
+                        drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
+                        hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
 
                         // release preload
-                        new SequentialCommandGroup(
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
+                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT),
 
-                        ),
+                        drive.moveTo(-48, -41, 0).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                        lift.liftTo(ConstantsPro.LIFT_PRESETS.HOME).withTimeout(SHORT_TIMEOUT),
+                        arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT)
 
-                        // move to next specimen!!
-                        new ParallelCommandGroup(
-                                drive.moveTo(-48, -40.75, 0).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.HOME).withTimeout(SHORT_TIMEOUT),
-                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT)
-                        )
+//                        // move to next specimen!!
+//                        new ParallelCommandGroup(
+//                                drive.moveTo(-48, -40.75, 0).withTimeout(SHORT_TIMEOUT),
+//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.HOME).withTimeout(SHORT_TIMEOUT),
+//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT)
+//                        )
                 )
         );
     }
