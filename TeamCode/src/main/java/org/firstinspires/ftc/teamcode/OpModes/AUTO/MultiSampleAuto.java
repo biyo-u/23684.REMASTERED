@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Hand;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
-@Autonomous(name = "Basket Auto", preselectTeleOp = "TeleOp")
+@Autonomous(name = "MultiSample Basket Auto", preselectTeleOp = "TeleOp")
 public class MultiSampleAuto extends OpMode {
 
     public long SECONDS_TO_MILLISECONDS = 1000;
