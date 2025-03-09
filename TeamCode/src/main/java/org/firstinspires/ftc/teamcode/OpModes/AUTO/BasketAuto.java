@@ -77,13 +77,13 @@ public class BasketAuto extends OpMode {
                 new SequentialCommandGroup(
                         // raise lift and move forward a bit
                         new ParallelCommandGroup(
-                                drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET).withTimeout(LONG_TIMEOUT)
                         ),
 
                         // move to baskets
-                        new ParallelCommandGroup(
+                        new SequentialCommandGroup(
+                                drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
                                 drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
                                 hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT)
                         ),
