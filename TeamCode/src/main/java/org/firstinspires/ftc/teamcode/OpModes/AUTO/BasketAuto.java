@@ -21,18 +21,19 @@ import org.firstinspires.ftc.teamcode.Subsystems.Hand;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
-@Autonomous(name = "Basket Auto", preselectTeleOp = "TeleOp")
+@Autonomous(name = "Real Basket Auto", preselectTeleOp = "TeleOp")
 public class BasketAuto extends OpMode {
 
     public long SECONDS_TO_MILLISECONDS = 1000;
     public long LONG_TIMEOUT = 5 * SECONDS_TO_MILLISECONDS;
-    public long SHORT_TIMEOUT = SECONDS_TO_MILLISECONDS;
-    Drive drive; // drivetrain
-    Lift lift; // viper slides / elevators
-    Arm arm; // shoulder
-    Hand hand; // claw and wrist
+    public long SHORT_TIMEOUT = (long) (1.5 * SECONDS_TO_MILLISECONDS);
+    Drive drive;
+    Lift lift;
+    Arm arm;
+    Hand hand;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
+    TelemetryPacket telemetryPacket;
 
     @Override
     public void init() {
@@ -43,6 +44,7 @@ public class BasketAuto extends OpMode {
         arm = new Arm(hardwareMap);
         hand = new Hand(hardwareMap);
         battery = hardwareMap.voltageSensor.get("Control Hub");
+        telemetryPacket = new TelemetryPacket(false);
 
         CommandScheduler.getInstance().registerSubsystem(drive);
         CommandScheduler.getInstance().registerSubsystem(lift);
@@ -55,44 +57,69 @@ public class BasketAuto extends OpMode {
         hand.reset();
     }
 
-    @Override
-    public void init_loop() {
-        drive.readSensors();
-        lift.readSensors();
-        arm.readSensors();
-        hand.readSensors();
-    }
-
-    public Command doNothing(long timeout) {
+    public Command pause(long timeout) {
         return new CommandBase() {
         }.withTimeout(timeout);
     }
 
     @Override
+    public void init_loop() {
+        drive.readSensors();
+        lift.readSensors();
+        hand.readSensors();
+    }
+
+    @Override
     public void start() {
-        drive.setPosition(new Pose2D(DistanceUnit.INCH, -32.25, -62, AngleUnit.DEGREES, 0));
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, -32.25, -62, AngleUnit.DEGREES, 0)); // one sample from the right tile edge
         runtime.reset();
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-                        // raise lift and move forward a bit
                         new ParallelCommandGroup(
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
-                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET).withTimeout(LONG_TIMEOUT)
+                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
+                                drive.moveTo(-32.25, -60, 0).withTimeout(LONG_TIMEOUT)
                         ),
-
-                        // move to baskets
                         new SequentialCommandGroup(
-                                drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
                                 drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
-                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT)
+                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                         ),
-
-                        // release preload
                         new SequentialCommandGroup(
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT)
-                        )
+                                drive.moveTo(-47, -40, 0).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
+                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
+                        ),
+                        pause(1000),
+                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                 )
+
+                // TODO: TRY THIS NEW CODE OUT:
+//                new SequentialCommandGroup(
+//                        new ParallelCommandGroup(
+//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
+//                                new SequentialCommandGroup(
+//                                        drive.moveTo(-32.25, -60, 0).withTimeout(LONG_TIMEOUT),
+//                                        drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT)
+//                                )
+//                        ),
+//                        new SequentialCommandGroup(
+//                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
+//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+//                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
+//                        ),
+//                        new SequentialCommandGroup(
+//                                drive.moveTo(-47, -40, 0).withTimeout(SHORT_TIMEOUT),
+//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
+//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
+//                        ),
+//                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
+//                )
         );
     }
 
@@ -100,7 +127,6 @@ public class BasketAuto extends OpMode {
     public void loop() {
         drive.readSensors();
         lift.readSensors();
-        arm.readSensors();
         hand.readSensors();
 
         // Run the CommandScheduler instance
@@ -115,13 +141,13 @@ public class BasketAuto extends OpMode {
         arm.addTelemetry(pack);
         hand.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 
     @Override
     public void stop() {
         drive.readSensors();
         lift.readSensors();
-        arm.readSensors();
         hand.readSensors();
 
         drive.stop();
