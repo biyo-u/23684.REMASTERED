@@ -8,8 +8,6 @@ import com.arcrobotics.ftclib.command.SubsystemBase;
 import com.arcrobotics.ftclib.controller.PIDController;
 import com.arcrobotics.ftclib.controller.PIDFController;
 import com.arcrobotics.ftclib.drivebase.MecanumDrive;
-import com.arcrobotics.ftclib.gamepad.GamepadEx;
-import com.arcrobotics.ftclib.gamepad.GamepadKeys;
 import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
@@ -45,7 +43,8 @@ public class Drive extends SubsystemBase {
     private Pose2D currentPosition;
     private Pose2D previousPosition;
     private double headingUnnormalizeMultiplier = 0;
-    private Pose2D target = new Pose2D(DISTANCE_UNIT, 0, 0, ANGLE_UNIT, 0);
+
+    private String telemetryString = "";
 
     public Drive(HardwareMap hardwareMap) {
         Motor motorFL = new Motor(hardwareMap, "frontLeft", Motor.GoBILDA.RPM_312);
@@ -147,65 +146,65 @@ public class Drive extends SubsystemBase {
         drivebase.driveFieldCentric(x, y, heading, currentPosition.getHeading(ANGLE_UNIT));
     }
 
-    public class HumanInputs extends CommandBase {
-        private final PIDFController quickTurn;
-        GamepadEx driver;
+//    public class HumanInputs extends CommandBase {
+//        private final PIDFController quickTurn;
+//        GamepadEx driver;
+//
+//        public HumanInputs(GamepadEx driver) {
+//            this.driver = driver;
+//            addRequirements(Drive.this);
+//
+//            quickTurn = new PIDController(0.035, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
+//            quickTurn.setTolerance(1);
+//        }
+//
+//        @Override
+//        public void execute() {
+////            strafe = scaleInputs(driver.getRightX());
+////            forward = scaleInputs(-driver.getRightY());
+//            strafe = -driver.getRightX();
+//            forward = -driver.getRightY();
+//            double leftX = driver.getLeftX();
+//            double DEAD_ZONE = 0.1;
+//            if (Math.abs(leftX) > DEAD_ZONE)
+//                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, target.getHeading(ANGLE_UNIT) - TURN_SPEED * leftX);
+//            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_UP))
+//                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 0);
+//            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
+//                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 180);
+//            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))
+//                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 90);
+//            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
+//                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, -90);
+//
+////            double[] headings = headingCalculations(currentPosition.getHeading(ANGLE_UNIT), target.getHeading(ANGLE_UNIT));
+////            double currentHeading = headings[0];
+////            double targetHeading = headings[1];
+////            turn = quickTurn.calculate(currentHeading, targetHeading);
+//            turn = quickTurn.calculate(currentPosition.getHeading(ANGLE_UNIT), target.getHeading(ANGLE_UNIT));
+//
+//            if (turn > STATIC_F_SENSITIVE) ffTurn = HEADING_PID_QUICK.f;
+//            if (turn < -STATIC_F_SENSITIVE) ffTurn = -HEADING_PID_QUICK.f;
+//            turn += ffTurn;
+//            turn = -turn;
+//
+//            // Left trigger for turbo mode
 
-        public HumanInputs(GamepadEx driver) {
-            this.driver = driver;
-            addRequirements(Drive.this);
-
-            quickTurn = new PIDController(0.035, HEADING_PID_QUICK.i, HEADING_PID_QUICK.d);
-            quickTurn.setTolerance(1);
-        }
-
-        @Override
-        public void execute() {
-//            strafe = scaleInputs(driver.getRightX());
-//            forward = scaleInputs(-driver.getRightY());
-            strafe = -driver.getRightX();
-            forward = -driver.getRightY();
-            double leftX = driver.getLeftX();
-            double DEAD_ZONE = 0.1;
-            if (Math.abs(leftX) > DEAD_ZONE)
-                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, target.getHeading(ANGLE_UNIT) - TURN_SPEED * leftX);
-            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_UP))
-                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 0);
-            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_DOWN))
-                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 180);
-            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_LEFT))
-                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, 90);
-            if (driver.wasJustPressed(GamepadKeys.Button.DPAD_RIGHT))
-                target = new Pose2D(DISTANCE_UNIT, target.getX(DISTANCE_UNIT), target.getY(DISTANCE_UNIT), ANGLE_UNIT, -90);
-
-//            double[] headings = headingCalculations(currentPosition.getHeading(ANGLE_UNIT), target.getHeading(ANGLE_UNIT));
-//            double currentHeading = headings[0];
-//            double targetHeading = headings[1];
-//            turn = quickTurn.calculate(currentHeading, targetHeading);
-            turn = quickTurn.calculate(currentPosition.getHeading(ANGLE_UNIT), target.getHeading(ANGLE_UNIT));
-
-            if (turn > STATIC_F_SENSITIVE) ffTurn = HEADING_PID_QUICK.f;
-            if (turn < -STATIC_F_SENSITIVE) ffTurn = -HEADING_PID_QUICK.f;
-            turn += ffTurn;
-            turn = -turn;
-
-            // Left trigger for turbo mode
-//            if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5){
-//                turbo(true);
-//            } else {
-//                turbo(false);
-//            }
-        }
-
-        public double scaleInputs(double input) {
-            double DEAD_ZONE = 0.1;
-            if (Math.abs(input) > DEAD_ZONE)
-                return Math.pow(Math.abs(input), 2) * Math.signum(input);
-            else
-                return 0;
-        }
-    }
-
+    /// /            if (driver.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER) > 0.5){
+    /// /                turbo(true);
+    /// /            } else {
+    /// /                turbo(false);
+    /// /            }
+//        }
+//
+//        public double scaleInputs(double input) {
+//            double DEAD_ZONE = 0.1;
+//            if (Math.abs(input) > DEAD_ZONE)
+//                return Math.pow(Math.abs(input), 2) * Math.signum(input);
+//            else
+//                return 0;
+//        }
+//    }
     public void readSensors() {
         Pose2D pinpointPosition = pinpoint.getPosition();
         currentPosition = new Pose2D(DISTANCE_UNIT, pinpointPosition.getX(DISTANCE_UNIT), pinpointPosition.getY(DISTANCE_UNIT), ANGLE_UNIT, -pinpointPosition.getHeading(ANGLE_UNIT));
@@ -214,10 +213,11 @@ public class Drive extends SubsystemBase {
     public void addTelemetry(TelemetryPacket pack) {
         pack.put("Current X", currentPosition.getX(DISTANCE_UNIT));
         pack.put("Current Y", currentPosition.getY(DISTANCE_UNIT));
-        pack.put("Target X", target.getX(DISTANCE_UNIT));
-        pack.put("Target Y", target.getY(DISTANCE_UNIT));
-        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
+//        pack.put("Target X", target.getX(DISTANCE_UNIT));
+//        pack.put("Target Y", target.getY(DISTANCE_UNIT));
+//        pack.put("Target Heading", target.getHeading(ANGLE_UNIT));
         pack.put("Current Heading", unnormalizeHeading(currentPosition.getHeading(ANGLE_UNIT)));
+        pack.put("Status: ", telemetryString);
 
         // Draw robot on field
 
@@ -237,6 +237,7 @@ public class Drive extends SubsystemBase {
         private final PIDFController quickStrafe;
         private final PIDFController quickForward;
         private final PIDFController quickTurn;
+        private Pose2D target = new Pose2D(DISTANCE_UNIT, 0, 0, ANGLE_UNIT, 0);
 
         public MoveTo(double x, double y, double h) {
             target = new Pose2D(DISTANCE_UNIT, x, y, ANGLE_UNIT, h);
@@ -295,6 +296,9 @@ public class Drive extends SubsystemBase {
             x = 0;
             y = 0;
             heading = 0;
+
+            telemetryString += "Finished move to: " + target.getX(DISTANCE_UNIT) + ", " + target.getY(DISTANCE_UNIT) + ", " + target.getHeading(ANGLE_UNIT);
+
             stop();
         }
     }

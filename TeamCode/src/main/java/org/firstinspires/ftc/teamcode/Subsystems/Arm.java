@@ -14,11 +14,8 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 public class Arm extends SubsystemBase {
 
     public static PIDFCoefficients shoulderPIDF = new PIDFCoefficients(0.002, 0, 0, 0);
-    private final Motor shoulder;
-    public static double shoulderTolerance;
-    private double shoulderPosition = 0;
-    private double shoulderTarget = 0;
     public static double shoulderTicksPerAngle = 1;
+    private final Motor shoulder;
     public double shoulderPower = 0;
 
     public Arm(HardwareMap hardwareMap) {
@@ -29,22 +26,37 @@ public class Arm extends SubsystemBase {
         shoulder.stopAndResetEncoder();
     }
 
-    public Command riseTo (double target) {
-        return new RiseTo(target);
+    public Command riseTo(double target, TelemetryPacket telemetryPacket) {
+        return new RiseTo(target, telemetryPacket);
     }
 
     public void periodic() {
         shoulder.set(shoulderPower);
     }
 
+    public void stop() {
+        shoulder.set(0);
+    }
+
+    public void addTelemetry(TelemetryPacket telemetryPacket) {
+    }
+
     public class RiseTo extends CommandBase {
-
+        public static double shoulderTolerance;
         private final PIDFController shoulderController;
+        TelemetryPacket telemetryPacket;
+        private double shoulderTarget;
 
-        public RiseTo(double target) {
+        public RiseTo(double target, TelemetryPacket telemetryPacket) {
+            this.telemetryPacket = telemetryPacket;
+
             shoulderController = new PIDFController(shoulderPIDF.p, shoulderPIDF.i, shoulderPIDF.d, shoulderPIDF.f);
             shoulderController.setTolerance(shoulderTolerance);
             shoulderTarget = target * shoulderTicksPerAngle;
+
+            if (shoulderTarget < 100) {
+                shoulderTarget = 100;
+            }
 
             addRequirements(Arm.this);
         }
@@ -56,30 +68,20 @@ public class Arm extends SubsystemBase {
 
         @Override
         public void execute() {
-            shoulderPower = shoulderController.calculate(shoulderPosition, shoulderTarget);
+            shoulderPower = shoulderController.calculate(shoulder.getCurrentPosition(), shoulderTarget);
+
+            telemetryPacket.put("Shoulder Target", shoulderTarget);
+            telemetryPacket.put("Shoulder Position", shoulder.getCurrentPosition());
         }
 
         @Override
         public boolean isFinished() {
-            return Math.abs(shoulderPosition - shoulderTarget) < 10;
+            return shoulderController.atSetPoint();
         }
 
         @Override
         public void end(boolean interrupted) {
-            shoulder.set(0);
+            stop();
         }
-    }
-
-    public void stop() {
-        shoulder.set(0);
-    }
-
-    public void readSensors() {
-        shoulderPosition = shoulder.getCurrentPosition();
-    }
-
-    public void addTelemetry(TelemetryPacket telemetryPacket) {
-        telemetryPacket.put("Shoulder Position", shoulderPosition);
-        telemetryPacket.put("Target Shoulder", shoulderTarget);
     }
 }

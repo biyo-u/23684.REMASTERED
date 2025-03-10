@@ -1,14 +1,13 @@
 package org.firstinspires.ftc.teamcode.OpModes.TELEOP;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
-import org.firstinspires.ftc.teamcode.Old.Utilities.MoreOld.Constants;
 import org.firstinspires.ftc.teamcode.Old.Subsystems.LegacySubsystems.Robot;
+import org.firstinspires.ftc.teamcode.Old.Utilities.MoreOld.Constants;
 
 import java.util.Locale;
 
@@ -41,7 +40,7 @@ public class OldTeleOp extends OpMode {
         }
 
         // Wrist
-        if (gamepad2.b){
+        if (gamepad2.b) {
             robot.intake.wristUp();
         } else if (gamepad2.x) {
             robot.intake.wristDown();

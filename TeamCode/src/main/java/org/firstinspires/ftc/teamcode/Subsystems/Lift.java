@@ -14,12 +14,11 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @Config
 public class Lift extends SubsystemBase {
     public static PIDFCoefficients liftPIDF = new PIDFCoefficients(0.0028, 0, 0, 0);
-    Motor liftMotorLeft;
-    Motor liftMotorRight;
     private final MotorGroup lift;
     private final double liftTicksPerInch = 1; // TODO: CALCULATE TICKS TO INCH IN FUTURE!!!
+    Motor liftMotorLeft;
+    Motor liftMotorRight;
     private double liftPosition = 0;
-    private double liftTarget = 0;
     private double liftPower = 0;
 
     public Lift(HardwareMap hardwareMap) {
@@ -54,9 +53,23 @@ public class Lift extends SubsystemBase {
         lift.set(0);
     }
 
+    public void readSensors() {
+//        liftPosition = lift.getCurrentPosition();
+        double leftLiftPosition = liftMotorLeft.getCurrentPosition();
+        double rightLiftPosition = liftMotorRight.getCurrentPosition();
+        liftPosition = (leftLiftPosition + rightLiftPosition) / 2;
+    }
+
+    public void addTelemetry(TelemetryPacket telemetryPacket) {
+        telemetryPacket.put("Lift Position", liftPosition);
+        telemetryPacket.put("Right Lift Position", liftMotorRight.getCurrentPosition());
+        telemetryPacket.put("Left Lift Position", liftMotorLeft.getCurrentPosition());
+    }
 
     public class LiftTo extends CommandBase {
         private final PIDFController liftController;
+        private final double liftTarget;
+
         public LiftTo(double target) {
             liftController = new PIDFController(liftPIDF.p, liftPIDF.i, liftPIDF.d, liftPIDF.f);
             double liftTolerance = 0.1 * liftTicksPerInch;
@@ -85,19 +98,5 @@ public class Lift extends SubsystemBase {
         public void end(boolean interrupted) {
             lift.set(0);
         }
-    }
-
-    public void readSensors() {
-//        liftPosition = lift.getCurrentPosition();
-        double leftLiftPosition = liftMotorLeft.getCurrentPosition();
-        double rightLiftPosition = liftMotorRight.getCurrentPosition();
-        liftPosition = (leftLiftPosition + rightLiftPosition) / 2;
-    }
-
-    public void addTelemetry(TelemetryPacket telemetryPacket) {
-        telemetryPacket.put("Lift Position", liftPosition);
-        telemetryPacket.put("Right Lift Position", liftMotorRight.getCurrentPosition());
-        telemetryPacket.put("Left Lift Position", liftMotorLeft.getCurrentPosition());
-        telemetryPacket.put("Target Lift", liftTarget);
     }
 }

@@ -2,13 +2,11 @@ package org.firstinspires.ftc.teamcode.OpModes.AUTO;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
-
 import com.arcrobotics.ftclib.command.Command;
 import com.arcrobotics.ftclib.command.CommandBase;
 import com.arcrobotics.ftclib.command.CommandScheduler;
 import com.arcrobotics.ftclib.command.ParallelCommandGroup;
 import com.arcrobotics.ftclib.command.SequentialCommandGroup;
-
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
@@ -17,27 +15,25 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-
+import org.firstinspires.ftc.teamcode.Subsystems.Arm;
+import org.firstinspires.ftc.teamcode.Subsystems.Drive;
 import org.firstinspires.ftc.teamcode.Subsystems.Hand;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
-import org.firstinspires.ftc.teamcode.Subsystems.Drive;
-import org.firstinspires.ftc.teamcode.Subsystems.Arm;
-
 import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
-@Autonomous(name = "Multi-Action Auto" , preselectTeleOp = "TeleOp")
+@Autonomous(name = "Multi-Action Auto", preselectTeleOp = "TeleOp")
 public class MultiMoveAutoTest extends OpMode {
 
+    public long SECONDS_TO_MILLISECONDS = 1000;
+    public long LONG_TIMEOUT = 5 * SECONDS_TO_MILLISECONDS;
+    public long SHORT_TIMEOUT = SECONDS_TO_MILLISECONDS;
     Drive drive; // drivetrain
     Lift lift; // viper slides / elevators
     Arm arm; // shoulder
     Hand hand; // claw and wrist
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
-
-    public long SECONDS_TO_MILLISECONDS = 1000;
-    public long LONG_TIMEOUT = 5 * SECONDS_TO_MILLISECONDS;
-    public long SHORT_TIMEOUT = (long) 1.5 * SECONDS_TO_MILLISECONDS;
+    TelemetryPacket telemetryPacket;
 
     @Override
     public void init() {
@@ -48,6 +44,7 @@ public class MultiMoveAutoTest extends OpMode {
         arm = new Arm(hardwareMap);
         hand = new Hand(hardwareMap);
         battery = hardwareMap.voltageSensor.get("Control Hub");
+        telemetryPacket = new TelemetryPacket(false);
 
         CommandScheduler.getInstance().registerSubsystem(drive);
         CommandScheduler.getInstance().registerSubsystem(lift);
@@ -64,7 +61,6 @@ public class MultiMoveAutoTest extends OpMode {
     public void init_loop() {
         drive.readSensors();
         lift.readSensors();
-        arm.readSensors();
         hand.readSensors();
     }
 
@@ -81,21 +77,32 @@ public class MultiMoveAutoTest extends OpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
 
-                        // raise lift
+//                         raise lift and move forward a bit
                         new ParallelCommandGroup(
-                            lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
-                            arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET).withTimeout(LONG_TIMEOUT)
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT)
                         ),
 
                         // move to baskets
-                        new ParallelCommandGroup(
-                                drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT)
-                        ),
+                        drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
+                        drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
+                        hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
 
                         // release preload
+                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT),
+
+                        // raise lift and move forward a bit
+//                        new ParallelCommandGroup(
+//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET).withTimeout(LONG_TIMEOUT)
+//                        ),
+
                         new SequentialCommandGroup(
-                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT)
+                                drive.moveTo(-48, -41, 0).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
+                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
                         )
                 )
         );
@@ -105,7 +112,6 @@ public class MultiMoveAutoTest extends OpMode {
     public void loop() {
         drive.readSensors();
         lift.readSensors();
-        arm.readSensors();
         hand.readSensors();
 
         // Run the CommandScheduler instance
@@ -120,13 +126,13 @@ public class MultiMoveAutoTest extends OpMode {
         arm.addTelemetry(pack);
         hand.addTelemetry(pack);
         FtcDashboard.getInstance().sendTelemetryPacket(pack);
+        FtcDashboard.getInstance().sendTelemetryPacket(telemetryPacket);
     }
 
     @Override
     public void stop() {
         drive.readSensors();
         lift.readSensors();
-        arm.readSensors();
         hand.readSensors();
 
         drive.stop();
