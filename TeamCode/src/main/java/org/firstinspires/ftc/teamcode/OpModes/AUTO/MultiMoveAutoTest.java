@@ -114,7 +114,6 @@ public class MultiMoveAutoTest extends OpMode {
         lift.readSensors();
         hand.readSensors();
 
-        // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket(false);
