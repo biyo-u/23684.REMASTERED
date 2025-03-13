@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Hand;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
-@Autonomous(name = "Real Basket Auto", preselectTeleOp = "TeleOp")
+@Autonomous(name = "Basket Auto", preselectTeleOp = "TeleOp")
 public class BasketAuto extends OpMode {
 
     public long SECONDS_TO_MILLISECONDS = 1000;
@@ -71,7 +71,7 @@ public class BasketAuto extends OpMode {
 
     @Override
     public void start() {
-        drive.setPosition(new Pose2D(DistanceUnit.INCH, -32.25, -62, AngleUnit.DEGREES, 0)); // one sample from the right tile edge
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, -32.25, -62, AngleUnit.DEGREES, 0)); // one sample (or 2 inches) from the right tile edge
         runtime.reset();
 
         CommandScheduler.getInstance().schedule(
@@ -88,38 +88,25 @@ public class BasketAuto extends OpMode {
                                 hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                         ),
                         new SequentialCommandGroup(
-                                drive.moveTo(-47, -40, 0).withTimeout(SHORT_TIMEOUT),
+                                drive.moveTo(-47, -39, 0).withTimeout(SHORT_TIMEOUT),
                                 hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
                         ),
-                        pause(1000),
-                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
-                )
+                        pause(800),
+                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(0,1).withTimeout(SHORT_TIMEOUT),
 
-                // TODO: TRY THIS NEW CODE OUT:
-//                new SequentialCommandGroup(
-//                        new ParallelCommandGroup(
-//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
-//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
-//                                new SequentialCommandGroup(
-//                                        drive.moveTo(-32.25, -60, 0).withTimeout(LONG_TIMEOUT),
-//                                        drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT)
-//                                )
-//                        ),
-//                        new SequentialCommandGroup(
-//                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
-//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-//                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
-//                        ),
-//                        new SequentialCommandGroup(
-//                                drive.moveTo(-47, -40, 0).withTimeout(SHORT_TIMEOUT),
-//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
-//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
-//                        ),
-//                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
-//                )
+                        // score second piece
+                        new ParallelCommandGroup(
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
+                                drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT) // TODO: tweak slightly if it misses basket
+                        ),
+                        hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT)
+                )
         );
     }
 

@@ -22,17 +22,16 @@ import org.firstinspires.ftc.teamcode.Subsystems.Hand;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
-@Disabled
-@Autonomous(name = "Multi-Action Auto", preselectTeleOp = "TeleOp")
-public class MultiMoveAutoTest extends OpMode {
+@Autonomous(name = "Chamber Auto", preselectTeleOp = "TeleOp")
+public class ChamberAuto extends OpMode {
 
     public long SECONDS_TO_MILLISECONDS = 1000;
     public long LONG_TIMEOUT = 5 * SECONDS_TO_MILLISECONDS;
-    public long SHORT_TIMEOUT = SECONDS_TO_MILLISECONDS;
-    Drive drive; // drivetrain
-    Lift lift; // viper slides / elevators
-    Arm arm; // shoulder
-    Hand hand; // claw and wrist
+    public long SHORT_TIMEOUT = (long) (1.5 * SECONDS_TO_MILLISECONDS);
+    Drive drive;
+    Lift lift;
+    Arm arm;
+    Hand hand;
     VoltageSensor battery;
     ElapsedTime runtime = new ElapsedTime();
     TelemetryPacket telemetryPacket;
@@ -59,6 +58,11 @@ public class MultiMoveAutoTest extends OpMode {
         hand.reset();
     }
 
+    public Command pause(long timeout) {
+        return new CommandBase() {
+        }.withTimeout(timeout);
+    }
+
     @Override
     public void init_loop() {
         drive.readSensors();
@@ -66,46 +70,37 @@ public class MultiMoveAutoTest extends OpMode {
         hand.readSensors();
     }
 
-    public Command doNothing(long timeout) {
-        return new CommandBase() {
-        }.withTimeout(timeout);
-    }
-
     @Override
     public void start() {
-        drive.setPosition(new Pose2D(DistanceUnit.INCH, -32.25, -62, AngleUnit.DEGREES, 0));
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, 12, -62, AngleUnit.DEGREES, 0));
         runtime.reset();
 
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
-
-//                         raise lift and move forward a bit
+                        // arms and move to prep to score preloaded specimen
                         new ParallelCommandGroup(
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
-                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT)
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.CHAMBER).withTimeout(LONG_TIMEOUT),
+                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.CHAMBER, telemetryPacket).withTimeout(LONG_TIMEOUT),
+                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT)
                         ),
 
-                        // move to baskets
-                        drive.moveTo(-32.25, -60, 0).withTimeout(SHORT_TIMEOUT),
-                        drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
-                        hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
+//                        // Move to chamber and snap specimen on chamber
+                        drive.moveTo(0, -42, 0).withTimeout(LONG_TIMEOUT)//,
+//                        arm.riseTo(ConstantsPro.SHOULDER_PRESETS.CHAMBER, telemetryPacket).withTimeout(SHORT_TIMEOUT), // todo: ensure change when scoring
+//
+//                        // score on chamber as you back up to release
+//                        new SequentialCommandGroup(
+//                                drive.moveTo(-0, -28, 0).withTimeout(LONG_TIMEOUT), // TODO: FIND SCORING WAYPOINT (0, -y-10)
+//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT)
+//                        )//,
 
-                        // release preload
-                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-                        hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT),
-
-                        // raise lift and move forward a bit
-//                        new ParallelCommandGroup(
-//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
-//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET).withTimeout(LONG_TIMEOUT)
-//                        ),
-
-                        new SequentialCommandGroup(
-                                drive.moveTo(-48, -41, 0).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
-                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
-                        )
+//                        // move to observation zone, park and prepare for teleop
+//                        new SequentialCommandGroup(
+//                                drive.moveTo(47, -40, 0).withTimeout(SHORT_TIMEOUT), // TODO: FIND OBSERVATION ZONE WAYPOINT (X, -Y) (more than (-51, -51)
+//                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT),
+//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.HOME).withTimeout(SHORT_TIMEOUT),
+//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.HOME, telemetryPacket).withTimeout(SHORT_TIMEOUT)
+//                        )
                 )
         );
     }
@@ -116,6 +111,7 @@ public class MultiMoveAutoTest extends OpMode {
         lift.readSensors();
         hand.readSensors();
 
+        // Run the CommandScheduler instance
         CommandScheduler.getInstance().run();
 
         TelemetryPacket pack = new TelemetryPacket(false);
