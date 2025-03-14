@@ -85,21 +85,23 @@ public class ChamberAuto extends OpMode {
                         ),
 
 //                        // Move to chamber and snap specimen on chamber
-                        drive.moveTo(0, -42, 0).withTimeout(LONG_TIMEOUT)//,
-//                        arm.riseTo(ConstantsPro.SHOULDER_PRESETS.CHAMBER, telemetryPacket).withTimeout(SHORT_TIMEOUT), // todo: ensure change when scoring
-//
-//                        // score on chamber as you back up to release
-//                        new SequentialCommandGroup(
-//                                drive.moveTo(-0, -28, 0).withTimeout(LONG_TIMEOUT), // TODO: FIND SCORING WAYPOINT (0, -y-10)
-//                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT)
-//                        )//,
+                        drive.moveTo(0, -37, 0).withTimeout(LONG_TIMEOUT),
+                        new SequentialCommandGroup(
+                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                pause(SHORT_TIMEOUT),
+                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
+                        ),
+                        new SequentialCommandGroup(
+                                drive.moveTo(48, -45, 225).withTimeout(SHORT_TIMEOUT)  // TODO: FIND OBSERVATION ZONE WAYPOINT (X, -Y) (more than (-51, -51)
+                                // todo: add in drop lift
+                                // todo: add in drop arm
+                                // todo: add in wrist down + claw open
+                                // todo: add in pause to wait for human player to position specimen
+                        )
 
-//                        // move to observation zone, park and prepare for teleop
 //                        new SequentialCommandGroup(
-//                                drive.moveTo(47, -40, 0).withTimeout(SHORT_TIMEOUT), // TODO: FIND OBSERVATION ZONE WAYPOINT (X, -Y) (more than (-51, -51)
-//                                hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT),
-//                                lift.liftTo(ConstantsPro.LIFT_PRESETS.HOME).withTimeout(SHORT_TIMEOUT),
-//                                arm.riseTo(ConstantsPro.SHOULDER_PRESETS.HOME, telemetryPacket).withTimeout(SHORT_TIMEOUT)
+//                                // todo: repeat move to chamber and snap specimen on chamber code
+                                 // todo: add in park
 //                        )
                 )
         );

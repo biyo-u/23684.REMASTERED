@@ -43,7 +43,7 @@ public class Intake {
      * This method sets the position of the wrist servo to 1.
      */
     public void wristUp() {
-        wrist.setPosition(1);
+        wrist.setPosition(0.8); // TODO: RETURN TO 1
     }
 
     /**
