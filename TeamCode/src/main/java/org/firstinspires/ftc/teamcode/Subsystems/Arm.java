@@ -42,7 +42,7 @@ public class Arm extends SubsystemBase {
     }
 
     public class RiseTo extends CommandBase {
-        public static double shoulderTolerance;
+        public static double shoulderTolerance = 20;
         private final PIDFController shoulderController;
         TelemetryPacket telemetryPacket;
         private double shoulderTarget;

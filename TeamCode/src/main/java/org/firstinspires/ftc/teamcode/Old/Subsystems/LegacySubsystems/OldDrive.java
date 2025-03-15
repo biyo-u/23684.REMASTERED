@@ -41,10 +41,10 @@ public class OldDrive {
         double frontRightPower = (y - x - right_stick_x) / denominator;
         double backRightPower = (y + x - right_stick_x) / denominator;
 
-        frontLeft.setPower(frontLeftPower);
-        rearLeft.setPower(backLeftPower);
-        frontRight.setPower(frontRightPower);
-        rearRight.setPower(backRightPower);
+        frontLeft.setPower(frontLeftPower * power);
+        rearLeft.setPower(backLeftPower * power);
+        frontRight.setPower(frontRightPower * power);
+        rearRight.setPower(backRightPower * power);
     }
 
     public void driveMecanumFieldCentric(double left_stick_y, double left_stick_x, double right_stick_x, double botHeading) {
