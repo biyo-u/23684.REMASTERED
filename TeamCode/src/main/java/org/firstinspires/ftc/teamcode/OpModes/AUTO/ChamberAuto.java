@@ -68,6 +68,7 @@ public class ChamberAuto extends OpMode {
         drive.readSensors();
         lift.readSensors();
         hand.readSensors();
+        drive.setPosition(new Pose2D(DistanceUnit.INCH, 12, -62, AngleUnit.DEGREES, 0));
     }
 
     @Override
@@ -92,7 +93,7 @@ public class ChamberAuto extends OpMode {
                                 hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                         ),
                         new SequentialCommandGroup(
-                                drive.moveTo(48, -45, 225).withTimeout(SHORT_TIMEOUT)  // TODO: FIND OBSERVATION ZONE WAYPOINT (X, -Y) (more than (-51, -51)
+                                drive.moveTo(48, -69, 270).withTimeout(SHORT_TIMEOUT)  // TODO: FIND OBSERVATION ZONE WAYPOINT (X, -Y) (more than (-51, -51)
                                 // todo: add in drop lift
                                 // todo: add in drop arm
                                 // todo: add in wrist down + claw open

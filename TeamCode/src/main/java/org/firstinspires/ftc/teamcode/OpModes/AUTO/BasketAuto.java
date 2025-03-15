@@ -88,7 +88,7 @@ public class BasketAuto extends OpMode {
                                 hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                         ),
                         new SequentialCommandGroup(
-                                drive.moveTo(-47, -37.2, 0).withTimeout(SHORT_TIMEOUT),
+                                drive.moveTo(-47, -37.8, 0).withTimeout(SHORT_TIMEOUT),
                                 hand.handTo(0.9, 0).withTimeout(SHORT_TIMEOUT),
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
@@ -102,7 +102,7 @@ public class BasketAuto extends OpMode {
                         new ParallelCommandGroup(
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
-                                drive.moveTo(-51.4, -51.8, -135).withTimeout(LONG_TIMEOUT) // TODO: tweak slightly if it misses basket
+                                drive.moveTo(-51, -51.9, -135.5).withTimeout(LONG_TIMEOUT) // TODO: tweak slightly if it misses basket
                         ),
                         hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
                         hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT)
