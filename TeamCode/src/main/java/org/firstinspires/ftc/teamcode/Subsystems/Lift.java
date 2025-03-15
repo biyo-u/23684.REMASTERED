@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
 @Config
 public class Lift extends SubsystemBase {
-    public static PIDFCoefficients liftPIDF = new PIDFCoefficients(0.0028, 0, 0, 0);
+    public static PIDFCoefficients liftPIDF = new PIDFCoefficients(0.003, 0,0,0.0001);// old was (0.0028, 0, 0, 0);
     private final MotorGroup lift;
     private final double liftTicksPerInch = 1; // TODO: CALCULATE TICKS TO INCH IN FUTURE!!!
     Motor liftMotorLeft;

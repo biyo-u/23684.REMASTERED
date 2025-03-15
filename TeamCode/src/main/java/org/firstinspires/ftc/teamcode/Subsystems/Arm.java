@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @Config
 public class Arm extends SubsystemBase {
 
-    public static PIDFCoefficients shoulderPIDF = new PIDFCoefficients(0.002, 0, 0, 0);
+    public static PIDFCoefficients shoulderPIDF = new PIDFCoefficients(0.003, 0,0,0.00015); //old was (0.002, 0, 0, 0);
     public static double shoulderTicksPerAngle = 1;
     private final Motor shoulder;
     public double shoulderPower = 0;
