@@ -79,7 +79,7 @@ public class ArmTest extends OpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.CHAMBER).withTimeout(LONG_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.CHAMBER, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.CHAMBER, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT)
                         )

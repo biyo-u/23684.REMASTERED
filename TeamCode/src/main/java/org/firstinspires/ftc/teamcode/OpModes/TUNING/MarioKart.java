@@ -77,7 +77,7 @@ public class MarioKart extends OpMode {
 
         if (controller.wasJustPressed(GamepadKeys.Button.Y)) {
             CommandScheduler.getInstance().schedule(
-                    lift.liftTo(LIFT_TARGET_TICKS)
+                    lift.liftTo(LIFT_TARGET_TICKS, packet)
             );
         }
 

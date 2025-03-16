@@ -77,7 +77,7 @@ public class BasketAuto extends OpMode {
         CommandScheduler.getInstance().schedule(
                 new SequentialCommandGroup(
                         new ParallelCommandGroup(
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 drive.moveTo(-32.25, -60, 0).withTimeout(LONG_TIMEOUT)
                         ),
@@ -89,18 +89,18 @@ public class BasketAuto extends OpMode {
                         ),
                         new SequentialCommandGroup(
                                 drive.moveTo(-47, -37.8, 0).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(0.9, 0).withTimeout(SHORT_TIMEOUT),
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
                         ),
-                        hand.handTo(0.9, 0).withTimeout(SHORT_TIMEOUT),
-                        hand.handTo(0.9, 1).withTimeout(SHORT_TIMEOUT),
-                        pause(800),
+                        hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                        hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
+                        pause(500),
                         hand.handTo(0,1).withTimeout(SHORT_TIMEOUT),
 
                         // score second piece
                         new ParallelCommandGroup(
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 drive.moveTo(-51, -51.9, -135.5).withTimeout(LONG_TIMEOUT) // TODO: tweak slightly if it misses basket
                         ),

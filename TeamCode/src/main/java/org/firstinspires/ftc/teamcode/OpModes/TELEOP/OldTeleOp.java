@@ -32,11 +32,11 @@ public class OldTeleOp extends OpMode {
 
         // Set speed mode
         if (gamepad1.left_trigger > 0.8) {
-            robot.oldDrive.setPower(1);
-        } else if (gamepad1.right_trigger > 0.8) {
-            robot.oldDrive.setPower(0.75);
-        } else {
             robot.oldDrive.setPower(0.5);
+        } else if (gamepad1.right_trigger > 0.8) {
+            robot.oldDrive.setPower(0.3);
+        } else {
+            robot.oldDrive.setPower(1);
         }
 
         // Wrist

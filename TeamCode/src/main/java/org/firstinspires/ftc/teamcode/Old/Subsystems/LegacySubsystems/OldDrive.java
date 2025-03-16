@@ -69,10 +69,10 @@ public class OldDrive {
         double frontRightPower = ((rotY - rotX - right_stick_x) / denominator) * power;
         double backRightPower = ((rotY + rotX - right_stick_x) / denominator) * power;
 
-        frontLeft.setPower(frontLeftPower);
-        frontRight.setPower(frontRightPower);
-        rearLeft.setPower(backLeftPower);
-        rearRight.setPower(backRightPower);
+        frontLeft.setPower(frontLeftPower * power);
+        rearLeft.setPower(backLeftPower * power);
+        frontRight.setPower(frontRightPower * power);
+        rearRight.setPower(backRightPower * power);
     }
 
     /**

@@ -40,8 +40,8 @@ public class Lift extends SubsystemBase {
         liftMotorRight.stopAndResetEncoder();
     }
 
-    public Command liftTo(double target) {
-        return new LiftTo(target);
+    public Command liftTo(double target, TelemetryPacket telemetryPacket) {
+        return new LiftTo(target, telemetryPacket);
     }
 
     @Override
@@ -69,8 +69,9 @@ public class Lift extends SubsystemBase {
     public class LiftTo extends CommandBase {
         private final PIDFController liftController;
         private final double liftTarget;
+        TelemetryPacket telemetryPacket;
 
-        public LiftTo(double target) {
+        public LiftTo(double target, TelemetryPacket telemetryPacket) {
             liftController = new PIDFController(liftPIDF.p, liftPIDF.i, liftPIDF.d, liftPIDF.f);
             double liftTolerance = 0.1 * liftTicksPerInch;
             liftController.setTolerance(liftTolerance);
@@ -86,6 +87,7 @@ public class Lift extends SubsystemBase {
         @Override
         public void execute() {
             liftPower = liftController.calculate(liftPosition, liftTarget);
+            telemetryPacket.put("Lift Target", liftTarget);
         }
 
         @Override

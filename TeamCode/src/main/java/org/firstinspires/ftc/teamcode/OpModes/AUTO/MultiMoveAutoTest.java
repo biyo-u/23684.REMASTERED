@@ -81,7 +81,7 @@ public class MultiMoveAutoTest extends OpMode {
 
 //                         raise lift and move forward a bit
                         new ParallelCommandGroup(
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET).withTimeout(LONG_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.BASKET, telemetryPacket).withTimeout(LONG_TIMEOUT)
                         ),
 
@@ -103,7 +103,7 @@ public class MultiMoveAutoTest extends OpMode {
                         new SequentialCommandGroup(
                                 drive.moveTo(-48, -41, 0).withTimeout(SHORT_TIMEOUT),
                                 hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
-                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE).withTimeout(SHORT_TIMEOUT),
+                                lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
                         )
                 )
