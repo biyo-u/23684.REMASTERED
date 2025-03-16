@@ -22,7 +22,7 @@ public class ConstantsPro {
         public static double HALF_EXTENSION = 3000 + LIFT_MODIFIER;
         public static double HOME = 0 + + LIFT_MODIFIER;
         public static double CHAMBER = 4050 + LIFT_MODIFIER; // old was 3243, then it was 4243
-        public static double COLLECT_SAMPLE = 1000 + LIFT_MODIFIER;
+        public static double COLLECT_SAMPLE = 2000 + LIFT_MODIFIER;
         public static double BASKET = 6800 + LIFT_MODIFIER;
 
     }

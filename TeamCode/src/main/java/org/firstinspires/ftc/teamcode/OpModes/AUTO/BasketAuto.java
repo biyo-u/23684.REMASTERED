@@ -83,13 +83,13 @@ public class BasketAuto extends OpMode {
                         ),
                         new SequentialCommandGroup(
                                 drive.moveTo(-51, -51, -135).withTimeout(LONG_TIMEOUT),
-                                hand.handTo(1, 1).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(0.8, 1).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(0.8, 0).withTimeout(SHORT_TIMEOUT),
                                 hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                         ),
                         new SequentialCommandGroup(
                                 drive.moveTo(-47, -37.8, 0).withTimeout(SHORT_TIMEOUT),
-                                hand.handTo(1, 0).withTimeout(SHORT_TIMEOUT),
+                                hand.handTo(0.8, 0).withTimeout(SHORT_TIMEOUT),
                                 lift.liftTo(ConstantsPro.LIFT_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT),
                                 arm.riseTo(ConstantsPro.SHOULDER_PRESETS.COLLECT_SAMPLE, telemetryPacket).withTimeout(SHORT_TIMEOUT)
                         ),

@@ -22,7 +22,7 @@ import org.firstinspires.ftc.teamcode.Subsystems.Hand;
 import org.firstinspires.ftc.teamcode.Subsystems.Lift;
 import org.firstinspires.ftc.teamcode.Utilites.ConstantsPro;
 
-@Autonomous(name = "[SINGLE SPECIMEN] Chamber Auto", preselectTeleOp = "TeleOp")
+@Autonomous(name = "Chamber Auto", preselectTeleOp = "TeleOp")
 public class ChamberAuto extends OpMode {
 
     public long SECONDS_TO_MILLISECONDS = 1000;
@@ -93,17 +93,12 @@ public class ChamberAuto extends OpMode {
                                 hand.handTo(0, 1).withTimeout(SHORT_TIMEOUT)
                         ),
                         new SequentialCommandGroup(
-                                drive.moveTo(48, -69, 270).withTimeout(SHORT_TIMEOUT)  // TODO: FIND OBSERVATION ZONE WAYPOINT (X, -Y) (more than (-51, -51)
-                                // todo: add in drop lift
-                                // todo: add in drop arm
-                                // todo: add in wrist down + claw open
-                                // todo: add in pause to wait for human player to position specimen
+                                drive.moveTo(48, -69, 270).withTimeout(SHORT_TIMEOUT)  // TODO: adjust to move in deeper into ob zone
+                                // add in drop lift
+                                // add in drop arm
+                                // add in wrist down + claw open
+                                // add in pause to wait for human player to position specimen
                         )
-
-//                        new SequentialCommandGroup(
-//                                // todo: repeat move to chamber and snap specimen on chamber code
-                                 // todo: add in park
-//                        )
                 )
         );
     }

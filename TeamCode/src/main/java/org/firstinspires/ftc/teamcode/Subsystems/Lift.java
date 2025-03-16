@@ -76,6 +76,7 @@ public class Lift extends SubsystemBase {
             double liftTolerance = 0.1 * liftTicksPerInch;
             liftController.setTolerance(liftTolerance);
             liftTarget = target * liftTicksPerInch; // CURRENTLY ACCEPTS ONLY TICKS. CALCULATE FOR TICKS TO INCH IN FUTURE!!!
+            this.telemetryPacket = telemetryPacket;
             addRequirements(Lift.this);
         }
 
