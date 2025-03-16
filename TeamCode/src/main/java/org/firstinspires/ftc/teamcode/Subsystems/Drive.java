@@ -285,9 +285,9 @@ public class Drive extends SubsystemBase {
         public boolean isFinished() {
             // Check if target is reached
 //            return quickStrafe.atSetPoint() && quickForward.atSetPoint() && quickTurn.atSetPoint();
-            boolean isXReached = Math.abs(currentPosition.getX(DISTANCE_UNIT) - target.getX(DISTANCE_UNIT)) < 3;
-            boolean isYReached = Math.abs(currentPosition.getY(DISTANCE_UNIT) - target.getY(DISTANCE_UNIT)) < 3;
-            boolean isHeadingReached = Math.abs(currentPosition.getHeading(ANGLE_UNIT) - target.getHeading(ANGLE_UNIT)) < 3;
+            boolean isXReached = Math.abs(currentPosition.getX(DISTANCE_UNIT) - target.getX(DISTANCE_UNIT)) < 2;
+            boolean isYReached = Math.abs(currentPosition.getY(DISTANCE_UNIT) - target.getY(DISTANCE_UNIT)) < 2;
+            boolean isHeadingReached = Math.abs(currentPosition.getHeading(ANGLE_UNIT) - target.getHeading(ANGLE_UNIT)) < 2;
             return isXReached && isYReached && isHeadingReached;
         }
 
